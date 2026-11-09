@@ -9,8 +9,6 @@ import {
 import type { AgentChat, AgentChatState } from './agentChat';
 import { toDataUri } from './photos';
 
-import { THINK_HARDER } from '../chatOptions';
-
 /** What the person did in a reply's UI, which a request carries in its `custom` data. */
 export type AgentRequestCustom = { uiAction?: UIAction };
 
@@ -75,7 +73,7 @@ export const createAgentTransport = (
     };
   },
   loadOlderMessages: () => chat.loadOlderMessages(),
-  send: async ({ attachments, chatOption, custom, text }) => {
+  send: async ({ attachments, custom, text }) => {
     // From now on the conversation is used, even before Stream's copy of the question arrives.
     chat.wasAsked = true;
     const photos = attachments
@@ -91,7 +89,6 @@ export const createAgentTransport = (
       if (wasNew) onCreated();
       await respond(session, text, {
         images,
-        reasoningEffort: chatOption?.id === THINK_HARDER.id ? 'high' : undefined,
         uiAction: (custom as AgentRequestCustom | undefined)?.uiAction,
       });
     } catch (error) {

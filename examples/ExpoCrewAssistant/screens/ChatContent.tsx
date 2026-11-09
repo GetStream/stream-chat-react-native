@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Linking,
   Platform,
   Pressable,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -11,13 +13,14 @@ import {
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import type { LocalMessage } from 'stream-chat';
 import { useStateStore } from 'stream-chat-expo';
 
 import { createA2UIRenderer } from 'stream-chat-expo/a2ui';
 import {
+  AIAssistantMessage,
   type AIConversationController,
   type AIConversationControllerState,
-  AISuggestions,
   AITypingIndicatorView,
   aiUIActionJSON,
   AIUIHost,
@@ -25,28 +28,24 @@ import {
   isAIConversationAnswering,
   useAIConversationState,
 } from 'stream-chat-expo/ai-components';
-import { AIConversation } from 'stream-chat-expo/ai-components/conversation';
+import {
+  AIConversation,
+  type AIConversationAssistantMessageProps,
+} from 'stream-chat-expo/ai-components/conversation';
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
 import type { AgentRequestCustom } from '../agent/agentTransport';
-import { chatOptions, STARTERS } from '../chatOptions';
-import { tripComponents } from '../components/TripComponents';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
+import { type Flow, FLOWS } from '../flows';
 
 const errorSelector = ({ error }: AIConversationControllerState) => ({ error });
 
-/**
- * The composer, with what rides the keyboard above it: why something failed, with a way to try
- * again, and the starters, which share the composer's draft and picked option. And the way into
- * voice mode beside it.
- */
+/** Why something failed, with a way to try again, above the composer, and voice mode beside it. */
 const ComposerArea = ({
-  chat,
   conversation,
   failure,
 }: {
-  chat: AgentChat;
   conversation: AIConversationController;
   failure: string | undefined;
 }) => {
@@ -66,7 +65,6 @@ const ComposerArea = ({
   return (
     <ComposerView
       bottomSheetInsets={insets}
-      chatOptions={chatOptions}
       conversation={conversation}
       header={
         <>
@@ -77,7 +75,6 @@ const ComposerArea = ({
               <Text style={styles.retryText}>Try again</Text>
             </Pressable>
           ) : null}
-          <Starters chat={chat} conversation={conversation} />
         </>
       }
       trailing={<VoiceMode />}
@@ -85,39 +82,128 @@ const ComposerArea = ({
   );
 };
 
-const EmptyState = () => <Text style={styles.emptyText}>What can I help with ?</Text>;
-
-// A conversation still loading isn't empty: it shows no starters meanwhile.
-const isEmptySelector = ({ isLoaded, messages }: AgentChatState) => ({
-  isEmpty: isLoaded && messages.length === 0,
-});
-
 const pendingSelector = ({ pendingMessage }: AIConversationControllerState) => ({
   pendingMessage,
 });
 
-/**
- * Starters, above the composer, until the conversation has a first question. One is asked with the
- * option picked in the composer, as the composer would ask it.
- */
-const Starters = ({
+/** What the assistant helps with, for an empty conversation: each starts a new one. */
+const Flows = ({ conversation }: { conversation: AIConversationController }) => {
+  const { startConversationAbout } = useAppContext();
+  const { pendingMessage } = useAIConversationState(conversation, pendingSelector);
+  if (pendingMessage) return null;
+  const start = (flow: Flow) =>
+    'event' in flow ? startConversationAbout(flow.event) : conversation.send({ text: flow.ask });
+  return (
+    <ScrollView contentContainerStyle={styles.flows}>
+      <Text style={styles.hello}>Hi Jordan 👋</Text>
+      <Text style={styles.helloSub}>What do you need before, during or after your shift?</Text>
+      <View style={styles.grid}>
+        {FLOWS.map((flow) => (
+          <Pressable
+            accessibilityRole='button'
+            key={flow.id}
+            onPress={() => start(flow)}
+            style={({ pressed }) => [styles.flow, pressed && styles.pressed]}
+            testID={`flow-${flow.id}`}
+          >
+            <Text style={styles.flowEmoji}>{flow.emoji}</Text>
+            <Text style={styles.flowTitle}>{flow.title}</Text>
+            <Text style={styles.flowSubtitle}>{flow.subtitle}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </ScrollView>
+  );
+};
+
+const emptySelector = ({ awaitingAgent, isLoaded }: AgentChatState) => ({
+  awaitingAgent,
+  isLoaded,
+});
+
+const EmptyContent = ({
   chat,
   conversation,
 }: {
   chat: AgentChat;
   conversation: AIConversationController;
 }) => {
-  const { isEmpty } = useStateStore(chat.state, isEmptySelector);
-  const { pendingMessage } = useAIConversationState(conversation, pendingSelector);
-  if (!isEmpty || pendingMessage) return null;
-  const onSelect = (text: string) => {
-    const { chatOption } = conversation.composer.getLatestValue();
-    conversation.send({ chatOption: chatOption ?? undefined, text });
-  };
-  return <AISuggestions onSelect={onSelect} suggestions={STARTERS} />;
+  const { awaitingAgent, isLoaded } = useStateStore(chat.state, emptySelector);
+  if (awaitingAgent) {
+    return <AITypingIndicatorView text='Crew is getting things ready' />;
+  }
+  return isLoaded ? <Flows conversation={conversation} /> : <ActivityIndicator />;
 };
 
-const loadedSelector = ({ isLoaded }: AgentChatState) => ({ isLoaded });
+type Source = { id: string; title: string; url: string; citation?: string };
+
+const sourcesOf = (message: LocalMessage | undefined): Source[] => {
+  const support = (message as { support_message?: { sources?: Source[] } } | undefined)
+    ?.support_message;
+  return support?.sources ?? [];
+};
+
+const messagesSelector = ({ messages }: AgentChatState) => ({ messages });
+
+/** The handbook passages and pages a reply was answered from, under it. */
+const ReplySources = ({ chat, messageId }: { chat: AgentChat; messageId: string }) => {
+  const { messages } = useStateStore(chat.state, messagesSelector);
+  const message = useMemo(() => messages.find(({ id }) => id === messageId), [messageId, messages]);
+  const sources = useMemo(() => sourcesOf(message), [message]);
+  if (sources.length === 0) return null;
+  return (
+    <View style={styles.sources} testID='reply-sources'>
+      <Text style={styles.sourcesTitle}>Sources</Text>
+      {sources.map((source, index) => (
+        <Pressable
+          accessibilityRole='link'
+          key={source.id}
+          onPress={() => void Linking.openURL(source.url)}
+          style={styles.source}
+        >
+          <Text style={styles.sourceIndex}>{index + 1}</Text>
+          <View style={styles.sourceBody}>
+            <Text style={styles.sourceTitle}>{source.title}</Text>
+            {source.citation ? (
+              <Text numberOfLines={2} style={styles.sourceCitation}>
+                {source.citation}
+              </Text>
+            ) : null}
+          </View>
+        </Pressable>
+      ))}
+    </View>
+  );
+};
+
+/** The agent's reply as the AI components show it, then the sources it was answered from. */
+const AssistantMessage = ({
+  approver,
+  attachments,
+  isGenerating,
+  message,
+  onWritingChange,
+  parts,
+  reasoningText,
+  text,
+}: AIConversationAssistantMessageProps) => {
+  const { chat } = useAppContext();
+  return (
+    <View>
+      <AIAssistantMessage
+        approver={approver}
+        attachments={attachments}
+        id={message.id}
+        isGenerating={isGenerating}
+        onWritingChange={onWritingChange}
+        parts={parts}
+        reasoningText={reasoningText}
+        text={text}
+      />
+      {chat && !isGenerating ? <ReplySources chat={chat} messageId={message.id} /> : null}
+    </View>
+  );
+};
 
 /** The open conversation, as its controller has it. */
 const Conversation = ({
@@ -128,19 +214,17 @@ const Conversation = ({
   conversation: AIConversationController;
 }) => {
   const { agentState } = useAppContext();
-  const { isLoaded } = useStateStore(chat.state, loadedSelector);
 
-  // The UI the agent writes for its replies, in A2UI, with the trip planner's own components. One
-  // host per conversation, for as long as it shows, so what a reply's UI holds survives scrolling.
-  // What the person does in it goes to the agent as their next message.
+  // The UI the agent writes for its replies, in A2UI: checklists, quizzes and forms. One host per
+  // conversation, so what a reply's UI holds survives scrolling. What the person does in it goes
+  // to the agent as their next message.
   const [ui] = useState(
     () =>
       new AIUIHost({
-        components: tripComponents,
         renderers: [createA2UIRenderer()],
         send: (action) => {
           if (isAIConversationAnswering(conversation.state.getLatestValue().status)) {
-            throw new Error('The agent is still answering');
+            throw new Error('Crew is still answering');
           }
           const custom: AgentRequestCustom = { uiAction: aiUIActionJSON(action) };
           conversation.send({ custom, text: action.label });
@@ -148,7 +232,6 @@ const Conversation = ({
       }),
   );
 
-  // What the agent is doing while it runs skills, under the latest turn.
   const footer =
     agentState.kind === 'working' ? (
       <AITypingIndicatorView
@@ -158,8 +241,9 @@ const Conversation = ({
 
   return (
     <AIConversation
+      AssistantMessage={AssistantMessage}
       conversation={conversation}
-      emptyContent={isLoaded ? <EmptyState /> : <ActivityIndicator />}
+      emptyContent={<EmptyContent chat={chat} conversation={conversation} />}
       footer={footer}
       ui={ui}
     />
@@ -185,29 +269,67 @@ export const ChatContent = () => {
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(200)}
     >
-      {/* The keyboard is the SDK's: the conversation makes room for it, the composer rides it. */}
       <Conversation chat={chat} conversation={conversation} />
-      <ComposerArea chat={chat} conversation={conversation} failure={failure} />
+      <ComposerArea conversation={conversation} failure={failure} />
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: { flex: 1, backgroundColor: '#fcfcfc' },
   emptyContainer: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'transparent',
+    flex: 1,
+    justifyContent: 'center',
+    width: '100%',
   },
-  emptyText: { fontSize: 24, fontWeight: 'bold' },
   failureText: { color: '#B00020', fontSize: 15, paddingHorizontal: 24, textAlign: 'center' },
+  flow: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E6E8EC',
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 4,
+    padding: 14,
+    width: '48%',
+  },
+  flowEmoji: { fontSize: 24 },
+  flowSubtitle: { color: '#5C6370', fontSize: 13 },
+  flowTitle: { color: '#0B1220', fontSize: 15, fontWeight: '700' },
+  flows: { paddingHorizontal: 16, paddingVertical: 24 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between' },
+  hello: { color: '#0B1220', fontSize: 26, fontWeight: '800' },
+  helloSub: { color: '#5C6370', fontSize: 15, marginBottom: 20, marginTop: 4 },
+  pressed: { opacity: 0.6 },
   retryText: {
-    color: '#005FFF',
+    color: '#C8102E',
     fontSize: 15,
     fontWeight: '600',
     paddingTop: 4,
     textAlign: 'center',
   },
+  source: { flexDirection: 'row', gap: 10, paddingVertical: 6 },
+  sourceBody: { flex: 1 },
+  sourceCitation: { color: '#5C6370', fontSize: 13 },
+  sourceIndex: {
+    backgroundColor: '#FDECEE',
+    borderRadius: 10,
+    color: '#C8102E',
+    fontSize: 12,
+    fontWeight: '700',
+    height: 20,
+    lineHeight: 20,
+    textAlign: 'center',
+    width: 20,
+  },
+  sourceTitle: { color: '#0B1220', fontSize: 14, fontWeight: '600' },
+  sources: {
+    backgroundColor: '#F7F8FA',
+    borderRadius: 12,
+    marginHorizontal: 16,
+    marginTop: 4,
+    padding: 12,
+  },
+  sourcesTitle: { color: '#5C6370', fontSize: 12, fontWeight: '700', marginBottom: 4 },
+  wrapper: { backgroundColor: '#FCFCFC', flex: 1 },
 });

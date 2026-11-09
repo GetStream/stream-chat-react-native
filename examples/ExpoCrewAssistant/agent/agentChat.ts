@@ -13,6 +13,8 @@ export type AgentChatState = {
   isLoaded: boolean;
   /** The session the conversation is held in, once something here needed it. */
   session: Session | undefined;
+  /** Whether the agent was asked to open the conversation and hasn't written yet. */
+  awaitingAgent: boolean;
 };
 
 /**
@@ -58,6 +60,7 @@ export class AgentChat {
     private readonly openSession: OpenSession,
   ) {
     this.state = new StateStore<AgentChatState>({
+      awaitingAgent: false,
       hasOlderMessages: false,
       isLoaded: sessionId === undefined,
       messages: [],
@@ -86,7 +89,11 @@ export class AgentChat {
         event.type === 'message.deleted'
       ) {
         // A new array, in which only the messages that changed are new objects.
-        this.state.partialNext({ messages: [...channel.state.messages] });
+        const messages = [...channel.state.messages];
+        this.state.partialNext({
+          messages,
+          ...(messages.some(isAgentReply) ? { awaitingAgent: false } : {}),
+        });
       }
     });
     this.stops.push(() => subscription.unsubscribe());

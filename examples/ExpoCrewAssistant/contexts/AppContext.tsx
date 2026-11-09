@@ -94,6 +94,8 @@ export type AppContextValue = {
   conversationsVersion: number;
   /** Why the last conversation couldn't be opened. */
   failure: string | undefined;
+  /** Whether the router knows who this is, so conversations can start. */
+  isReady: boolean;
   /** The open conversation's session id, or `undefined` for a new one that wasn't asked anything. */
   sessionId: string | undefined;
   /**
@@ -103,6 +105,13 @@ export type AppContextValue = {
   openConversation: (sessionId: string, conversationId?: string) => void;
   /** Starts a new conversation. The router creates it with its first question. */
   startConversation: () => void;
+  /** Starts a new conversation and asks it `text`, as a flow or a scanned code does. */
+  startConversationWith: (text: string) => void;
+  /**
+   * Starts a new conversation that the agent opens, about something that happened, such as a
+   * clock-in: the restaurant's systems would tell the backend, here the app does.
+   */
+  startConversationAbout: (event: CrewEvent) => void;
 };
 
 export const AppContext = React.createContext<AppContextValue>({
@@ -111,10 +120,28 @@ export const AppContext = React.createContext<AppContextValue>({
   conversation: undefined,
   conversationsVersion: 0,
   failure: undefined,
+  isReady: false,
   openConversation: () => {},
   sessionId: undefined,
   startConversation: () => {},
+  startConversationAbout: () => {},
+  startConversationWith: () => {},
 });
+
+/** What the restaurant's systems tell the agent about, so it speaks first. */
+export type CrewEvent = 'clock_in' | 'clock_out' | 'back_from_time_off' | 'onboarding';
+
+// Tells the backend what happened, which has the agent open the conversation about it.
+const tellBackend = async (kind: CrewEvent, sessionId: string) => {
+  const response = await fetch(`${AgentConfig.backendUrl}/events`, {
+    body: JSON.stringify({ kind, session_id: sessionId, user_id: AgentConfig.user.id }),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+  });
+  if (!response.ok) {
+    throw new Error(`The crew backend answered ${response.status}: ${await response.text()}`);
+  }
+};
 
 const messageOf = (error: unknown) => (error instanceof Error ? error.message : String(error));
 
@@ -142,6 +169,7 @@ type Opened = { chat: AgentChat; conversation: AIConversationController };
 export const AppProvider = ({ client, children }: PropsWithChildren<{ client: StreamChat }>) => {
   const [opened, setOpened] = useState<Opened>();
   const [failure, setFailure] = useState<string>();
+  const [isReady, setIsReady] = useState(false);
   const [agentState, setAgentState] = useState<ConversationSnapshot>(IDLE);
   const [conversationsVersion, setConversationsVersion] = useState(0);
   const current = useRef<Opened | undefined>(undefined);
@@ -179,6 +207,28 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   // A new conversation is only shown: the router creates it with its first question, so one
   // that is never asked anything isn't left in the drawer.
   const startConversation = useStableCallback(() => show(newChat()));
+
+  const startConversationWith = useStableCallback((text: string) => {
+    const next = newChat();
+    show(next);
+    void current.current?.conversation.send({ text });
+  });
+
+  const startConversationAbout = useStableCallback((kind: CrewEvent) => {
+    const next = newChat();
+    show(next);
+    next.state.partialNext({ awaitingAgent: true });
+    void (async () => {
+      try {
+        const opened = await next.session();
+        setConversationsVersion((version) => version + 1);
+        await tellBackend(kind, opened.id);
+      } catch (error) {
+        next.state.partialNext({ awaitingAgent: false });
+        if (current.current?.chat === next) setFailure(messageOf(error));
+      }
+    })();
+  });
 
   const openConversation = useStableCallback((sessionId: string, conversationId?: string) => {
     if (sessionId === current.current?.chat.id) {
@@ -221,6 +271,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
         agents.use({ chat: client });
         if (!cancelled) {
           startConversation();
+          setIsReady(true);
         }
       } catch (error) {
         setFailure(messageOf(error));
@@ -240,9 +291,12 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       conversation,
       conversationsVersion,
       failure,
+      isReady,
       openConversation,
       sessionId,
       startConversation,
+      startConversationAbout,
+      startConversationWith,
     }),
     [
       agentState,
@@ -250,9 +304,12 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       conversation,
       conversationsVersion,
       failure,
+      isReady,
       openConversation,
       sessionId,
       startConversation,
+      startConversationAbout,
+      startConversationWith,
     ],
   );
 
