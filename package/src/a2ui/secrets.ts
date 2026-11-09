@@ -22,7 +22,44 @@ export const withoutSecrets = <T>(value: T, secrets: readonly string[]): T => {
   return clean(value) as T;
 };
 
-const absolute = (path: string) => (path.startsWith('/') ? path : `/${path}`);
+const resolvedPath = (base: string, path: string) => {
+  if (path.startsWith('/')) return path;
+  const parent = base === '/' ? '' : base.replace(/\/$/, '');
+  return path === '' || path === '.' ? parent || '/' : `${parent}/${path}`;
+};
+
+const placesOf = (surface: SurfaceModel<ComponentApi>) => {
+  const places: Array<{ dataPath: string; id: string }> = [];
+  const seen = new Set<string>();
+  const visit = (id: string, dataPath: string) => {
+    const key = `${id}\u0000${dataPath}`;
+    const component = surface.componentsModel.get(id);
+    if (!component || seen.has(key)) return;
+    seen.add(key);
+    places.push({ dataPath, id });
+    const children = (value: unknown): void => {
+      if (typeof value === 'string') return visit(value, dataPath);
+      if (Array.isArray(value)) return value.forEach(children);
+      if (!isRecord(value)) return;
+      const { componentId, path } = value;
+      if (typeof componentId === 'string' && typeof path === 'string') {
+        const listPath = resolvedPath(dataPath, path);
+        const items: unknown = surface.dataModel.get(listPath);
+        if (Array.isArray(items)) {
+          items.forEach((_, index) => visit(componentId, resolvedPath(listPath, `${index}`)));
+        }
+        return;
+      }
+      Object.values(value).forEach(children);
+    };
+    Object.values(component.properties as Record<string, unknown>).forEach(children);
+  };
+  visit(surface.rootId, '/');
+  for (const component of surface.componentsModel.values) {
+    if (!places.some(({ id }) => id === component.id)) visit(component.id, '/');
+  }
+  return places;
+};
 
 // The paths each surface's obscured fields write, as they resolved when they showed: inside a
 // list, or with a variant bound to the data model, the components alone don't tell.
@@ -43,14 +80,16 @@ export const keepSecretPath = (surface: SurfaceModel<ComponentApi>, path: string
  * components name, whether or not they show, and those of the ones that showed.
  */
 export const secretPathsOf = (surface: SurfaceModel<ComponentApi> | undefined) => {
-  const paths: string[] = [...((surface && shownSecretPaths.get(surface)) ?? [])];
-  for (const component of surface?.componentsModel.values ?? []) {
-    const { value, variant } = component.properties as Record<string, unknown>;
-    if (component.type !== 'TextField' || variant !== 'obscured' || !isRecord(value)) continue;
+  if (!surface) return [];
+  const paths = new Set(shownSecretPaths.get(surface));
+  for (const { dataPath, id } of placesOf(surface)) {
+    const component = surface.componentsModel.get(id);
+    const { value, variant } = (component?.properties ?? {}) as Record<string, unknown>;
+    if (component?.type !== 'TextField' || variant !== 'obscured' || !isRecord(value)) continue;
     const path = value['@path'];
-    if (typeof path === 'string' && !paths.includes(absolute(path))) paths.push(absolute(path));
+    if (typeof path === 'string') paths.add(resolvedPath(dataPath, path));
   }
-  return paths;
+  return [...paths];
 };
 
 /** What the person typed into a surface's obscured TextFields. */
@@ -68,12 +107,17 @@ export const secretContextKeysOf = (
   const secretPaths = secretPathsOf(surface);
   const action: unknown = surface?.componentsModel.get(sourceComponentId)?.properties.action;
   const context = isRecord(action) && isRecord(action.event) ? action.event.context : undefined;
-  if (!isRecord(context)) return [];
+  if (!isRecord(context) || !surface) return [];
+  const dataPaths = placesOf(surface)
+    .filter(({ id }) => id === sourceComponentId)
+    .map(({ dataPath }) => dataPath);
   return Object.entries(context).flatMap(([key, value]) => {
     const path = isRecord(value) ? value['@path'] : undefined;
     if (typeof path !== 'string') return [];
-    const bound = absolute(path);
-    return secretPaths.some((secret) => bound === secret || bound.startsWith(`${secret}/`))
+    return dataPaths.some((dataPath) => {
+      const bound = resolvedPath(dataPath, path);
+      return secretPaths.some((secret) => bound === secret || bound.startsWith(`${secret}/`));
+    })
       ? [key]
       : [];
   });

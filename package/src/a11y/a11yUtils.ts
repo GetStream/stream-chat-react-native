@@ -9,7 +9,6 @@ export const composeAccessibilityLabel = (
 
 /**
  * Build the value object passed to `accessibilityValue` for progress/seek surfaces.
- * Mirrors the React SDK's `progressBarA11y.ts` shape.
  */
 export const formatAccessibilityValue = ({
   max,

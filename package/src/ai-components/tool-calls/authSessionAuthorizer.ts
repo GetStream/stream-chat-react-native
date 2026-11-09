@@ -7,8 +7,7 @@ import NativeAIAgent from '../native-specs/NativeAIAgent';
 // (`ASWebAuthenticationSession` on iOS, an Auth Tab or a Custom Tab on Android), with the
 // handoff token in the page's fragment, which no server sees. The page goes to the provider,
 // which sends the person back through the router to the session's return URL, on this app's
-// scheme, with how it ended in the query. The counterpart of `AIWebAuthentication` in
-// StreamChatAI and of `createPopupAuthorizer` on the web.
+// scheme, with how it ended in the query.
 
 /** How the router says a consent ended, in the return URL's `status` query parameter. */
 export type ConnectorSignInStatus = 'connected' | 'denied' | 'failed' | 'account_mismatch';

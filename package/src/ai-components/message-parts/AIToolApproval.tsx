@@ -41,8 +41,7 @@ export type AIToolApprovalCardProps = {
 /**
  * Asks the person a tool call's question, such as "Share your location?", with the agent's
  * reason and what allowing it shares, and an Allow and a Don't Allow button. Used inline under
- * a step by `AIToolApproval`, and on its own, such as on a voice call. The counterpart of
- * `AIToolApprovalCard`.
+ * a step by `AIToolApproval`, and on its own, such as on a voice call.
  */
 export const AIToolApprovalCard = ({
   approval,
@@ -134,8 +133,7 @@ export type AIToolApprovalProps = {
 /**
  * Asks the question of a tool call that waits for this person on this device, and sends their
  * answer with `approver.decide`. Until the call's step changes the buttons wait; a failed send
- * lets them answer again. Renders nothing for a call that does not wait for them here. The
- * counterpart of `AIToolApprovalView`.
+ * lets them answer again. Renders nothing for a call that does not wait for them here.
  */
 export const AIToolApproval = ({ approver: approverProp, children, part }: AIToolApprovalProps) => {
   const approver = useAIToolApprover(approverProp);

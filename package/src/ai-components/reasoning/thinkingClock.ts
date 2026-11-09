@@ -20,7 +20,7 @@ type Turn = {
 
 /**
  * Times each turn's thinking, so the reply's first reasoning step takes over the seconds the
- * conversation counted while it showed the agent thinking. The counterpart of `AIThinkingClock`.
+ * conversation counted while it showed the agent thinking.
  *
  * It is written only from effects (`update`, `firstStepStreams`, `firstStepDone`) and read
  * during render, so a render React throws away changes nothing.

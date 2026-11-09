@@ -46,8 +46,7 @@ export type AIAssistantMessageProps = {
 
 /**
  * The agent's reply: its steps (reasoning, tool calls and their questions), then its answer,
- * typed out as it streams in, then what it sent with it. The counterpart of
- * `AIAssistantMessageView`.
+ * typed out as it streams in, then what it sent with it.
  */
 export const AIAssistantMessage = ({
   approver,

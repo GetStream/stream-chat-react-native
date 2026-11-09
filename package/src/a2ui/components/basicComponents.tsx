@@ -1,5 +1,5 @@
-// The basic catalog's components, drawn natively in StreamChatA2UI's look: its spacing, radii and
-// type, in the AI components' colors.
+// The basic catalog's components, drawn natively in the AI components' spacing, radii, type and
+// colors.
 import React, { createContext, useContext, useMemo, useRef } from 'react';
 import {
   type DimensionValue,

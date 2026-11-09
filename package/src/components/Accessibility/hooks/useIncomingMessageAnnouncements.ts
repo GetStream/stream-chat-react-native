@@ -34,7 +34,7 @@ export type UseIncomingMessageAnnouncementsParams = {
 };
 
 /**
- * Mirrors stream-chat-react's `useIncomingMessageAnnouncements`:
+ * Announces incoming messages:
  *  - 1 message → "New message from {{user}}"
  *  - >1 messages within throttle window → "{{count}} new messages"
  *  - Throttled to one announcement per second

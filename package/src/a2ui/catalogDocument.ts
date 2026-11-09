@@ -65,8 +65,7 @@ const toolFunctionOf = (tool: AIClientToolDefinition, bindings: boolean) => {
 /**
  * The app's components as an A2UI catalog document: each under its A2UI type, its parameters
  * as its properties and what its events do in its description, since it reports them itself
- * rather than through an A2UI action the agent writes. The same as StreamChatA2UI's
- * `PortableComponent`, so an agent writes for both alike. With `bindings`, as the renderer reads
+ * rather than through an A2UI action the agent writes. With `bindings`, as the renderer reads
  * them, a parameter may also be bound to the data model or worked out by a function; without,
  * as an agent is told them, it is the value its schema describes.
  */
@@ -97,7 +96,6 @@ export const a2uiAppCatalogDocument = (
               ]),
             ),
           },
-          // Sorted, as StreamChatA2UI writes it, so both platforms describe it alike.
           required: [
             'component',
             ...definition.parameters

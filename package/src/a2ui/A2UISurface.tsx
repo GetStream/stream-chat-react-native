@@ -157,7 +157,7 @@ const secretPathOf = (node: ComponentNode, resolved: Record<string, unknown>) =>
     resolved.variant instanceof ResolvedBinding ? resolved.variant.value : resolved.variant;
   const { value } = resolved;
   return variant === 'obscured' && value instanceof ResolvedBinding && isWritable(value)
-    ? value.path
+    ? (node.context?.dataContext.resolvePath(value.path) ?? value.path)
     : undefined;
 };
 

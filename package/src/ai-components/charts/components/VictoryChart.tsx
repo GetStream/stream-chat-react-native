@@ -25,7 +25,6 @@ const font = matchFont({
     android: 'sans-serif',
     default: 'serif',
   }),
-  // A chart's labels read at the caption size, as in StreamChatAI.
   fontSize: primitives.typographyFontSizeXxs,
   fontWeight: 'normal',
   fontStyle: 'normal',

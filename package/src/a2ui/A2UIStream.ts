@@ -12,6 +12,9 @@ const VERSION_SPELLINGS = new Set(['1', '1.0', '1.0.0', 'v1', 'v1.0']);
 export const supportsA2UIVersion = (version: string | undefined) =>
   version === undefined || VERSION_SPELLINGS.has(version);
 
+const VALUE_STARTS = ':,[';
+const WHITESPACE = /\s/;
+
 /**
  * The complete A2UI messages in `text`, as written: every top-level JSON object, in order.
  * One object per line, a pretty-printed one or a JSON array of them all read the same, and
@@ -24,23 +27,43 @@ export const a2uiMessagesIn = (text: string): string[] => {
   let start = 0;
   let inString = false;
   let escaped = false;
+  let resyncing = false;
+  let previous = ' ';
+  const breakOff = (index: number) => {
+    messages.push(text.slice(start, index).trimEnd());
+    depth = 0;
+    inString = false;
+    escaped = false;
+    resyncing = true;
+  };
   for (let index = 0; index < text.length; index++) {
     const char = text[index];
     if (inString) {
-      if (escaped) escaped = false;
+      if (char === '\n') breakOff(index);
+      else if (escaped) escaped = false;
       else if (char === '\\') escaped = true;
-      else if (char === '"') inString = false;
+      else if (char === '"') {
+        inString = false;
+        previous = char;
+      }
       continue;
     }
+    if (WHITESPACE.test(char)) continue;
     if (char === '"' && depth > 0) {
       inString = true;
     } else if (char === '{') {
-      if (depth === 0) start = index;
-      depth++;
+      const firstColumn = index === 0 || text[index - 1] === '\n';
+      if (depth > 0 && firstColumn && !VALUE_STARTS.includes(previous)) breakOff(index);
+      if (depth > 0 || !resyncing || firstColumn) {
+        if (depth === 0) start = index;
+        resyncing = false;
+        depth++;
+      }
     } else if (char === '}' && depth > 0) {
       depth--;
       if (depth === 0) messages.push(text.slice(start, index + 1));
     }
+    previous = char;
   }
   return messages;
 };

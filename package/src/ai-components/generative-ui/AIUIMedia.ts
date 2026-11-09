@@ -3,7 +3,7 @@ import { aiUILinkScheme } from './AIUIHelpers';
 /**
  * Decides what a reply's UI loads for an image, video or sound the agent linked to: the address
  * to load, which may be another, or `null` not to load it. The agent writes these links, so one
- * could track the person or reach their network. The counterpart of `mediaURL` in StreamChatAI.
+ * could track the person or reach their network.
  */
 export type AIUIMediaURL = (url: string) => string | null | undefined;
 

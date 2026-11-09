@@ -43,8 +43,7 @@ export type AIToolAuthorizationCardProps = {
 /**
  * Asks the person to sign in at a provider a tool call needs, such as "Connect Linear", with a
  * Connect and a Not now button. Once the sign-in is over it says how it ended (connected,
- * declined, expired or failed), and a sign-in past its expiry can no longer be opened. The
- * counterpart of `AIToolAuthorizationCard`.
+ * declined, expired or failed), and a sign-in past its expiry can no longer be opened.
  */
 export const AIToolAuthorizationCard = ({
   authorization,
@@ -182,7 +181,7 @@ export type AIToolAuthorizationProps = {
 /**
  * Asks for the sign-in of a tool call that waits for this person, and runs it with
  * `approver.authorizer`. Renders nothing for a call that does not wait for them, or without an
- * authorizer. The counterpart of `AIToolAuthorizationView`.
+ * authorizer.
  */
 export const AIToolAuthorization = ({
   approver: approverProp,

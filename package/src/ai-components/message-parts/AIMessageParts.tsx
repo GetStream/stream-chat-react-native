@@ -31,7 +31,7 @@ export type AIMessagePartProps = {
 /**
  * One step of a reply: a round of reasoning (`AIReasoning`), a tool call (`AIToolCall`, with its
  * question or sign-in when it waits for this person here), or a neutral line for a step this SDK can't
- * show. The counterpart of `AIMessagePartView`.
+ * show.
  */
 export const AIMessagePart = ({ approver, part, reasoningText, stepKey }: AIMessagePartProps) => {
   const { t } = useAITranslation();
@@ -76,7 +76,7 @@ export type AIMessagePartsProps = Omit<AIMessagePartProps, 'part' | 'stepKey'> &
   messageId?: string;
 };
 
-/** The steps of a reply, in order. The counterpart of `AIMessagePartsView`. */
+/** The steps of a reply, in order. */
 export const AIMessageParts = ({
   approver,
   children,

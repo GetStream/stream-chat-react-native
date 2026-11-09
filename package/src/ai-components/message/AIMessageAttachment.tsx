@@ -6,8 +6,7 @@ import { type AIIcons, useAIIcons } from '../icons';
 import { primitives } from '../internal/tokens';
 
 /**
- * What a message carries besides its text, such as an image or a file. The counterpart of
- * `AIMessageAttachment` in StreamChatAI.
+ * What a message carries besides its text, such as an image or a file.
  */
 export type AIMessageAttachmentData = {
   /** `image` shows a thumbnail; `file` shows its name, type and size. An open set. */
@@ -54,8 +53,7 @@ const IMAGE_EXTENSIONS = ['bmp', 'gif', 'heic', 'heif', 'jpeg', 'jpg', 'png', 's
 const VIDEO_EXTENSIONS = ['avi', 'm4v', 'mkv', 'mov', 'mp4', 'webm'];
 
 /**
- * The icon of a file's type, from its media type, else from the extension of its name or URL, as
- * in StreamChatAI and the Android AI SDK.
+ * The icon of a file's type, from its media type, else from the extension of its name or URL.
  */
 const fileTypeIcon = (
   attachment: AIMessageAttachmentData,
@@ -116,8 +114,7 @@ export type AIMessageAttachmentProps = {
 
 /**
  * An image or a file on a message: an image as a thumbnail, a file with its type's icon, name, type
- * and size. A file at a web URL opens in the browser when tapped; an image doesn't open, as in
- * StreamChatAI and the Android AI SDK. The counterpart of `AIMessageAttachmentView`.
+ * and size. A file at a web URL opens in the browser when tapped; an image doesn't open.
  */
 export const AIMessageAttachment = ({
   attachment,
@@ -224,7 +221,7 @@ export const AIMessageAttachment = ({
 };
 
 const defaultStyles = StyleSheet.create({
-  // The Android AI SDK's card: a 36 tile with a 20 icon, 8 padding, 10 apart, at most 280 wide.
+  // A 36 tile with a 20 icon, 8 padding, 10 apart, at most 280 wide.
   file: {
     alignItems: 'center',
     borderRadius: 16,

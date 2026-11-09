@@ -176,7 +176,7 @@ export type AIReasoningProps = {
   text?: string;
 };
 
-// StreamChatAI's fold, SwiftUI's `spring(response: 0.45, dampingFraction: 0.95)`: a stiffness of
+// A spring with a response of 0.45 and a damping fraction of 0.95: a stiffness of
 // (2π / 0.45)² and a damping of 2 × 0.95 × √stiffness. With Reduce Motion it folds at once.
 const FOLD_SPRING = { damping: 26.5, mass: 1, stiffness: 195 };
 
@@ -246,7 +246,7 @@ const opensByDefault = (
  * A round of the model's reasoning: a header that counts the seconds while it thinks ("Thinking...
  * 7s") and says how long it thought once done ("Thought for 12s"), over the reasoning itself,
  * which streams into view while the model thinks and folds away when it is done. Pressing the
- * header opens or folds it. The counterpart of `StreamingReasoningView`.
+ * header opens or folds it.
  *
  * Inside an `AIConversation` that showed the agent thinking, the reply's first reasoning step
  * takes over that thinking: its seconds count from when the question was asked.
@@ -473,8 +473,7 @@ export type AIThinkingProps = {
 
 /**
  * The agent thinking before its reply shows anything: a header that counts the seconds. In an
- * `AIConversation`, the reply's first reasoning step takes over its seconds. The counterpart of
- * `AIThinkingView`.
+ * `AIConversation`, the reply's first reasoning step takes over its seconds.
  */
 export const AIThinking = ({ since }: AIThinkingProps) => {
   const turn = useAIThinkingTurn();

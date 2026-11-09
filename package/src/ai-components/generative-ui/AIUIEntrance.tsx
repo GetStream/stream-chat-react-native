@@ -23,7 +23,7 @@ import { useReduceMotion } from '../voice-visualization/useReduceMotion';
 
 /**
  * Spaces out the parts of a reply's UI that come in together, so they come in one after another
- * rather than at once. The counterpart of `AIUICascade` in StreamChatAI.
+ * rather than at once.
  */
 export class AIUICascade {
   /** How long after the part before it a part comes in, in seconds. */
@@ -49,7 +49,7 @@ type AIUIStage = {
 
 const AIUIStageContext = createContext<AIUIStage | undefined>(undefined);
 
-// StreamChatAI's spring: response 0.7, damping 0.88. It settles in about as long.
+// A spring with a response of 0.7 and a damping of 0.88. It settles in about as long.
 const SPRING = { dampingRatio: 0.88, duration: 700 };
 // With reduced motion a part only fades, which the system setting would otherwise skip.
 const FADE = {

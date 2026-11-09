@@ -7,11 +7,11 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 /**
- * Mirrors stream-chat-react's `<NotificationAnnouncer />`. RN does not yet have a
- * unified Notification queue, so this component currently announces only
- * connection-state transitions (offline → online and back) gated on
- * `accessibility.announceConnectionState`. Per-channel error announcements can
- * be wired in by a future PR via `useChannelContext().error`.
+ * Announces notifications. RN does not yet have a unified Notification queue,
+ * so this component currently announces only connection-state transitions
+ * (offline → online and back) gated on `accessibility.announceConnectionState`.
+ * Per-channel error announcements can be wired in by a future PR via
+ * `useChannelContext().error`.
  *
  * Renders nothing. Mount once inside `<Channel>` (or wherever the active chat
  * surface lives).

@@ -43,7 +43,7 @@ const MENU_IN = new Keyframe({
 /**
  * The menu a long press on the person's message opens, under the bubble or above it when there is
  * no room, at its trailing edge. On iOS the screen dims behind the lifted bubble, as a context menu
- * does; on Android it drops down from the bubble, as the Android AI SDK's does.
+ * does; on Android it drops down from the bubble.
  */
 export const UserMessageMenu = ({ anchor, bubble, items, onClose }: UserMessageMenuProps) => {
   const {

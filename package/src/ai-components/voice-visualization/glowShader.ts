@@ -1,9 +1,7 @@
 import { Skia, type SkRuntimeEffect } from '@shopify/react-native-skia';
 
 /**
- * The glow's shader, SkSL: the AGSL glow of stream-chat-android (itself ported from the iOS Metal
- * glow) as is, since AGSL is SkSL, so the platforms look alike. Every pixel is computed on the
- * GPU: color masses warped by simplex noise, concentric waves, ripples from a tap or a hovering
+ * The glow's shader, SkSL. Every pixel is computed on the GPU: color masses warped by simplex noise, concentric waves, ripples from a tap or a hovering
  * pointer, light and a halo. Pixels past the halo return at once, so only the glow itself costs.
  */
 const SOURCE = `

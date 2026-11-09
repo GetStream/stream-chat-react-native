@@ -7,8 +7,7 @@ import { isRecord, isSameJSON } from './AIUIHelpers';
 export type AIUIFormat = 'a2ui' | 'openui' | (string & {});
 
 /**
- * The UI an agent wrote for a reply, which shows in place of the reply's text. The counterpart
- * of `AIUIDocument` in StreamChatAI.
+ * The UI an agent wrote for a reply, which shows in place of the reply's text.
  */
 export type AIUIDocument = {
   /** The document in its format's own shape: a program's text, or JSON. */
