@@ -15,7 +15,6 @@ import { useStateStore } from 'stream-chat-expo';
 
 import { createA2UIRenderer } from 'stream-chat-expo/a2ui';
 import {
-  AIConversation,
   type AIConversationController,
   type AIConversationControllerState,
   AISuggestions,
@@ -26,6 +25,7 @@ import {
   isAIConversationAnswering,
   useAIConversationState,
 } from 'stream-chat-expo/ai-components';
+import { AIConversation } from 'stream-chat-expo/ai-components/conversation';
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
 import type { AgentRequestCustom } from '../agent/agentTransport';

@@ -1,4 +1,4 @@
-import type { AIMessage, AIPendingMessage } from './types';
+import type { AIMessage, AIPendingMessage } from '../conversation-state/types';
 
 import type { AIUIDocument } from '../generative-ui/AIUIDocument';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
