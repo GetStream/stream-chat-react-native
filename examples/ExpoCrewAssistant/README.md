@@ -81,5 +81,11 @@ free") first reads your own Cal.com. The first time, the reply asks you to **Con
 same sign-in the AI components show for any connector: Connect opens Cal.com's sign-in, and the
 booking carries on once you're connected. Not now books the time you asked for without it.
 
-Not here yet: voice memos (dictation and voice mode work), and approvals answered by someone
-other than the person chatting.
+**Voice memos.** The red mic beside the composer records a memo with the chat SDK's own recorder
+(`AudioRecorderManager` and `AudioRecordingInProgress`). Send uploads it to the conversation's
+channel with `channel.sendFile`, then asks the router with `audio: { url }`: the router transcribes
+it, answers it and shows it on your message as a voice recording, which plays with the chat SDK's
+`AudioAttachment`. At clock-out, a memo is your reflection. The router transcribes recordings with
+Deepgram's batch model only, so it needs a `DEEPGRAM_API_KEY` with credit.
+
+Not here yet: approvals answered by someone other than the person chatting.

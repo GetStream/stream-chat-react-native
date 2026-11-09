@@ -84,7 +84,7 @@ export const VoiceMemoBar = () => {
           </Pressable>
           <View style={styles.recording}>
             <MessageInputContext.Provider value={recorderContext}>
-              <AudioRecordingInProgress />
+              <AudioRecordingInProgress maxDataPointsDrawn={36} />
             </MessageInputContext.Provider>
           </View>
           <Pressable accessibilityRole='button' onPress={send} testID='voice-memo-send'>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   cancel: { color: '#5C6370', fontSize: 15, fontWeight: '600' },
   pressed: { opacity: 0.6 },
-  recording: { flex: 1 },
+  recording: { flex: 1, overflow: 'hidden' },
   send: { color: '#C8102E', fontSize: 15, fontWeight: '700' },
   sending: { alignItems: 'center', flexDirection: 'row', gap: 8, paddingVertical: 14 },
   sendingText: { color: '#5C6370', fontSize: 15 },
