@@ -4,6 +4,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { Schemas } from '@stream-io/calypso';
+import { router } from 'expo-router';
 import type { DrawerContentComponentProps } from 'expo-router/drawer';
 
 import { Plus, useStableCallback } from 'stream-chat-expo';
@@ -47,11 +48,13 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
 
   const onSelect = useStableCallback((session: SessionRow) => {
     openConversation(session.id, session.conversation_id ?? undefined);
+    router.navigate('/');
     navigation.closeDrawer();
   });
 
   const onCreateNewChat = useStableCallback(() => {
     startConversation();
+    router.navigate('/');
     navigation.closeDrawer();
   });
 
