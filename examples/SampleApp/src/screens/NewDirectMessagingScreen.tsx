@@ -6,18 +6,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { Channel as StreamChatChannel } from 'stream-chat';
+import type { ChannelStateData, Channel as StreamChatChannel } from 'stream-chat';
 import {
   Channel,
   MessageComposer,
   MessageList,
   UserAdd,
-  WithComponents,
+  useChannelContext,
+  useStateStore,
   useTheme,
   TextInputRef,
 } from 'stream-chat-react-native';
 
-import { NewDirectMessagingSendButton } from '../components/NewDirectMessagingSendButton';
+import { ChannelHeader } from './ChannelScreen';
+
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
@@ -27,8 +29,8 @@ import { useUserSearchContext } from '../context/UserSearchContext';
 import { Group } from '../icons/Group';
 import { User } from '../icons/User';
 import { useLegacyColors } from '../theme/useLegacyColors';
-
 import type { StackNavigatorParamList } from '../types';
+import { startLocalConversation } from '../utils/startConversation';
 
 const styles = StyleSheet.create({
   container: {
@@ -87,6 +89,38 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
 });
+
+// A conversation that doesn't exist yet has no capabilities from the server, so these let the
+// composer send text and links.
+const provisionalCapabilities = { sendLinks: true, sendMessage: true };
+
+const initializedSelector = ({ initialized }: ChannelStateData) => ({ initialized });
+
+type NewConversationHeaderProps = {
+  onBack: () => void;
+  startedAsDraft: boolean;
+  userSearch: React.ReactNode;
+};
+
+/**
+ * Shows the user search until the conversation started on this screen is created by its first
+ * message, then the channel's header. An existing conversation keeps the user search, so the
+ * recipients can still be changed.
+ */
+const NewConversationHeader = ({
+  onBack,
+  startedAsDraft,
+  userSearch,
+}: NewConversationHeaderProps) => {
+  const { channel } = useChannelContext();
+  // Re-renders when `watch()` creates the channel, which ends `isProvisional`.
+  useStateStore(channel.state, initializedSelector);
+
+  if (startedAsDraft && !channel.isProvisional) {
+    return <ChannelHeader channel={channel} inSafeArea onBack={onBack} />;
+  }
+  return <>{userSearch}</>;
+};
 
 export const EmptyMessagesIndicator = () => {
   const { grey } = useLegacyColors();
@@ -212,13 +246,11 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         currentChannel.current = channels[0];
         isDraft.current = false;
       } else {
-        // Channel doesn't exist. `<Channel>` leaves a channel built from members alone, and the
-        // send button creates it with the first message.
+        // Channel doesn't exist. `<Channel>` leaves a channel built from members alone, and
+        // `createOnFirstSend` creates it with the first message, without leaving this screen.
         isDraft.current = true;
 
-        currentChannel.current = chatClient.channel('messaging', {
-          members: members.map((user_id) => ({ user_id })),
-        });
+        currentChannel.current = startLocalConversation(chatClient, members);
       }
 
       if (messageInputRef.current) {
@@ -384,16 +416,20 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         channel={currentChannel.current}
         enforceUniqueReaction
         keyboardVerticalOffset={0}
-        overrideOwnCapabilities={{ sendMessage: true }}
+        overrideOwnCapabilities={
+          currentChannel.current.isProvisional ? provisionalCapabilities : undefined
+        }
         setInputRef={(ref) => (messageInputRef.current = ref)}
       >
-        {renderUserSearch({ inSafeArea: true })}
+        <NewConversationHeader
+          onBack={onBackPress}
+          startedAsDraft={isDraft.current}
+          userSearch={renderUserSearch({ inSafeArea: true })}
+        />
         {results && results.length >= 0 && !focusOnSearchInput && focusOnMessageInput && (
           <MessageList />
         )}
-        <WithComponents overrides={{ SendButton: NewDirectMessagingSendButton }}>
-          <MessageComposer />
-        </WithComponents>
+        <MessageComposer />
       </Channel>
     </SafeAreaView>
   );

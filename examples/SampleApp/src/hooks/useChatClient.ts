@@ -14,6 +14,7 @@ import { SqliteClient } from 'stream-chat-react-native';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 import type { LoginConfig } from '../types';
 import AsyncStore from '../utils/AsyncStore';
+import { createOnFirstSend } from '../utils/startConversation';
 import { clearLastToken, getTokenOrProvider, SAMPLE_APP_API_KEY } from '../utils/tokenProvider';
 
 const messaging = getMessaging();
@@ -106,6 +107,11 @@ export const useChatClient = () => {
     // `linkPreviews.enabled` is deliberately not set: it defaults to `true` in v10 and is ANDed with
     // the channel type's `url_enrichment`, so the server has the final say either way.
     client.config.set({
+      // Creates a new conversation on its first message (see `NewDirectMessagingScreen`). It
+      // applies to every channel, and every other channel's messages are sent the usual way.
+      channel: {
+        requestHandlers: { sendMessageRequest: createOnFirstSend(client) },
+      },
       messageComposer: {
         drafts: { enabled: true },
       },
