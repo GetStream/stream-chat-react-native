@@ -1,5 +1,13 @@
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,38 +16,41 @@ import { useStateStore } from 'stream-chat-expo';
 import { createA2UIRenderer } from 'stream-chat-expo/a2ui';
 import {
   AIConversation,
-  type AIMessage,
+  type AIConversationController,
+  type AIConversationControllerState,
   AISuggestions,
   AITypingIndicatorView,
   aiUIActionJSON,
   AIUIHost,
   ComposerView,
-  createFromStreamMessage,
-  createNewComposerStore,
+  isAIConversationAnswering,
+  useAIConversationState,
 } from 'stream-chat-expo/ai-components';
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
-import { chatOptions, STARTERS, THINK_HARDER } from '../chatOptions';
+import type { AgentRequestCustom } from '../agent/agentTransport';
+import { chatOptions, STARTERS } from '../chatOptions';
 import { tripComponents } from '../components/TripComponents';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
-import { useSendAIMessage } from '../hooks/useSendAIMessage';
 
-type Composer = ReturnType<typeof createNewComposerStore>;
+const errorSelector = ({ error }: AIConversationControllerState) => ({ error });
 
-const CustomComposerView = ({
-  composer,
-  header,
-  trailing,
+/**
+ * The composer, with what rides the keyboard above it: why something failed, with a way to try
+ * again, and the starters, which share the composer's draft and picked option. And the way into
+ * voice mode beside it.
+ */
+const ComposerArea = ({
+  chat,
+  conversation,
+  failure,
 }: {
-  composer: Composer;
-  header: ReactNode;
-  trailing: ReactNode;
+  chat: AgentChat;
+  conversation: AIConversationController;
+  failure: string | undefined;
 }) => {
-  const { isBusy, stop } = useAppContext();
-
-  // The router stops through its own session, not with an AI indicator event.
-  const stopGenerating = useMemo(() => () => Promise.resolve(stop()), [stop]);
+  const { error } = useAIConversationState(conversation, errorSelector);
 
   const safeAreaInsets = useSafeAreaInsets();
   const insets = useMemo(
@@ -52,18 +63,24 @@ const CustomComposerView = ({
     [safeAreaInsets],
   );
 
-  const serializeToMessage = useSendAIMessage();
-
   return (
     <ComposerView
-      chatOptions={chatOptions}
-      header={header}
-      state={composer}
       bottomSheetInsets={insets}
-      onSendMessage={serializeToMessage}
-      isGenerating={isBusy}
-      stopGenerating={stopGenerating}
-      trailing={trailing}
+      chatOptions={chatOptions}
+      conversation={conversation}
+      header={
+        <>
+          {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
+          {error ? (
+            <Pressable accessibilityRole='button' onPress={() => conversation.retry()}>
+              <Text style={styles.failureText}>{error.message}</Text>
+              <Text style={styles.retryText}>Try again</Text>
+            </Pressable>
+          ) : null}
+          <Starters chat={chat} conversation={conversation} />
+        </>
+      }
+      trailing={<VoiceMode />}
     />
   );
 };
@@ -75,51 +92,43 @@ const isEmptySelector = ({ isLoaded, messages }: AgentChatState) => ({
   isEmpty: isLoaded && messages.length === 0,
 });
 
+const pendingSelector = ({ pendingMessage }: AIConversationControllerState) => ({
+  pendingMessage,
+});
+
 /**
  * Starters, above the composer, until the conversation has a first question. One is asked with the
  * option picked in the composer, as the composer would ask it.
  */
-const Starters = ({ chat, composer }: { chat: AgentChat; composer: Composer }) => {
-  const { ask, pending } = useAppContext();
+const Starters = ({
+  chat,
+  conversation,
+}: {
+  chat: AgentChat;
+  conversation: AIConversationController;
+}) => {
   const { isEmpty } = useStateStore(chat.state, isEmptySelector);
-  if (!isEmpty || pending) return null;
+  const { pendingMessage } = useAIConversationState(conversation, pendingSelector);
+  if (!isEmpty || pendingMessage) return null;
   const onSelect = (text: string) => {
-    const { chatOption } = composer.getLatestValue();
-    void ask(text, [], chatOption?.id === THINK_HARDER.id);
+    const { chatOption } = conversation.composer.getLatestValue();
+    conversation.send({ chatOption: chatOption ?? undefined, text });
   };
   return <AISuggestions onSelect={onSelect} suggestions={STARTERS} />;
 };
 
-/**
- * The composer, with what rides the keyboard above it, a failure and the starters (which share the
- * composer's draft and picked option), and the way into voice mode beside it.
- */
-const ComposerArea = ({ chat, failure }: { chat: AgentChat; failure: string | undefined }) => {
-  const [composer] = useState(createNewComposerStore);
-  return (
-    <CustomComposerView
-      composer={composer}
-      header={
-        <>
-          {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
-          <Starters chat={chat} composer={composer} />
-        </>
-      }
-      trailing={<VoiceMode />}
-    />
-  );
-};
+const loadedSelector = ({ isLoaded }: AgentChatState) => ({ isLoaded });
 
-const conversationSelector = ({ hasOlderMessages, isLoaded, messages }: AgentChatState) => ({
-  hasOlderMessages,
-  isLoaded,
-  messages,
-});
-
-/** The open conversation, read from its channel by `AgentChat`. */
-const Conversation = ({ chat }: { chat: AgentChat }) => {
-  const { agentState, approver, ask, isThinking, pending, rate, ratings } = useAppContext();
-  const { hasOlderMessages, isLoaded, messages } = useStateStore(chat.state, conversationSelector);
+/** The open conversation, as its controller has it. */
+const Conversation = ({
+  chat,
+  conversation,
+}: {
+  chat: AgentChat;
+  conversation: AIConversationController;
+}) => {
+  const { agentState } = useAppContext();
+  const { isLoaded } = useStateStore(chat.state, loadedSelector);
 
   // The UI the agent writes for its replies, in A2UI, with the trip planner's own components. One
   // host per conversation, for as long as it shows, so what a reply's UI holds survives scrolling.
@@ -129,32 +138,14 @@ const Conversation = ({ chat }: { chat: AgentChat }) => {
       new AIUIHost({
         components: tripComponents,
         renderers: [createA2UIRenderer()],
-        send: async (action) => {
-          if (!(await ask(action.label, [], false, aiUIActionJSON(action)))) {
+        send: (action) => {
+          if (isAIConversationAnswering(conversation.state.getLatestValue().status)) {
             throw new Error('The agent is still answering');
           }
+          const custom: AgentRequestCustom = { uiAction: aiUIActionJSON(action) };
+          conversation.send({ custom, text: action.label });
         },
       }),
-  );
-
-  // The same message object for each Stream message that didn't change, so only the messages an
-  // update touched render again. The live thinking is read through `chat.reasoning`.
-  const [fromStreamMessage] = useState(() =>
-    createFromStreamMessage({
-      reasoningText: (messageId, stepId) => chat.reasoning.get(messageId, stepId),
-    }),
-  );
-  const conversation = useMemo(
-    () => messages.map(fromStreamMessage),
-    [fromStreamMessage, messages],
-  );
-
-  const replyActions = useCallback(
-    (message: AIMessage) => ({
-      onRate: (rating: Parameters<typeof rate>[1]) => rate(message.id, rating),
-      rating: ratings[message.id] ?? null,
-    }),
-    [rate, ratings],
   );
 
   // What the agent is doing while it runs skills, under the latest turn.
@@ -167,24 +158,19 @@ const Conversation = ({ chat }: { chat: AgentChat }) => {
 
   return (
     <AIConversation
-      approver={approver}
+      conversation={conversation}
       emptyContent={isLoaded ? <EmptyState /> : <ActivityIndicator />}
       footer={footer}
-      isThinking={isThinking}
-      loadOlderMessages={hasOlderMessages ? chat.loadOlderMessages : undefined}
-      messages={conversation}
-      pendingMessage={pending}
-      replyActions={replyActions}
       ui={ui}
     />
   );
 };
 
 export const ChatContent = () => {
-  const { chat, failure } = useAppContext();
+  const { chat, conversation, failure } = useAppContext();
   const { bottom } = useSafeAreaInsets();
 
-  if (!chat) {
+  if (!chat || !conversation) {
     return (
       <View style={styles.emptyContainer}>
         {failure ? <Text style={styles.failureText}>{failure}</Text> : <ActivityIndicator />}
@@ -200,8 +186,8 @@ export const ChatContent = () => {
       exiting={FadeOut.duration(200)}
     >
       {/* The keyboard is the SDK's: the conversation makes room for it, the composer rides it. */}
-      <Conversation chat={chat} />
-      <ComposerArea chat={chat} failure={failure} />
+      <Conversation chat={chat} conversation={conversation} />
+      <ComposerArea chat={chat} conversation={conversation} failure={failure} />
     </Animated.View>
   );
 };
@@ -217,4 +203,11 @@ const styles = StyleSheet.create({
   },
   emptyText: { fontSize: 24, fontWeight: 'bold' },
   failureText: { color: '#B00020', fontSize: 15, paddingHorizontal: 24, textAlign: 'center' },
+  retryText: {
+    color: '#005FFF',
+    fontSize: 15,
+    fontWeight: '600',
+    paddingTop: 4,
+    textAlign: 'center',
+  },
 });

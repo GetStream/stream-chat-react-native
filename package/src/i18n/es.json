@@ -371,6 +371,8 @@
   "Copied": "Copiado",
   "Copy": "Copiar",
   "Edit": "Editar",
+  "Editing message": "Editando mensaje",
+  "Cancel editing": "Cancelar edición",
   "Files": "Archivos",
   "Group Info": "Información del grupo",
   "timestamp/UserActivityStatus": "Última conexión {{ timestamp | fromNowFormatter }}",

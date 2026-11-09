@@ -11,19 +11,32 @@ import { BottomSheetContent } from './ActionSheet';
 
 import { AttachmentButton } from './AttachmentButton';
 import { type AIChatOption, SelectedChatOptionChip } from './ChatOptions';
+import { EditingMessageChip } from './EditingMessageChip';
 
 import { MediaPreviewList } from './MediaPreviewList';
 
 import { BottomSheet } from '../components/BottomSheet';
 
 import { ComposerProvider, useMessageComposerContext, useTheme } from '../contexts';
+import type {
+  AIConversationController,
+  AIConversationControllerState,
+} from '../conversation/controller/AIConversationController';
+import { isAIConversationAnswering } from '../conversation/controller/types';
+import { useAIConversationState } from '../conversation/controller/useAIConversationState';
 import { useBottomSafeArea } from '../internal/hooks/useBottomSafeArea';
+import { useStableCallback } from '../internal/hooks/useStableCallback';
 import { primitives } from '../internal/tokens';
 import type {
   AbstractMediaPickerService,
   MediaPickerState,
 } from '../services/media-picker-service/AbstractMediaPickerService';
-import { COMPOSER_DICTATION_SOURCE, useComposerChatOption, useComposerText } from '../store';
+import {
+  COMPOSER_DICTATION_SOURCE,
+  useComposerChatOption,
+  useComposerIsEditing,
+  useComposerText,
+} from '../store';
 import type { ComposerState } from '../store';
 import { useDictationState } from '../store/dictation/useDictationState';
 import { useDictationTranscript } from '../store/dictation/useDictationTranscript';
@@ -43,7 +56,15 @@ export type BottomSheetInsets = {
 };
 
 export type ComposerViewProps = {
-  onSendMessage: (opts: {
+  /**
+   * The conversation the person writes in. The composer shows its `composer` store, sends what
+   * the person writes to it, offers to stop the agent while it answers, and says when the person
+   * is editing a message. It takes the place of `onSendMessage`, `isGenerating`,
+   * `stopGenerating` and `state`.
+   */
+  conversation?: AIConversationController;
+  /** Sends what the person wrote. Required without `conversation`. */
+  onSendMessage?: (opts: {
     text: string;
     attachments?: MediaPickerState['assets'];
     /** The chat option picked for the message. */
@@ -113,6 +134,7 @@ export const ComposerViewUI = ({
               layout={LinearTransition.duration(150)}
             >
               <MediaPreviewList />
+              <EditingChip />
               <ChatOptionChip />
               <View style={[styles.inputPill, inputPill]}>
                 <AIMessageInput />
@@ -131,6 +153,22 @@ export const ComposerViewUI = ({
         />
       </BottomSheet>
     </View>
+  );
+};
+
+/** Says the person is editing a message they sent, with a button that cancels it. */
+const EditingChip = () => {
+  const { isEditing } = useComposerIsEditing();
+  const { state } = useMessageComposerContext();
+  if (!isEditing) return null;
+  return (
+    <Animated.View
+      entering={FadeIn.duration(150)}
+      exiting={FadeOut.duration(150)}
+      style={chipStyles.chip}
+    >
+      <EditingMessageChip onCancel={() => state.partialNext({ isEditing: false, text: '' })} />
+    </Animated.View>
   );
 };
 
@@ -162,9 +200,14 @@ export const AIMessageInput = () => {
   const { error, isRecording, source } = useDictationState();
   const { text } = useComposerText();
   const { transcript } = useDictationTranscript();
+  const { isEditing } = useComposerIsEditing();
   const { setText } = useMessageComposerContext();
   const previousTranscript = useRef(transcript);
   const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
+
+  useEffect(() => {
+    if (isEditing) inputRef.current?.focus();
+  }, [isEditing]);
 
   useEffect(() => {
     if (Platform.OS === 'ios' && text === '') {
@@ -197,15 +240,46 @@ export const AIMessageInput = () => {
   );
 };
 
-export const ComposerView = (props: ComposerViewProps) => (
-  <ComposerProvider
-    onSendMessage={props.onSendMessage}
-    mediaPickerService={props.mediaPickerService}
-    state={props.state}
-  >
-    <ComposerViewUI {...props} />
-  </ComposerProvider>
-);
+const statusSelector = ({ status }: AIConversationControllerState) => ({ status });
+
+const ConversationComposerView = ({
+  conversation,
+  ...props
+}: ComposerViewProps & { conversation: AIConversationController }) => {
+  const { status } = useAIConversationState(conversation, statusSelector);
+  const onSendMessage = useStableCallback((message: Parameters<SendMessage>[0]) =>
+    Promise.resolve(conversation.send(message)),
+  );
+  const stopGenerating = useStableCallback(() => Promise.resolve(conversation.stop()));
+  return (
+    <ComposerProvider
+      mediaPickerService={props.mediaPickerService}
+      onSendMessage={onSendMessage}
+      state={conversation.composer}
+    >
+      <ComposerViewUI
+        {...props}
+        isGenerating={isAIConversationAnswering(status)}
+        stopGenerating={stopGenerating}
+      />
+    </ComposerProvider>
+  );
+};
+
+type SendMessage = NonNullable<ComposerViewProps['onSendMessage']>;
+
+export const ComposerView = (props: ComposerViewProps) =>
+  props.conversation ? (
+    <ConversationComposerView {...props} conversation={props.conversation} />
+  ) : (
+    <ComposerProvider
+      onSendMessage={props.onSendMessage}
+      mediaPickerService={props.mediaPickerService}
+      state={props.state}
+    >
+      <ComposerViewUI {...props} />
+    </ComposerProvider>
+  );
 
 const chipStyles = StyleSheet.create({
   chip: { alignSelf: 'stretch', paddingBottom: primitives.spacingXs },

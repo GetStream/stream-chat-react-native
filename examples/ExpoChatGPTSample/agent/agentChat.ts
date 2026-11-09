@@ -91,10 +91,10 @@ export class AgentChat {
     });
     this.stops.push(() => subscription.unsubscribe());
 
-    const recovered = channel
-      .getClient()
-      .on('connection.recovered', () => void this.watchLatest().catch(() => {}));
-    this.stops.push(() => recovered.unsubscribe());
+    const reconnected = channel.getClient().on('connection.changed', (event: Event) => {
+      if (event.online) void this.watchLatest().catch(() => {});
+    });
+    this.stops.push(() => reconnected.unsubscribe());
 
     // A channel this client read before shows what it had at once, while the latest page loads.
     if (channel.state.messages.length > 0) {
@@ -178,11 +178,3 @@ export class AgentChat {
 
 /** A reply the agent wrote. */
 export const isAgentReply = (message: LocalMessage) => message.ai_generated === true;
-
-/** A reply with nothing to show yet: no text, no steps and no UI. */
-export const isEmptyReply = (message: LocalMessage) =>
-  !message.text &&
-  !message.ai_ui &&
-  !(message.attachments ?? []).some(
-    (attachment) => attachment.type === 'ai_reasoning' || attachment.type === 'ai_tool_call',
-  );

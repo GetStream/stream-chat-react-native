@@ -371,6 +371,8 @@
   "Copied": "Gekopieerd",
   "Copy": "Kopiëren",
   "Edit": "Bewerken",
+  "Editing message": "Bericht bewerken",
+  "Cancel editing": "Bewerken annuleren",
   "Files": "Bestanden",
   "Group Info": "Groepsinformatie",
   "timestamp/UserActivityStatus": "Laatst gezien {{ timestamp | fromNowFormatter }}",
