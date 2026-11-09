@@ -134,7 +134,12 @@ export type CrewEvent = 'clock_in' | 'clock_out' | 'back_from_time_off' | 'onboa
 // Tells the backend what happened, which has the agent open the conversation about it.
 const tellBackend = async (kind: CrewEvent, sessionId: string) => {
   const response = await fetch(`${AgentConfig.backendUrl}/events`, {
-    body: JSON.stringify({ kind, session_id: sessionId, user_id: AgentConfig.user.id }),
+    body: JSON.stringify({
+      kind,
+      session_id: sessionId,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      user_id: AgentConfig.user.id,
+    }),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
   });
