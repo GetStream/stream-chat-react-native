@@ -257,6 +257,8 @@ export type TranslationCatalog = {
   'message.pinMessage.label': 'Pin to Conversation';
   'message.pinned.text': 'Message pinned';
   'message.pinnedBy.text': 'Pinned by';
+  'message.reactionList.more.accessibilityLabel_one': 'and {{count}} more reaction';
+  'message.reactionList.more.accessibilityLabel_other': 'and {{count}} more reactions';
   'message.reactionList.total.accessibilityLabel_one': '{{count}} reaction';
   'message.reactionList.total.accessibilityLabel_other': '{{count}} reactions';
   'message.reactionList.viewHint.accessibilityLabel': 'Double tap to view reactions';
