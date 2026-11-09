@@ -2,12 +2,13 @@ import '../agent/polyfills';
 
 import React from 'react';
 
-import { StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { router } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 
 import type { LocalMessage } from 'stream-chat';
@@ -45,7 +46,14 @@ export default function Layout() {
                     drawerContent={MenuDrawer}
                     screenOptions={{ drawerStyle: { width: 300 } }}
                   >
-                    <Drawer.Screen name={'index'} />
+                    <Drawer.Screen
+                      name={'index'}
+                      options={{
+                        headerRight: TeamLeadButton,
+                        title: 'Crew',
+                      }}
+                    />
+                    <Drawer.Screen name={'leader'} options={{ title: 'Team lead view' }} />
                   </Drawer>
                 </Chat>
               </OverlayProvider>
@@ -57,6 +65,19 @@ export default function Layout() {
   );
 }
 
+const TeamLeadButton = () => (
+  <Pressable
+    accessibilityRole='button'
+    onPress={() => router.push('/leader')}
+    style={styles.teamLead}
+    testID='team-lead-view'
+  >
+    <Text style={styles.teamLeadText}>Team lead</Text>
+  </Pressable>
+);
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  teamLead: { paddingHorizontal: 16, paddingVertical: 8 },
+  teamLeadText: { color: '#C8102E', fontSize: 15, fontWeight: '700' },
 });
