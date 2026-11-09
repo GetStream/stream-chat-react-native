@@ -9,10 +9,4 @@ try {
   // do nothing
 }
 
-if (!AudioComponent) {
-  console.log(
-    'The audio library is currently not installed. To allow in-app audio playback, install the "expo-av" package.',
-  );
-}
-
 export { AudioComponent, RecordingObject };
