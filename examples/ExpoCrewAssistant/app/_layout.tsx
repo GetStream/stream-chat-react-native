@@ -54,6 +54,10 @@ export default function Layout() {
                       }}
                     />
                     <Drawer.Screen name={'leader'} options={{ title: 'Team lead view' }} />
+                    <Drawer.Screen
+                      name={'equipment'}
+                      options={{ headerShown: false, title: 'Equipment' }}
+                    />
                   </Drawer>
                 </Chat>
               </OverlayProvider>
