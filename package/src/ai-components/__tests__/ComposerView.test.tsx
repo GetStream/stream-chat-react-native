@@ -5,6 +5,8 @@ import { KeyboardController } from 'react-native-keyboard-controller';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import {
+  AIConversationController,
+  type AIConversationFeed,
   AISuggestions,
   ComposerView,
   type ComposerViewProps,
@@ -253,5 +255,84 @@ describe('AISuggestions', () => {
       </StreamTheme>,
     );
     expect(screen.queryByTestId('ai-suggestions')).toBeNull();
+  });
+});
+
+describe('ComposerView with a conversation', () => {
+  const conversationOf = (messages: { id: string; role: string; text: string }[] = []) => {
+    const transport = {
+      connect: (feed: AIConversationFeed) => feed.updateMessages(messages),
+      send: jest.fn(() => Promise.resolve()),
+      stop: jest.fn(() => Promise.resolve()),
+    };
+    return { controller: new AIConversationController({ transport }), transport };
+  };
+
+  const renderWith = (controller: AIConversationController) =>
+    render(
+      <StreamTheme>
+        <ComposerView conversation={controller} />
+      </StreamTheme>,
+    );
+
+  it('sends to the conversation, and stops the agent while it answers', async () => {
+    const { controller, transport } = conversationOf([{ id: 'u1', role: 'user', text: 'Hi' }]);
+    renderWith(controller);
+
+    fireEvent.changeText(screen.getByPlaceholderText('Ask anything'), 'Plan a weekend in Lisbon');
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('send-up'));
+      await flushPromises();
+    });
+
+    expect(transport.send).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'message', text: 'Plan a weekend in Lisbon' }),
+    );
+    expect(controller.state.getLatestValue().status).toBe('submitted');
+
+    fireEvent.press(screen.getByTestId('stop-generating'));
+    await act(flushPromises);
+
+    expect(transport.stop).toHaveBeenCalledTimes(1);
+    expect(controller.state.getLatestValue().status).toBe('ready');
+    controller.dispose();
+  });
+
+  it('shows the draft of the conversation it is given', () => {
+    const first = conversationOf().controller;
+    const second = conversationOf().controller;
+    first.composer.partialNext({ text: 'Lisbon' });
+    second.composer.partialNext({ text: 'Porto' });
+    const { rerender } = renderWith(first);
+    expect(screen.getByPlaceholderText('Ask anything').props.value).toBe('Lisbon');
+
+    rerender(
+      <StreamTheme>
+        <ComposerView conversation={second} />
+      </StreamTheme>,
+    );
+
+    expect(screen.getByPlaceholderText('Ask anything').props.value).toBe('Porto');
+    first.dispose();
+    second.dispose();
+  });
+
+  it('says the person is editing a message, and cancels it', () => {
+    const message = { id: 'u1', role: 'user', text: 'Plan Lisbon' };
+    const { controller } = conversationOf([message, { id: 'a1', role: 'assistant', text: 'Done' }]);
+    renderWith(controller);
+    expect(screen.queryByTestId('ai-editing-message')).toBeNull();
+
+    act(() => controller.edit(message));
+
+    expect(screen.getByText('Editing message')).toBeTruthy();
+    expect(screen.getByPlaceholderText('Ask anything').props.value).toBe('Plan Lisbon');
+
+    fireEvent.press(screen.getByRole('button', { name: 'Cancel editing' }));
+
+    expect(screen.queryByTestId('ai-editing-message')).toBeNull();
+    expect(controller.editingMessage).toBeUndefined();
+    expect(screen.getByPlaceholderText('Ask anything').props.value).toBe('');
+    controller.dispose();
   });
 });

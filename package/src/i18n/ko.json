@@ -371,6 +371,8 @@
   "Copied": "복사됨",
   "Copy": "복사",
   "Edit": "편집",
+  "Editing message": "메시지 편집 중",
+  "Cancel editing": "편집 취소",
   "Files": "파일",
   "Group Info": "그룹 정보",
   "timestamp/UserActivityStatus": "마지막 접속 {{ timestamp | fromNowFormatter }}",

@@ -93,6 +93,8 @@ export type UseConversationRowsOptions = {
   canShowUI?: AIConversationCanShowUI;
   footer?: ReactNode;
   isThinking?: boolean;
+  /** Whether `isThinking` alone says whether the agent is thinking, rather than the rows too. */
+  isThinkingKnown?: boolean;
   pendingMessage?: AIPendingMessage | null;
 };
 
@@ -116,6 +118,7 @@ export const useConversationRows = ({
   canShowUI,
   footer,
   isThinking = false,
+  isThinkingKnown = false,
   messages,
   pendingMessage,
 }: UseConversationRowsOptions): ConversationRows => {
@@ -127,7 +130,9 @@ export const useConversationRows = ({
     [canShowUI, messages, pendingMessage, tracker],
   );
   // after `entries`, which matched the copies
-  const thinking = isThinking || tracker.isAwaitingReply(messages, pendingMessage, canShowUI);
+  const thinking =
+    isThinking ||
+    (!isThinkingKnown && tracker.isAwaitingReply(messages, pendingMessage, canShowUI));
 
   // The agent thinking again between the latest reply's steps: from the update in which a step
   // ended without the answer growing, until the answer grows. A step that ends together with more

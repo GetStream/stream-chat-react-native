@@ -1,5 +1,6 @@
 import type { AIUIDocument } from '../generative-ui/AIUIDocument';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
+import type { AIMessageRating } from '../message/AIReplyActions';
 import type { AIMessagePartData } from '../message-parts/types';
 
 /** Who wrote a message: the person using the app (`user`) or the agent (`assistant`). */
@@ -19,6 +20,11 @@ export type AIMessage = {
   attachments?: AIMessageAttachmentData[];
   /** Whether the agent is still writing it. */
   isGenerating?: boolean;
+  /**
+   * How the person rated a reply, as your backend has it. An `AIConversationController` shows it
+   * until the person rates the reply on this device.
+   */
+  rating?: AIMessageRating | null;
   /** The steps the agent took for it, in order: reasoning, tool calls and kinds of its own. */
   parts?: AIMessagePartData[];
   /**

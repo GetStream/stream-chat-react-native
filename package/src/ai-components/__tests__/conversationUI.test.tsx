@@ -5,6 +5,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
 import {
   AIConversation,
+  AIConversationController,
   type AIMessage,
   AIUIComponentView,
   AIUIHost,
@@ -431,6 +432,53 @@ describe('AIConversation with generated UI', () => {
     await settle();
     expect(screen.getByTestId('card')).toHaveTextContent('Ohrid');
     expect(screen.queryByText('The words')).toBeNull();
+  });
+});
+
+describe('AIConversation with a controller and generated UI', () => {
+  const controllerWith = (messages: AIMessage[]) =>
+    new AIConversationController({
+      transport: {
+        connect: (feed) => feed.updateMessages(messages),
+        send: () => Promise.resolve(),
+        stop: () => Promise.resolve(),
+      },
+    });
+
+  it('shows a reply that shows only its UI rather than the agent thinking', async () => {
+    const controller = controllerWith([
+      user('u1', 'Plan'),
+      reply(
+        'a1',
+        '',
+        { content: 'Ohrid', format: 'a2ui', status: 'streaming' },
+        { generating: true },
+      ),
+    ]);
+    expect(controller.state.getLatestValue().status).toBe('submitted');
+
+    await renderConversation(<AIConversation conversation={controller} ui={makeHost()} />);
+
+    expect(screen.queryByRole('button', { name: 'Thinking...' })).toBeNull();
+    expect(screen.getByTestId('card')).toHaveTextContent('Ohrid');
+    controller.dispose();
+  });
+
+  it('shows the agent thinking while nothing reads the reply’s UI', async () => {
+    const controller = controllerWith([
+      user('u1', 'Plan'),
+      reply(
+        'a1',
+        '',
+        { content: 'x', format: 'openui', status: 'streaming' },
+        { generating: true },
+      ),
+    ]);
+
+    await renderConversation(<AIConversation conversation={controller} ui={makeHost()} />);
+
+    expect(screen.getByRole('button', { name: 'Thinking...' })).toBeTruthy();
+    controller.dispose();
   });
 });
 

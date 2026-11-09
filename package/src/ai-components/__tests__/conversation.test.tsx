@@ -7,6 +7,10 @@ import { AIPendingMessageTracker, turnsOf } from '../conversation/entries';
 import {
   AIConversation,
   type AIConversationAssistantMessageProps,
+  AIConversationController,
+  type AIConversationControllerOptions,
+  type AIConversationFeed,
+  type AIConversationTransport,
   type AIConversationUserMessageProps,
   type AIMessage,
   type AIToolApprover,
@@ -552,5 +556,150 @@ describe('fromStreamMessage', () => {
     expect(adapted.role).toBe('assistant');
     expect(adapt(stream)).toBe(adapted);
     expect(adapt({ ...stream, text: 'Hi there' })).not.toBe(adapted);
+  });
+});
+
+// A transport the test drives: what it sends, stops and rates, and the messages it reports.
+const conversationOf = (
+  messages: AIMessage[],
+  options: Omit<AIConversationControllerOptions, 'transport'> = {},
+) => {
+  let feed: AIConversationFeed | undefined;
+  const transport = {
+    connect: (connected: AIConversationFeed) => {
+      feed = connected;
+      connected.updateMessages(messages);
+    },
+    loadOlderMessages: jest.fn(() => Promise.resolve()),
+    rate: jest.fn(() => Promise.resolve()),
+    send: jest.fn(() => Promise.resolve()),
+    stop: jest.fn(() => Promise.resolve()),
+  } satisfies AIConversationTransport;
+  const controller = new AIConversationController({ transport, ...options });
+  const update = async (next: AIMessage[]) => {
+    act(() => feed?.updateMessages(next));
+    await layOut();
+  };
+  const olderMessages = async (hasOlderMessages: boolean) => {
+    act(() => feed?.updateHasOlderMessages(hasOlderMessages));
+    await layOut();
+  };
+  return { controller, olderMessages, transport, update };
+};
+
+const thinking = () => screen.queryByRole('button', { name: 'Thinking...' });
+
+describe('AIConversation with a controller', () => {
+  it('shows the conversation as the controller has it', async () => {
+    const history = [user('u1', 'Hello'), reply('a1', 'Hi!')];
+    const { controller, update } = conversationOf(history);
+    await renderConversation(<AIConversation conversation={controller} />);
+    expect(screen.getByText('Hi!')).toBeTruthy();
+    expect(thinking()).toBeNull();
+
+    act(() => controller.send({ text: 'Plan my day' }));
+    await layOut();
+    expect(screen.getByText('Plan my day')).toBeTruthy();
+    expect(thinking()).toBeTruthy();
+
+    await update([
+      ...history,
+      user('u2', 'Plan my day'),
+      reply('a2', 'Here is your plan.', { isGenerating: true }),
+    ]);
+    expect(thinking()).toBeNull();
+    expect(screen.getByText('Here is your plan.')).toBeTruthy();
+    expect(screen.getAllByText('Plan my day')).toHaveLength(1);
+    controller.dispose();
+  });
+
+  it('shows the agent thinking while a reply is written again', async () => {
+    const { controller } = conversationOf([user('u1', 'Hello'), reply('a1', 'Hi!')]);
+    await renderConversation(<AIConversation conversation={controller} />);
+
+    act(() => controller.regenerate(reply('a1', 'Hi!')));
+    await layOut();
+
+    expect(screen.queryByText('Hi!')).toBeNull();
+    expect(thinking()).toBeTruthy();
+    controller.dispose();
+  });
+
+  it('stops showing the agent thinking once stopped, with the message still on its way', async () => {
+    const { controller, transport } = conversationOf([user('u1', 'Hello'), reply('a1', 'Hi!')]);
+    await renderConversation(<AIConversation conversation={controller} />);
+    act(() => controller.send({ text: 'Plan my day' }));
+    await layOut();
+    expect(thinking()).toBeTruthy();
+
+    act(() => controller.stop());
+    await layOut();
+
+    expect(screen.getByText('Plan my day')).toBeTruthy();
+    expect(thinking()).toBeNull();
+    expect(transport.stop).toHaveBeenCalledTimes(1);
+    controller.dispose();
+  });
+
+  it('offers the controller’s actions under replies and on the person’s latest message', async () => {
+    const { controller, transport } = conversationOf([
+      user('u1', 'Lisbon'),
+      reply('a1', 'Lisbon it is'),
+      user('u2', 'Porto'),
+      reply('a2', 'Porto it is'),
+    ]);
+    await renderConversation(<AIConversation conversation={controller} />);
+
+    // Regenerating the latest reply only, and editing the person's latest message only.
+    expect(screen.getAllByRole('button', { name: 'Regenerate' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: 'Edit' })).toHaveLength(1);
+
+    fireEvent.press(screen.getAllByRole('button', { name: 'Good response' })[0]);
+    await layOut();
+    expect(transport.rate).toHaveBeenCalledWith(
+      expect.objectContaining({ role: 'assistant' }),
+      'positive',
+    );
+    expect(screen.getAllByRole('button', { name: 'Good response' })[0]).toHaveProp(
+      'accessibilityState',
+      expect.objectContaining({ selected: true }),
+    );
+
+    fireEvent.press(screen.getByRole('button', { name: 'Edit' }));
+    expect(controller.editingMessage?.id).toBe('u2');
+    expect(controller.composer.getLatestValue().text).toBe('Porto');
+
+    fireEvent.press(screen.getByRole('button', { name: 'Regenerate' }));
+    await layOut();
+    expect(transport.send).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'regenerate', text: 'Porto' }),
+    );
+    // The agent is answering.
+    expect(screen.queryByRole('button', { name: 'Regenerate' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Edit' })).toBeNull();
+    controller.dispose();
+  });
+
+  it('offers what the app allows', async () => {
+    const { controller } = conversationOf([user('u1', 'Lisbon'), reply('a1', 'Done')], {
+      actions: { edit: false, rate: false },
+    });
+    await renderConversation(<AIConversation conversation={controller} />);
+
+    expect(screen.queryByRole('button', { name: 'Edit' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Good response' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Regenerate' })).toBeTruthy();
+    controller.dispose();
+  });
+
+  it('loads older messages through the controller while there are any', async () => {
+    const { controller, olderMessages } = conversationOf([user('u1', 'Hi'), reply('a1', 'Hello')]);
+    await renderConversation(<AIConversation conversation={controller} />);
+    expect(screen.queryByRole('progressbar', { name: 'Loading older messages' })).toBeNull();
+
+    await olderMessages(true);
+
+    expect(screen.getByRole('progressbar', { name: 'Loading older messages' })).toBeTruthy();
+    controller.dispose();
   });
 });

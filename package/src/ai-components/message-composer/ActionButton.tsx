@@ -39,7 +39,11 @@ export const ActionButton = ({
         entering={ZoomIn.duration(250)}
         exiting={ZoomOut.duration(250)}
       >
-        <Pressable style={[styles.iconButton, iconButton]} onPress={stopGenerating}>
+        <Pressable
+          onPress={stopGenerating}
+          style={[styles.iconButton, iconButton]}
+          testID='stop-generating'
+        >
           <View style={[styles.stopGeneratingIcon, stopGeneratingIcon]}>
             <CircleStop fill={black} size={32} />
           </View>
