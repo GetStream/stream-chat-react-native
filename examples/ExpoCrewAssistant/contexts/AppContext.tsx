@@ -105,6 +105,11 @@ export type AppContextValue = {
   openConversation: (sessionId: string, conversationId?: string) => void;
   /** Starts a new conversation. The router creates it with its first question. */
   startConversation: () => void;
+  /**
+   * Asks with a voice memo recorded on the phone: it goes up to the conversation's channel, and the
+   * router transcribes it, answers it and shows it on the person's message.
+   */
+  sendVoiceMemo: (uri: string) => Promise<void>;
   /** Asks again what the agent couldn't answer: the last question, or the event it was told of. */
   retry: () => void;
   /** Starts a new conversation and asks it `text`, as a flow or a scanned code does. */
@@ -125,6 +130,7 @@ export const AppContext = React.createContext<AppContextValue>({
   isReady: false,
   openConversation: () => {},
   retry: () => {},
+  sendVoiceMemo: () => Promise.resolve(),
   sessionId: undefined,
   startConversation: () => {},
   startConversationAbout: () => {},
@@ -150,6 +156,19 @@ const tellBackend = async (kind: CrewEvent, sessionId: string) => {
     throw new Error(`The crew backend answered ${response.status}: ${await response.text()}`);
   }
 };
+
+// Asks with a voice memo at `url`. calypso's `responses.create` has no voice note yet, so this is
+// the request it makes, with the voice note the router takes beside the text.
+const askWithVoiceMemo = async (session: Session, url: string) => {
+  deviceTools.addressed = false;
+  await agents.post('/v1/agents/sessions/{id}/responses', {
+    body: { audio: { url }, request_id: crypto.randomUUID(), text: '' },
+    path: { id: session.id },
+  });
+};
+
+// What the recorder wrote, by its file's extension.
+const audioTypeOf = (uri: string) => (/\.(m4a|mp4)$/i.test(uri) ? 'audio/mp4' : 'audio/aac');
 
 const messageOf = (error: unknown) => (error instanceof Error ? error.message : String(error));
 
@@ -239,10 +258,37 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     })();
   });
 
+  const sendVoiceMemo = useStableCallback(async (uri: string) => {
+    const opened = current.current;
+    if (!opened) return;
+    const { chat } = opened;
+    try {
+      const wasNew = chat.id === undefined;
+      const session = await chat.session();
+      if (wasNew) setConversationsVersion((version) => version + 1);
+      const channel = chat.conversationChannel;
+      if (!channel) throw new Error('The conversation has no channel yet');
+      const name = uri.split('/').pop() ?? 'voice-memo.aac';
+      const { file } = await channel.sendFile(uri, name, audioTypeOf(uri));
+      chat.wasAsked = true;
+      chat.lastRequest = { voiceMemoUrl: file };
+      await askWithVoiceMemo(session, file);
+    } catch (error) {
+      setFailure(messageOf(error));
+    }
+  });
+
   const retry = useStableCallback(() => {
     const opened = current.current;
     const last = opened?.chat.lastRequest;
     if (!opened || !last) return;
+    if ('voiceMemoUrl' in last) {
+      void opened.chat
+        .session()
+        .then((session) => askWithVoiceMemo(session, last.voiceMemoUrl))
+        .catch((error: unknown) => setFailure(messageOf(error)));
+      return;
+    }
     if ('event' in last) {
       void opened.chat
         .session()
@@ -317,6 +363,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       isReady,
       openConversation,
       retry,
+      sendVoiceMemo,
       sessionId,
       startConversation,
       startConversationAbout,
@@ -331,6 +378,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       isReady,
       openConversation,
       retry,
+      sendVoiceMemo,
       sessionId,
       startConversation,
       startConversationAbout,

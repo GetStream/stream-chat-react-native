@@ -14,6 +14,7 @@
     "@shopify/react-native-skia": "^2.14.0",
     "@stream-io/calypso": "^0.3.0",
     "expo": "^58.0.8",
+    "expo-audio": "patch:expo-audio@npm%3A58.0.9#~/.yarn/patches/expo-audio-npm-58.0.9-5c313f7a3f.patch",
     "expo-clipboard": "~58.0.3",
     "expo-constants": "~58.0.11",
     "expo-image-manipulator": "~58.0.14",

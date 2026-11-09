@@ -2,7 +2,10 @@ import { LiveReasoning, type Session } from '@stream-io/calypso';
 import { type Channel, type Event, type LocalMessage, StateStore } from 'stream-chat';
 
 /** What was last asked of the agent here, so it can be asked again when it couldn't answer. */
-export type AgentRequest = { text: string; custom?: Record<string, unknown> } | { event: string };
+export type AgentRequest =
+  | { text: string; custom?: Record<string, unknown> }
+  | { event: string }
+  | { voiceMemoUrl: string };
 
 /** How many messages are read at a time. */
 const PAGE_SIZE = 30;
@@ -72,6 +75,11 @@ export class AgentChat {
       messages: [],
       session: undefined,
     });
+  }
+
+  /** The channel the conversation is kept in, once it is followed. */
+  get conversationChannel() {
+    return this.channel;
   }
 
   /** The conversation's session id: the one it was opened with, or the one asking created. */

@@ -13,8 +13,8 @@ import {
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { LocalMessage } from 'stream-chat';
-import { useStateStore } from 'stream-chat-expo';
+import type { Attachment, LocalMessage } from 'stream-chat';
+import { AudioAttachment, AudioPlayerProvider, useStateStore } from 'stream-chat-expo';
 
 import { createA2UIRenderer } from 'stream-chat-expo/a2ui';
 import {
@@ -24,6 +24,7 @@ import {
   AITypingIndicatorView,
   aiUIActionJSON,
   AIUIHost,
+  AIUserMessage,
   ComposerView,
   isAIConversationAnswering,
   useAIConversationState,
@@ -31,9 +32,11 @@ import {
 import {
   AIConversation,
   type AIConversationAssistantMessageProps,
+  type AIConversationUserMessageProps,
 } from 'stream-chat-expo/ai-components/conversation';
 
 import { AgentNotices } from './AgentNotices';
+import { VoiceMemoBar, VoiceMemoButton } from './VoiceMemo';
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
 import type { AgentRequestCustom } from '../agent/agentTransport';
@@ -76,6 +79,7 @@ const ComposerArea = ({
       header={
         <>
           <AgentNotices chat={chat} />
+          <VoiceMemoBar />
           {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
           {error ? (
             <Pressable accessibilityRole='button' onPress={() => conversation.retry()}>
@@ -85,7 +89,12 @@ const ComposerArea = ({
           ) : null}
         </>
       }
-      trailing={<VoiceMode />}
+      trailing={
+        <View style={styles.trailing}>
+          <VoiceMemoButton />
+          <VoiceMode />
+        </View>
+      }
     />
   );
 };
@@ -184,6 +193,48 @@ const ReplySources = ({ chat, messageId }: { chat: AgentChat; messageId: string 
   );
 };
 
+// One player pool for the conversation, as a channel has: starting one memo pauses another.
+const AUDIO_PLAYER = { allowConcurrentAudioPlayback: false };
+
+const voiceNotesOf = (message: LocalMessage | undefined) =>
+  (message?.attachments ?? []).filter(
+    (attachment): attachment is Attachment & { asset_url: string } =>
+      attachment.type === 'voiceRecording' && !!attachment.asset_url,
+  );
+
+/** The voice memos on a person's message, played with the chat SDK's own voice recording view. */
+const VoiceNotes = ({ chat, messageId }: { chat: AgentChat; messageId: string }) => {
+  const { messages } = useStateStore(chat.state, messagesSelector);
+  const message = useMemo(() => messages.find(({ id }) => id === messageId), [messageId, messages]);
+  const notes = useMemo(() => voiceNotesOf(message), [message]);
+  if (notes.length === 0) return null;
+  return (
+    <View style={styles.voiceNotes}>
+      {notes.map((note, index) => (
+        <AudioAttachment
+          item={{ ...note, id: `${messageId}-${index}`, type: 'voiceRecording' }}
+          key={note.asset_url}
+          message={message}
+          showTitle={false}
+        />
+      ))}
+    </View>
+  );
+};
+
+/** The person's message as the AI components show it, after the voice memo it carries, if any. */
+const UserMessage = ({ attachments, message, onEdit, text }: AIConversationUserMessageProps) => {
+  const { chat } = useAppContext();
+  return (
+    <View>
+      {chat && message ? <VoiceNotes chat={chat} messageId={message.id} /> : null}
+      {text || attachments.length > 0 ? (
+        <AIUserMessage attachments={attachments} onEdit={onEdit} text={text} />
+      ) : null}
+    </View>
+  );
+};
+
 /** The agent's reply as the AI components show it, then the sources it was answered from. */
 const AssistantMessage = ({
   approver,
@@ -248,13 +299,16 @@ const Conversation = ({
     ) : undefined;
 
   return (
-    <AIConversation
-      AssistantMessage={AssistantMessage}
-      conversation={conversation}
-      emptyContent={<EmptyContent chat={chat} conversation={conversation} />}
-      footer={footer}
-      ui={ui}
-    />
+    <AudioPlayerProvider value={AUDIO_PLAYER}>
+      <AIConversation
+        AssistantMessage={AssistantMessage}
+        conversation={conversation}
+        emptyContent={<EmptyContent chat={chat} conversation={conversation} />}
+        footer={footer}
+        ui={ui}
+        UserMessage={UserMessage}
+      />
+    </AudioPlayerProvider>
   );
 };
 
@@ -339,5 +393,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   sourcesTitle: { color: '#5C6370', fontSize: 12, fontWeight: '700', marginBottom: 4 },
+  trailing: { alignItems: 'center', flexDirection: 'row', gap: 8 },
+  voiceNotes: { alignItems: 'flex-end', gap: 6, paddingHorizontal: 16, paddingTop: 8 },
   wrapper: { backgroundColor: '#FCFCFC', flex: 1 },
 });
