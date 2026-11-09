@@ -72,12 +72,12 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
   const supportedReactionTypes = supportedReactions?.map(
     (supportedReaction) => supportedReaction.type,
   );
-  const reactionsCount = reactions?.length || 0;
-  const moreReactionsCount = reactionsCount - 4;
+  const totalReactionCount =
+    reactions?.reduce((total, reaction) => total + (reaction.count ?? 0), 0) ?? 0;
   const reactionsCountText =
-    moreReactionsCount < 99 ? moreReactionsCount : `+${moreReactionsCount}`;
-  const moreReactionsA11yText = useA11yLabel('message.reactionList.more.accessibilityLabel', {
-    count: moreReactionsCount,
+    totalReactionCount < 99 ? totalReactionCount : `+${totalReactionCount}`;
+  const totalReactionsA11yText = useA11yLabel('message.reactionList.total.accessibilityLabel', {
+    count: totalReactionCount,
   });
 
   const hasSupportedReactions = reactions?.some((reaction) =>
@@ -133,8 +133,8 @@ export const ReactionListClusteredWithContext = (props: ReactionListClusteredPro
           {reaction.own ? <HiddenA11yText label={youReacted} /> : null}
         </Fragment>
       ))}
-      {reactionsCount > 4 ? (
-        <Text accessibilityLabel={moreReactionsA11yText} style={styles.reactionCount}>
+      {totalReactionCount > 1 ? (
+        <Text accessibilityLabel={totalReactionsA11yText} style={styles.reactionCount}>
           {reactionsCountText}
         </Text>
       ) : null}
