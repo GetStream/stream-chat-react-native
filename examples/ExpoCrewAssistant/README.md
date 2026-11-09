@@ -1,47 +1,80 @@
-# ExpoChatGPTSample
+# Crew assistant (Expo)
 
-A ChatGPT-style assistant built with [`stream-chat-expo`](../../package/expo-package) and its AI components
-(`stream-chat-expo/ai-components`): streamed markdown answers with syntax highlighting, tables and charts, an "AI is
-thinking" indicator, and a composer with attachments, a custom actions sheet and speech-to-text.
+An AI assistant for a restaurant's team members, built on the AI components and the Vision-Agents
+router. A team member opens it before, during or after a shift. The home screen lists what it
+helps with, and each flow starts a conversation with the agent: `AIConversation` for the chat,
+A2UI for checklists, quizzes and forms, and the phone's own tools for the restaurant's systems.
 
-Ported from the `ExpoChatGPTSample` of the deprecated `@stream-io/chat-react-native-ai` repository
-([`GetStream/ai-components-js`](https://github.com/GetStream/ai-components-js)).
+The backend is `examples/voice_agents/crew_assistant` in Vision-Agents, forked from
+`swift_assistant`. It mints Stream tokens, stands in for the restaurant's schedule, handbook,
+equipment and leaders' inbox, and makes the agent speak first when something happens, such as a
+clock-in.
 
-## How it works
+## What it shows
 
-The agent runs on a [Vision-Agents](https://github.com/GetStream/Vision-Agents) router, which the app talks to through
-[`@stream-io/calypso`](https://www.npmjs.com/package/@stream-io/calypso) (`agent/`).
+| Flow                   | How it starts                 | What to look at                                                                                                                                                     |
+| ---------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Clock in**           | the agent speaks first        | A fit-check checklist and the focus for the shift, as interactive UI. Tick the boxes and tap "I'm ready".                                                           |
+| **Call out sick**      | a question                    | Schedule and call-out policy as tool steps. With a cold it offers cover, the swap asks you first, and the shift leader gets a note. With a fever it says stay home. |
+| **Ask the handbook**   | a question                    | The answer comes from `search_handbook`, and the passages show as **Sources** under the reply.                                                                      |
+| **Equipment problem**  | a question, a photo or a scan | The quick fix for the asset and code. "Still broken" drafts a repair ticket, which asks you first. Send a photo with "+" to have it look first.                     |
+| **Back from time off** | the agent speaks first        | What you missed since your time off started, grouped.                                                                                                               |
+| **I'm new here**       | the agent speaks first        | Who's who, a menu quiz as interactive UI, and booking a check-in with the trainer.                                                                                  |
+| **Interview practice** | a question                    | A mock shift leader interview, one question at a time, with feedback. Try it in voice mode (the button beside the composer).                                        |
+| **Clock out**          | the agent speaks first        | An end-of-shift reflection form. What it saves shows in the team lead view, without your name.                                                                      |
 
-- Each conversation is a router session, kept in an `agent` channel. The drawer lists the user's `agent` channels. `+`
-  starts a new session, and one that is never asked anything is deleted when you leave it.
-- The conversation is `AIConversation`, fed from `agent/agentChat.ts`: a small store that watches the channel, copies
-  its messages on every `message.*` event, loads older pages, and keeps each reply's full reasoning from its live
-  updates. There's no `<Channel>`, so the store also watches the channel again after `connection.recovered`, to pick up
-  what was written while the connection was down.
-- Asking goes through the session, not the chat composer. The router writes the question and the streamed reply into
-  the channel, the reply's steps as `ai_reasoning` and `ai_tool_call` attachments, and titles the conversation itself.
-  A plain question goes to `respond` with this install's id, so the agent can call the phone's tools
-  (`agent/deviceTools.ts`). A question with photos or "Think harder" goes to `responses.create`, which takes neither.
-- The keyboard is handled by the AI components through `react-native-keyboard-controller`; the app only wraps itself
-  in `KeyboardProvider`. The starters and the voice button sit in the composer's `header`, so they ride the keyboard.
+**Team lead** (top right) is what the shift leaders and the owner see: call-out notes, swap
+requests, drafted tickets, booked check-ins and the team's pulse from reflections. It refreshes
+every few seconds, so keep it open next to a flow.
 
-## Running
-
-1. Run a Vision-Agents router locally, with its `swift_assistant` agent and token backend, as in
-   [`examples/voice_agents/swift_assistant`](https://github.com/GetStream/Vision-Agents/tree/accelerate/examples/voice_agents/swift_assistant):
-   `docker compose up` (with `ROUTER_AUTH_MODE=proxy`), `go run ./configure`, then `go run ./backend`. The chat model
-   is Grok, so the router needs `XAI_API_KEY`.
-2. Copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_STREAM_API_KEY` to the Stream app the router runs in.
-3. On an Android emulator, forward the ports: `adb reverse tcp:8080 tcp:8080 && adb reverse tcp:8098 tcp:8098`.
-4. From the repository root:
+**Scanning a machine.** A QR code on a machine holds a link such as
+`crewassistant://equipment?asset=FRY-02&code=E-41`. Opening it starts a conversation about that
+machine. On an emulator, open it with:
 
 ```bash
-yarn install
-yarn workspace expochatgptsample ios      # or: android
+adb shell am start -a android.intent.action.VIEW -d "crewassistant://equipment?asset=FRY-02\&code=E-41"
 ```
 
-`ios` and `android` sync the SDK's shared native code, run `expo prebuild` and build the app. The native `ios` and
-`android` folders are generated and not committed.
+Known assets and codes: `FRY-02` (`E-41`, `E-07`), `POS-1` (`E-NET`), `ICE-1` (`BIN`).
 
-On iOS, if the app crashes at launch in `dyld` with a missing symbol, reinstall the pods without Expo's
-precompiled modules: `cd ios && EXPO_USE_PRECOMPILED_MODULES=0 pod install`, then build again.
+## Run it
+
+1. Run the router as in Vision-Agents' `swift_demo` README, then store the agent and start its
+   backend:
+
+   ```bash
+   cd examples/voice_agents/crew_assistant/configure
+   STREAM_ACCELERATION_URL=http://localhost:8080 STREAM_ACCELERATION_CUSTOMER_ID=examples GOWORK=off go run . -dir ..
+   cd ../backend
+   STREAM_API_SECRET=<the router's> STREAM_ACCELERATION_URL=http://localhost:8080 STREAM_ACCELERATION_CUSTOMER_ID=examples GOWORK=off go run .
+   ```
+
+2. Copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_STREAM_API_KEY` to the router's
+   Stream app.
+
+3. Build and run the app:
+
+   ```bash
+   yarn install
+   cd examples/ExpoCrewAssistant
+   npx expo prebuild
+   yarn android   # or yarn ios
+   ```
+
+   On an Android emulator, `adb reverse tcp:8080 tcp:8080 && adb reverse tcp:8097 tcp:8097` lets
+   the app reach the router and the backend on `localhost`.
+
+## How it's built
+
+- `contexts/AppContext.tsx` opens conversations: new ones, ones from the drawer, ones that start
+  with a question (`startConversationWith`), and ones the agent opens about an event
+  (`startConversationAbout`), which asks the backend's `POST /events`.
+- `agent/crewTools.ts` declares the tools the phone runs for the agent. Each reads or writes the
+  backend. `request_shift_swap`, `create_support_ticket` and `book_check_in` ask first, with the
+  AI components' approval card.
+- `search_handbook` answers `{"status": "answered", "citations": [...]}`, which the router adds to
+  the reply's `support_message.sources`. `screens/ChatContent.tsx` shows them under the reply.
+- `app/leader.tsx` is the team lead view, and `app/equipment.tsx` the scanned-code link.
+
+Not here yet: voice memos (dictation and voice mode work), approvals answered by someone other
+than the person chatting, and a real calendar connector for check-ins.
