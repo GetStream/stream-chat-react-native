@@ -52,7 +52,6 @@ const Requests = ({ session }: { session: Session }) => {
         <AIToolApprovalCard
           approval={{
             allowTitle: request.approval.allowTitle,
-            declineTitle: 'Not now',
             message: request.approval.message,
             reason: request.reason || detailsOf(request),
             title: request.approval.title,
