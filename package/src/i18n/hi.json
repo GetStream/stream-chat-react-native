@@ -371,6 +371,8 @@
   "Copied": "कॉपी हो गया",
   "Copy": "कॉपी करें",
   "Edit": "संपादित करें",
+  "Editing message": "संदेश संपादित कर रहे हैं",
+  "Cancel editing": "संपादन रद्द करें",
   "Files": "फ़ाइलें",
   "Group Info": "ग्रुप की जानकारी",
   "timestamp/UserActivityStatus": "अंतिम बार देखा गया {{ timestamp | fromNowFormatter }}",

@@ -33,7 +33,8 @@ export const ComposerProvider = ({
   const [mediaPickerService] = useState(
     () => mediaPickerServiceOverride ?? (MediaPickerService ? new MediaPickerService() : undefined),
   );
-  const [state] = useState(() => stateOverride ?? createNewComposerStore());
+  const [ownState] = useState(createNewComposerStore);
+  const state = stateOverride ?? ownState;
 
   const setText = useStableCallback((text: string) => state.partialNext({ text }));
   const setChatOption = useStableCallback((chatOption: AIChatOption | null) =>
@@ -57,7 +58,7 @@ export const ComposerProvider = ({
 
     clearState();
 
-    await onSendMessage(data);
+    await onSendMessage?.(data);
   });
 
   const contextValue = useMemo(
