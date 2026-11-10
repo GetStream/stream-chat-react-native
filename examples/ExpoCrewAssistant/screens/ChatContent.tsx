@@ -157,7 +157,11 @@ const EmptyContent = ({
 }) => {
   const { awaitingAgent, isLoaded } = useStateStore(chat.state, emptySelector);
   if (awaitingAgent) {
-    return <AITypingIndicatorView text='Crew is getting things ready' />;
+    return (
+      <View>
+        <AITypingIndicatorView text='Crew is getting things ready' />
+      </View>
+    );
   }
   return isLoaded ? <Flows conversation={conversation} /> : <ActivityIndicator />;
 };
