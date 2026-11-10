@@ -100,8 +100,12 @@ export const runtimeDefaults = {
     'Double tap and hold to activate contextual menu',
   'message.content.fromSender.accessibilityLabel': 'Message from {{sender}}',
   'message.content.fromYou.accessibilityLabel': 'Message from you',
+  // No longer rendered: the clustered list labels its count with `total` instead. Kept so existing
+  // overrides still type-check; remove in the next major.
   'message.reactionList.more.accessibilityLabel_one': 'and {{count}} more reaction',
   'message.reactionList.more.accessibilityLabel_other': 'and {{count}} more reactions',
+  'message.reactionList.total.accessibilityLabel_one': '{{count}} reaction',
+  'message.reactionList.total.accessibilityLabel_other': '{{count}} reactions',
   'message.reactionList.viewHint.accessibilityLabel': 'Double tap to view reactions',
   'message.reactionList.youReacted.accessibilityLabel': 'you reacted',
   'message.status.delivered.accessibilityLabel': 'Delivered',
