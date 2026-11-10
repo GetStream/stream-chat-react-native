@@ -238,6 +238,26 @@ describe('ComposerView trailing', () => {
   });
 });
 
+describe('ComposerView SpeechToTextButton', () => {
+  const Dictate = () => <Text>dictate</Text>;
+
+  it('shows the one it is given while the message box is empty, and the send button after', () => {
+    renderComposer({ SpeechToTextButton: Dictate });
+    expect(screen.getByText('dictate')).toBeTruthy();
+
+    fireEvent.changeText(screen.getByPlaceholderText('Ask anything'), 'Hello');
+    expect(screen.queryByText('dictate')).toBeNull();
+    expect(screen.getByTestId('send-up')).toBeTruthy();
+  });
+
+  it('shows none with null', () => {
+    renderComposer({ SpeechToTextButton: null });
+    expect(screen.queryByText('dictate')).toBeNull();
+    expect(screen.queryByTestId('send-up')).toBeNull();
+    expect(screen.getByPlaceholderText('Ask anything')).toBeTruthy();
+  });
+});
+
 describe('AISuggestions', () => {
   it('hands the picked suggestion over, and shows nothing without any', () => {
     const onSelect = jest.fn();

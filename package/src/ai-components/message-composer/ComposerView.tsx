@@ -1,4 +1,4 @@
-import React, { type ReactNode, useEffect, useMemo, useRef } from 'react';
+import React, { type ComponentType, type ReactNode, useEffect, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
@@ -91,6 +91,11 @@ export type ComposerViewProps = {
    * Shown after the message box, on the same line, such as a button into voice mode.
    */
   trailing?: ReactNode;
+  /**
+   * The button that dictates into the message box while it is empty. Defaults to
+   * `SpeechToTextButton`; `null` shows none.
+   */
+  SpeechToTextButton?: ComponentType | null;
   isGenerating?: boolean;
   stopGenerating?: () => Promise<void>;
   bottomSheetInsets?: BottomSheetInsets;
@@ -105,6 +110,7 @@ export const ComposerViewUI = ({
   header,
   isGenerating,
   keyboardOffset,
+  SpeechToTextButton,
   stopGenerating,
   trailing,
 }: ComposerViewProps) => {
@@ -138,7 +144,11 @@ export const ComposerViewUI = ({
               <ChatOptionChip />
               <View style={[styles.inputPill, inputPill]}>
                 <AIMessageInput />
-                <ActionButton isGenerating={isGenerating} stopGenerating={stopGenerating} />
+                <ActionButton
+                  isGenerating={isGenerating}
+                  SpeechToTextButton={SpeechToTextButton}
+                  stopGenerating={stopGenerating}
+                />
               </View>
             </Animated.View>
             {trailing ? <View style={[styles.trailing, trailingStyle]}>{trailing}</View> : null}

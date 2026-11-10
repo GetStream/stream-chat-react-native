@@ -6,7 +6,7 @@ import { useStateStore } from '@stream-io/state-store/react-bindings';
 
 import type { ComposerViewProps } from './ComposerView';
 
-import { SpeechToTextButton } from './SpeechToTextButton';
+import { SpeechToTextButton as DefaultSpeechToTextButton } from './SpeechToTextButton';
 
 import { useMessageComposerContext, useTheme } from '../contexts';
 import { CircleStop } from '../internal/icons/CircleStop';
@@ -19,8 +19,9 @@ const selector = ({ isRecording }: DictationStoreState) => ({
 
 export const ActionButton = ({
   isGenerating,
+  SpeechToTextButton = DefaultSpeechToTextButton,
   stopGenerating,
-}: Pick<ComposerViewProps, 'isGenerating' | 'stopGenerating'>) => {
+}: Pick<ComposerViewProps, 'isGenerating' | 'SpeechToTextButton' | 'stopGenerating'>) => {
   const { hasText } = useComposerHasText();
   const { isRecording } = useStateStore(dictationStore, selector);
   const { sendMessage } = useMessageComposerContext();
@@ -64,9 +65,9 @@ export const ActionButton = ({
         </View>
       </Pressable>
     </Animated.View>
-  ) : (
+  ) : SpeechToTextButton ? (
     <SpeechToTextButton />
-  );
+  ) : null;
 };
 
 const useStyles = () => {
