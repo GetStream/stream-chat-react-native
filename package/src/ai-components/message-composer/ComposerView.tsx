@@ -201,13 +201,17 @@ export const AIMessageInput = () => {
   const { text } = useComposerText();
   const { transcript } = useDictationTranscript();
   const { isEditing } = useComposerIsEditing();
-  const { setText } = useMessageComposerContext();
+  const { setText, state } = useMessageComposerContext();
   const previousTranscript = useRef(transcript);
   const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
 
   useEffect(() => {
-    if (isEditing) inputRef.current?.focus();
-  }, [isEditing]);
+    if (!isEditing) return;
+    if (Platform.OS === 'ios') {
+      inputRef.current?.setNativeProps({ text: state.getLatestValue().text });
+    }
+    inputRef.current?.focus();
+  }, [isEditing, state]);
 
   useEffect(() => {
     if (Platform.OS === 'ios' && text === '') {
