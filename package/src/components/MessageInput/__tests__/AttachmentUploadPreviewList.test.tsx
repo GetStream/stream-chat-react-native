@@ -16,6 +16,7 @@ import {
   generateImageAttachment as generateImageAttachmentBase,
   generateVideoAttachment as generateVideoAttachmentBase,
 } from '../../../mock-builders/attachments';
+import { generateMessage } from '../../../mock-builders/generator/message';
 
 import { FileState } from '../../../utils/utils';
 import { Channel } from '../../Channel/Channel';
@@ -626,6 +627,29 @@ describe('AttachmentUploadPreviewList', () => {
         expect(countActivityIndicators(getAllByTestId('image-attachment-upload-preview'))).toBe(1);
         expect(queryAllByTestId('retry-upload-progress-indicator')).toHaveLength(1);
         expect(queryAllByTestId('inline-not-supported-indicator')).toHaveLength(1);
+      });
+    });
+  });
+
+  describe('VideoAttachmentUploadPreview', () => {
+    it('renders a video restored from a sent message, which has no local file', async () => {
+      act(() => {
+        channel.messageComposer.initState({
+          composition: generateMessage({
+            attachments: [
+              generateVideoAttachmentBase({
+                asset_url: 'https://video-attachment.mp4',
+                thumb_url: 'https://video-attachment-thumb.png',
+              }),
+            ],
+          }),
+        });
+      });
+
+      renderComponent({ channel, client, props: {} });
+
+      await waitFor(() => {
+        expect(screen.queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
       });
     });
   });
