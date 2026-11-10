@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { Schemas } from '@stream-io/calypso';
 import { router } from 'expo-router';
-import type { DrawerContentComponentProps } from 'expo-router/drawer';
+import { type DrawerContentComponentProps, useDrawerStatus } from 'expo-router/drawer';
 
 import { Plus, useStableCallback } from 'stream-chat-expo';
 
@@ -30,10 +30,13 @@ const byLastUsed = (sessions: readonly SessionRow[]) =>
  * was only ever a call has no channel to read back.
  */
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
-  const { conversationsVersion, openConversation, sessionId, startConversation } = useAppContext();
+  const { conversationsVersion, isReady, openConversation, sessionId, startConversation } =
+    useAppContext();
   const [sessions, setSessions] = useState<readonly SessionRow[]>([]);
+  const isOpen = useDrawerStatus() === 'open';
 
   useEffect(() => {
+    if (!isReady || !isOpen) return;
     let cancelled = false;
     agentSessions()
       .query({ limit: 50 })
@@ -44,7 +47,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
     return () => {
       cancelled = true;
     };
-  }, [conversationsVersion]);
+  }, [conversationsVersion, isOpen, isReady]);
 
   const onSelect = useStableCallback((session: SessionRow) => {
     openConversation(session.id, session.conversation_id ?? undefined);
