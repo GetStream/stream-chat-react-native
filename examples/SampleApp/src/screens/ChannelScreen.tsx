@@ -56,9 +56,13 @@ export type ChannelScreenProps = {
 
 export type ChannelHeaderProps = {
   channel: StreamChatChannel;
+  /** Whether a parent already applies the top safe-area inset. */
+  inSafeArea?: boolean;
+  /** Replaces the default back behaviour. */
+  onBack?: () => void;
 };
 
-const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
+export const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel, inSafeArea, onBack }) => {
   const { closePicker } = useAttachmentPickerContext();
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel);
@@ -91,7 +95,8 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 
   return (
     <ScreenHeader
-      onBack={onBackPress}
+      inSafeArea={inSafeArea}
+      onBack={onBack ?? onBackPress}
       // eslint-disable-next-line react/no-unstable-nested-components
       RightContent={() => (
         <Pressable

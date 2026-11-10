@@ -308,6 +308,8 @@ export const it: TranslationDictionary = {
   'message.pinnedBy.text': 'Fissato da',
   'message.reactionList.more.accessibilityLabel_one': "e un'altra reazione",
   'message.reactionList.more.accessibilityLabel_other': 'e altre {{count}} reazioni',
+  'message.reactionList.total.accessibilityLabel_one': '{{count}} reazione',
+  'message.reactionList.total.accessibilityLabel_other': '{{count}} reazioni',
   'message.reactionList.viewHint.accessibilityLabel': 'Tocca due volte per vedere le reazioni',
   'message.reactionList.youReacted.accessibilityLabel': 'hai reagito',
   'message.reminderOverdue.text': 'Promemoria scaduto',

@@ -30,7 +30,10 @@ export const waitToAppear = async (
  * Retries `action` while Detox reports the element as not hittable (e.g. covered by the keyboard
  * while it animates in). iOS runs without Detox's idle synchronization, which used to absorb that.
  */
-const retryWhileNotHittable = async (action: () => Promise<void>, timeout = defaultTimeout) => {
+export const retryWhileNotHittable = async (
+  action: () => Promise<void>,
+  timeout = defaultTimeout,
+) => {
   const deadline = Date.now() + timeout;
   for (;;) {
     try {
@@ -48,6 +51,19 @@ export const waitToAppearAndClick = async (selector: Selector, options?: WaitOpt
   const target = await waitToAppear(selector, options);
   await retryWhileNotHittable(() => target.tap(), options?.timeout);
   return target;
+};
+
+/**
+ * Taps an element of something that animates in: a menu, a bottom sheet, a swipe action. iOS runs
+ * without Detox's idle sync, so a tap that lands during the animation is reported done but never
+ * fires. On iOS this lets the animation settle first; Android's Espresso sync already waits.
+ */
+export const waitToSettleAndClick = async (selector: Selector, options?: WaitOptions) => {
+  if (device.getPlatform() === 'ios') {
+    await waitToAppear(selector, options);
+    await sleep(1000);
+  }
+  return waitToAppearAndClick(selector, options);
 };
 
 export const waitToAppearAndLongPress = async (selector: Selector, options?: WaitOptions) => {
@@ -102,6 +118,17 @@ export const isDisplayed = async (selector: Selector, index?: number) => {
     return false;
   }
 };
+
+/**
+ * Whether any element matching `selector` is on screen. Unlike `isDisplayed` without an index, it
+ * copes with several matches: Detox iOS also reports the list's off-screen cells (a message text and
+ * the same text inside a quote further down), where `isDisplayed` throws "multiple elements" and so
+ * answers `false` even with the text in view.
+ */
+export const isAnyDisplayed = async (selector: Selector) =>
+  device.getPlatform() === 'ios'
+    ? (await allAttributes(selector)).some((attributes) => attributes.visible)
+    : isDisplayed(selector);
 
 /** Polls until `predicate` holds, then returns `true`; returns `false` once `timeout` elapses. */
 export const waitUntil = async (
@@ -162,3 +189,58 @@ export const textOf = async (selector: Selector, index = 0) => {
     return '';
   }
 };
+
+type ElementAttributes = {
+  enabled?: boolean;
+  visible?: boolean;
+  frame?: { height: number; width: number; x: number; y: number };
+  label?: string;
+  text?: string;
+};
+
+/** Attributes of every element matching `selector`, in Detox's match order; `[]` when none match. */
+export const allAttributes = async (selector: Selector): Promise<ElementAttributes[]> => {
+  try {
+    const attributes = (await element(selector).getAttributes()) as
+      | ElementAttributes
+      | { elements: ElementAttributes[] };
+    return 'elements' in attributes ? attributes.elements : [attributes];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * The Detox index of the `fromBottom`-th match counted from the bottom of the screen (0 is the
+ * lowest), like Android's `waitToAppearBottomUp`. Message lists render the newest message at the
+ * bottom, but the platforms disagree on the order in which they report matches.
+ */
+export const indexFromBottom = async (
+  selector: Selector,
+  fromBottom = 0,
+  timeout = defaultTimeout,
+) => {
+  let matches: ElementAttributes[] = [];
+  await waitUntil(async () => {
+    matches = await allAttributes(selector);
+    return matches.length > 0;
+  }, timeout);
+  if (matches.length === 0) {
+    throw new Error(`No element matches ${JSON.stringify(selector)}`);
+  }
+  const order = matches
+    .map((match, index) => ({ index, y: match.frame?.y ?? 0 }))
+    .sort((a, b) => b.y - a.y);
+  return order[Math.min(fromBottom, order.length - 1)].index;
+};
+
+export const frameOf = async (selector: Selector, index = 0) => {
+  const matches = await allAttributes(selector);
+  const frame = matches[index]?.frame;
+  if (!frame) {
+    throw new Error(`No frame for ${JSON.stringify(selector)} at index ${index}`);
+  }
+  return frame;
+};
+
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

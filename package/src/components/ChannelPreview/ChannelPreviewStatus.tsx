@@ -63,7 +63,11 @@ export const ChannelPreviewStatus = (props: ChannelPreviewStatusProps) => {
   );
 
   return (
-    <Text accessibilityLabel={accessibilityLabel} style={styles.date}>
+    <Text
+      accessibilityLabel={accessibilityLabel}
+      style={styles.date}
+      testID='channel-preview-timestamp'
+    >
       {visibleDate}
     </Text>
   );

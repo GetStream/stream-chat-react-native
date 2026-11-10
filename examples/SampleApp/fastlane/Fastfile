@@ -1,5 +1,7 @@
 skip_docs
 
+import 'Allurefile'
+
 # Common Configuration
 github_repo = ENV['GITHUB_REPOSITORY'] || 'GetStream/stream-chat-react-native'
 root_path = File.absolute_path('../../../')
@@ -271,8 +273,17 @@ end
 
 # The e2e suite drives the dedicated examples/E2ETestApp; its lanes live here with the repo's other lanes.
 e2e_app_path = File.absolute_path('../../E2ETestApp')
+allure_results_path = File.join(e2e_app_path, 'allure-results')
 mock_server_repo_name = 'stream-chat-test-mock-server'
 mock_server_driver_port = ENV['MOCK_DRIVER_PORT'] || '4569'
+# Impact analysis (e2e/README.md): pull requests run only the tests a coverage map says the diff can reach.
+e2e_tests_path = File.join(e2e_app_path, 'e2e', 'tests')
+e2e_selection_path = File.join(e2e_app_path, 'e2e_selection.json')
+e2e_batch_selection_path = File.join(e2e_app_path, 'e2e_batch_selection.json')
+e2e_max_batches = 8
+e2e_coverage_path = File.join(e2e_app_path, 'e2e-coverage')
+e2e_coverage_map_path = File.join(e2e_app_path, 'e2e_coverage_map.json')
+e2e_coverage_map_artifact = 'e2e-coverage-map'
 
 desc 'Starts the stream-chat-test-mock-server driver. Options: local_server (path to a checkout), branch'
 lane :start_mock_server do |options|
@@ -320,11 +331,127 @@ private_lane :wait_for_mock_server_driver do |options|
   UI.user_error!("Mock server driver did not start on port #{options[:port]}") unless ready
 end
 
-desc 'Writes `required=true|false` to $GITHUB_OUTPUT, so CI can skip the e2e jobs before building anything'
+desc 'Writes `required=true|false` and `e2e_batches` to $GITHUB_OUTPUT, so CI can skip the e2e jobs before building anything'
 lane :e2e_check_required do
   required = is_check_required(sources: @impact[:e2e][:sources], force_check: @force_check, required_checks: @impact[:e2e][:checks])
-  File.write(ENV['GITHUB_OUTPUT'], "required=#{required}\n", mode: 'a') if ENV['GITHUB_OUTPUT']
+  tests = required ? select_e2e_tests['tests'] : []
+  required &&= !tests.empty?
+  # Like the native Android SDK: 8 batches, or one per test when fewer are selected.
+  batches = (0...[tests.size, e2e_max_batches].min).to_a
+  UI.important("E2E batches: #{batches.size}")
+  File.write(ENV['GITHUB_OUTPUT'], "required=#{required}\ne2e_batches=#{batches.to_json}\n", mode: 'a') if ENV['GITHUB_OUTPUT']
   required
+end
+
+# `<test file>/<test>` ids of the tests that can run, e.g. `MessageListTests.e2e/test_x`: the coverage
+# map's keys. `it.skip` tests are left out; `itOnAndroid`, `itOnIOS` and `itExceptOnOldIOS` ones are
+# in (Jest skips them where they don't run).
+def e2e_test_ids(tests_path)
+  Dir.glob(File.join(tests_path, '*.e2e.ts')).sort.flat_map do |file|
+    source = File.read(file)
+    calls = source.scan(/^\s*(?:it|itOnAndroid|itOnIOS|itExceptOnOldIOS)(?:\.skip)?\(/).size
+    tests = source.scan(/^\s*(?:it|itOnAndroid|itOnIOS|itExceptOnOldIOS)(\.skip)?\(\s*'(test_\w+)'/)
+    # A test this misses would never run on a pull request, so fail loudly instead.
+    UI.user_error!("#{file}: read #{tests.size} of its #{calls} tests; name each one with a `test_*` literal") if tests.size != calls
+
+    suite = File.basename(file, '.ts')
+    tests.reject { |skip, _| skip }.map { |_, name| "#{suite}/#{name}" }
+  end
+end
+
+desc 'Selects the e2e tests a pull request can affect into e2e_selection.json.'
+lane :select_e2e_tests do |options|
+  all_tests = e2e_test_ids(e2e_tests_path)
+  local = options[:coverage_map] || options[:changed_files] || options[:diff_base]
+  if !local && ENV['GITHUB_EVENT_NAME'] != 'pull_request'
+    # A dispatched run's tip can be a merge commit, which would pass for a pull request's.
+    selection = { 'run_all' => true, 'tests' => all_tests, 'reasons' => ["not a pull request (#{ENV['GITHUB_EVENT_NAME'] || 'local'})"] }
+    File.write(e2e_selection_path, JSON.pretty_generate(selection))
+    UI.important("Running all #{all_tests.size} tests: #{selection['reasons'].first}")
+    next selection
+  end
+
+  select_impacted_tests(
+    all_tests: all_tests,
+    coverage_map: options[:coverage_map] ? File.expand_path(options[:coverage_map], root_path) : nil,
+    coverage_map_artifact: e2e_coverage_map_artifact,
+    coverage_map_branch: 'develop',
+    changed_files: options[:changed_files]&.split(','),
+    diff_base: options[:diff_base],
+    source_root: root_path,
+    # The instrumented code: examples/E2ETestApp/e2e/coverage/sources.js
+    source_paths: ['package/src/', 'package/native-package/src/', 'examples/E2ETestApp/'],
+    test_paths: ['examples/E2ETestApp/e2e/tests/'],
+    ignore_paths: ['package/src/**/__tests__/**', 'package/src/**/*.test.{ts,tsx}', 'package/src/mock-builders/', '**/*.md'],
+    run_all_paths: [
+      # The test harness, the app's native side and build setup, the SDK's native code
+      'examples/E2ETestApp/e2e/{coverage,mock-server,pages,robots,support}/**/*',
+      'examples/E2ETestApp/e2e/*',
+      'examples/E2ETestApp/android/',
+      'examples/E2ETestApp/ios/',
+      'examples/E2ETestApp/*.{js,json}',
+      'package/package.json',
+      'package/shared-native/',
+      'package/native-package/{package.json,*.podspec}',
+      'package/native-package/android/',
+      'package/native-package/ios/',
+      'package.json'
+    ],
+    # Code nearly every test runs (startup, login, the channel list) selects one test per file instead.
+    hot_test_ratio: 0.9,
+    output_path: e2e_selection_path
+  )
+end
+
+# Ids of the tests whose last Allure result passed or was skipped, from the run's allure-results.
+def e2e_passed_test_ids(results_path)
+  Dir.glob(File.join(results_path, '*-result.json')).map { |file| JSON.parse(File.read(file)) }
+     .group_by { |result| result['fullName'] }.values
+     .map { |runs| runs.max_by { |run| run['stop'].to_i } }
+     .select { |run| %w[passed skipped].include?(run['status']) }
+     .map { |run| "#{run['fullName'].split.first}.e2e/#{run['name']}" }
+end
+
+desc 'Writes the failed tests of a `test_e2e coverage:true batch:<n>` run to e2e-coverage/failed_tests_<n>.json'
+lane :e2e_failed_tests do |options|
+  # Every test of the batch that didn't pass, also those a dead emulator never ran.
+  tests = JSON.parse(File.read(e2e_batch_selection_path))['tests']
+  failed = tests - e2e_passed_test_ids(allure_results_path)
+  FileUtils.mkdir_p(e2e_coverage_path)
+  File.write(File.join(e2e_coverage_path, "failed_tests_#{options[:batch] || 0}.json"), JSON.generate(failed))
+  UI.important("Failed tests of batch #{options[:batch] || 0}: #{failed.join(', ')}") unless failed.empty?
+end
+
+desc 'Builds the e2e coverage map from a `test_e2e coverage:true` run. Options: batch_count (merged CI batches)'
+lane :build_e2e_coverage_map do |options|
+  if options[:batch_count]
+    # Every batch writes its failed tests even when they all pass, so a missing file means the batch
+    # never finished.
+    files = (0...options[:batch_count].to_i).map { |batch| File.join(e2e_coverage_path, "failed_tests_#{batch}.json") }
+    missing = files.each_index.reject { |batch| File.exist?(files[batch]) }
+    UI.user_error!("No coverage from batch(es) #{missing.join(', ')}; keeping the previous map") unless missing.empty?
+    failed = files.flat_map { |file| JSON.parse(File.read(file)) }
+  else
+    passed = e2e_passed_test_ids(allure_results_path)
+    failed = Dir.glob(File.join(allure_results_path, '*-result.json'))
+                .map { |file| JSON.parse(File.read(file)) }
+                .map { |run| "#{run['fullName'].split.first}.e2e/#{run['name']}" }.uniq - passed
+  end
+  UI.important("Failed tests, which keep their previous coverage: #{failed.join(', ')}") unless failed.empty?
+  build_test_coverage_map(
+    coverage_dir: e2e_coverage_path,
+    lcov_base_dir: root_path,
+    source_root: root_path,
+    output_path: e2e_coverage_map_path,
+    previous_map_artifact: e2e_coverage_map_artifact,
+    previous_map_branch: 'develop',
+    failed_tests: failed
+  )
+end
+
+desc 'Installs an iOS simulator runtime. Options: ios (e.g. 17.5)'
+lane :install_runtime do |options|
+  install_ios_runtime(version: options[:ios], custom_script: File.join(root_path, 'bin/install_ios_runtime.sh'))
 end
 
 desc 'Installs the E2ETestApp pods with this bundle (the e2e app has no Gemfile of its own)'
@@ -344,14 +471,41 @@ private_lane :prepare_android_emulator do
   wait_android_emu_idle(timeout: 60)
 end
 
-desc 'Runs the Detox e2e tests. Options: platform (ios|android), configuration (release|debug), ' \
-     'device (android: emu|att), skip_build, test (a test file or -t filter), local_server, mock_server_branch'
+desc 'Runs the Detox e2e tests'
 lane :test_e2e do |options|
   next unless is_check_required(sources: @impact[:e2e][:sources], force_check: @force_check, required_checks: @impact[:e2e][:checks])
 
   platform = options[:platform] || 'ios'
   device = platform == 'ios' ? 'sim' : (options[:device] || 'emu')
   detox_config = "#{platform}.#{device}.#{options[:configuration] || 'release'}"
+  coverage = options[:coverage] == true || options[:coverage].to_s == 'true'
+
+  env = { 'MOCK_DRIVER_PORT' => mock_server_driver_port }
+  selection_path = options[:selection] && File.expand_path(options[:selection], root_path)
+  if selection_path
+    selection = JSON.parse(File.read(selection_path))
+    if selection['tests'].empty?
+      UI.important("No e2e tests selected: #{selection['reasons'].join('; ')}")
+      next
+    end
+    UI.important("Running #{selection['run_all'] ? 'all' : selection['tests'].size} selected e2e tests")
+  end
+  if options[:batch] && options[:batch_count]
+    tests = selection ? selection['tests'] : e2e_test_ids(e2e_tests_path)
+    batch = options[:batch].to_i
+    batch_count = options[:batch_count].to_i
+    # Round-robin, as on native Android: slicing by a rounded-up size can leave the last batches empty.
+    batch_tests = tests.select.with_index { |_, i| i % batch_count == batch }
+    UI.user_error!("Batch #{batch} is empty: #{tests.size} tests cannot fill #{batch_count} batches") if batch_tests.empty?
+    UI.important("Batch #{batch + 1} of #{batch_count}: #{batch_tests.size} of #{tests.size} tests")
+    File.write(e2e_batch_selection_path, JSON.pretty_generate('run_all' => false, 'tests' => batch_tests))
+    selection_path = e2e_batch_selection_path
+  end
+  env['E2E_SELECTION'] = selection_path if selection_path
+  if coverage
+    FileUtils.rm_rf(e2e_coverage_path)
+    env['E2E_COVERAGE_DIR'] = e2e_coverage_path
+  end
 
   start_mock_server(local_server: options[:local_server], branch: options[:mock_server_branch])
   # An attached emulator is already booted; Detox boots `emu` devices itself.
@@ -359,10 +513,12 @@ lane :test_e2e do |options|
 
   begin
     Dir.chdir(e2e_app_path) do
-      sh("yarn e2e:build -c #{detox_config}") unless options[:skip_build]
+      sh({ 'E2E_COVERAGE' => coverage ? '1' : '0' }, "yarn e2e:build -c #{detox_config}") unless options[:skip_build]
+      # Kept across Detox's --retries runs (jest-allure2-reporter `overwrite: false`), so cleared here.
+      FileUtils.rm_rf(allure_results_path)
       # On CI: retry flaky tests, run the simulator headless, and keep logs + screenshots of failures in ./artifacts.
       ci_flags = is_ci ? '--retries 2 --headless --record-logs failing --take-screenshots failing' : ''
-      sh("MOCK_DRIVER_PORT=#{mock_server_driver_port} yarn detox test -c #{detox_config} --cleanup #{ci_flags} #{options[:test]}")
+      sh(env, "yarn detox test -c #{detox_config} --cleanup #{ci_flags} #{options[:test]}")
     end
   ensure
     stop_mock_server

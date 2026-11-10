@@ -312,6 +312,8 @@ export const de: TranslationDictionary = {
   'message.pinnedBy.text': 'Angeheftet von',
   'message.reactionList.more.accessibilityLabel_one': 'und {{count}} weitere Reaktion',
   'message.reactionList.more.accessibilityLabel_other': 'und {{count}} weitere Reaktionen',
+  'message.reactionList.total.accessibilityLabel_one': '{{count}} Reaktion',
+  'message.reactionList.total.accessibilityLabel_other': '{{count}} Reaktionen',
   'message.reactionList.viewHint.accessibilityLabel':
     'Doppelt tippen, um die Reaktionen anzuzeigen',
   'message.reactionList.youReacted.accessibilityLabel': 'du hast reagiert',

@@ -1,0 +1,48 @@
+name: Setup iOS Runtime
+description: Download and install a requested iOS simulator runtime, and create a simulator on it
+inputs:
+  version:
+    description: iOS runtime version (e.g. 17.5)
+    required: true
+  device:
+    description: Simulator device type, also the simulator's name (e.g. iPhone 15 Pro)
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Install ipsw
+      shell: bash
+      run: |
+        IPSW_VERSION=3.1.592
+        FILE="ipsw_${IPSW_VERSION}_macOS_universal.tar.gz"
+        if ! command -v ipsw >/dev/null; then
+          wget -q "https://github.com/blacktop/ipsw/releases/download/v${IPSW_VERSION}/${FILE}"
+          tar -xzf "$FILE"
+          chmod +x ipsw
+          sudo mv ipsw /usr/local/bin/
+          rm -f "$FILE"
+        fi
+
+    # Starts from no simulators, as the Flutter nightly does.
+    - name: Remove the preinstalled simulators
+      shell: bash
+      run: sudo rm -rf ~/Library/Developer/CoreSimulator/* || true
+
+    - name: Install iOS runtime
+      shell: bash
+      working-directory: examples/SampleApp
+      run: bundle exec fastlane install_runtime ios:${{ inputs.version }}
+
+    - name: Cleanup iOS runtime install artifacts
+      shell: bash
+      run: |
+        sudo rm -rf examples/SampleApp/*.dmg || true
+        xcrun simctl list runtimes
+
+    # Named after the device type, so the job's `Boot simulator` step finds it.
+    - name: Create the iOS simulator
+      shell: bash
+      run: |
+        ios_version_dash=$(echo "${{ inputs.version }}" | tr '.' '-')
+        xcrun simctl create "${{ inputs.device }}" "${{ inputs.device }}" "com.apple.CoreSimulator.SimRuntime.iOS-${ios_version_dash}"
+        xcrun simctl list devices "${{ inputs.version }}"

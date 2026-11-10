@@ -6933,7 +6933,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-web: "npm:~0.21.4"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.0"
+    stream-chat: "npm:^10.0.1"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -7051,6 +7051,15 @@ __metadata:
     json-schema-traverse: "npm:^1.0.0"
     require-from-string: "npm:^2.0.2"
   checksum: 10c0/5df9a1c8f83863cde1bd3a9ddb426f599718f88e3dc9153616c79fb28e0be455335830d7f21d745576519f057b371352daa31047b6a33d7036fe08777d60cf2a
+  languageName: node
+  linkType: hard
+
+"allure-store@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "allure-store@npm:1.2.0"
+  dependencies:
+    properties: "npm:^1.2.1"
+  checksum: 10c0/3d12eb38e609fbc86572e12c12e42628ca67b9f21421de9250d1033878890c3826de01d5133050adde3c89800ec6954f82b8bf2af92df0c75ce05df9c1514dda
   languageName: node
   linkType: hard
 
@@ -8048,7 +8057,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bunyamin@npm:^1.5.2":
+"bunyamin@npm:^1.5.2, bunyamin@npm:^1.6.1":
   version: 1.6.3
   resolution: "bunyamin@npm:1.6.3"
   dependencies:
@@ -9547,10 +9556,14 @@ __metadata:
     "@babel/core": "npm:^7.29.0"
     "@babel/runtime": "npm:^7.29.2"
     "@jest/globals": "npm:^30.4.1"
+    "@op-engineering/op-sqlite": "npm:^18.2.5"
+    "@react-native-camera-roll/camera-roll": "npm:^7.10.2"
+    "@react-native-clipboard/clipboard": "npm:^1.16.3"
     "@react-native-community/cli": "npm:20.2.0"
     "@react-native-community/cli-platform-android": "npm:20.2.0"
     "@react-native-community/cli-platform-ios": "npm:20.2.0"
     "@react-native-community/netinfo": "npm:^12.0.1"
+    "@react-native-documents/picker": "npm:^12.0.2"
     "@react-native/babel-preset": "npm:0.88.0"
     "@react-native/metro-config": "npm:0.88.0"
     "@react-native/typescript-config": "npm:0.88.0"
@@ -9560,16 +9573,20 @@ __metadata:
     babel-jest: "npm:30.0.0"
     detox: "npm:^20.51.4"
     jest: "npm:^30.4.2"
+    jest-allure2-reporter: "npm:^2.3.0"
+    jest-metadata: "npm:^1.6.0"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-gesture-handler: "npm:^3.4.0"
+    react-native-image-picker: "npm:^8.2.1"
     react-native-launch-arguments: "npm:^4.1.1"
     react-native-reanimated: "npm:4.7.1"
     react-native-safe-area-context: "npm:^5.10.1"
     react-native-svg: "npm:^15.15.5"
     react-native-teleport: "npm:^1.2.2"
+    react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^10.0.0"
+    stream-chat: "npm:^10.0.1"
     stream-chat-react-native: "workspace:^"
     typescript: "npm:6.0.3"
   languageName: unknown
@@ -10952,7 +10969,7 @@ __metadata:
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.0"
+    stream-chat: "npm:^10.0.1"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -11910,6 +11927,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"handlebars@npm:^4.7.8":
+  version: 4.7.10
+  resolution: "handlebars@npm:4.7.10"
+  dependencies:
+    minimist: "npm:^1.2.8"
+    neo-async: "npm:^2.6.2"
+    source-map: "npm:^0.6.1"
+    uglify-js: "npm:^3.1.4"
+    wordwrap: "npm:^1.0.0"
+  dependenciesMeta:
+    uglify-js:
+      optional: true
+  bin:
+    handlebars: bin/handlebars
+  checksum: 10c0/9b5573584ae5836172ae3f1502d9819568ba1b92ee83b81b18223beeb4c07486595e7b0fa633102beabc66ed06fe6e7da1dd9a9ea8c7072b9550b9a88809165c
+  languageName: node
+  linkType: hard
+
 "has-bigints@npm:^1.0.2":
   version: 1.0.2
   resolution: "has-bigints@npm:1.0.2"
@@ -12344,6 +12379,13 @@ __metadata:
     debug: "npm:^4.3.4"
     import-meta-resolve: "npm:^4.0.0"
   checksum: 10c0/6ee85521a1b540927c50f9f16c4f1fc25fa0383c16740483b5ba838d8deea8f5e7a30b6a9f6dff28292589317e679a07da8fa63890a0fd2e549a51e9d28a66fd
+  languageName: node
+  linkType: hard
+
+"import-from@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "import-from@npm:4.0.0"
+  checksum: 10c0/7fd98650d555e418c18341fef49ae11afc833f5ae70b7043e99684187cba6ac6b52e4118a491bd9f856045495bef5bdda7321095e65bcb2ef70ce2adf9f0d8d1
   languageName: node
   linkType: hard
 
@@ -13175,6 +13217,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-allure2-reporter@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "jest-allure2-reporter@npm:2.3.0"
+  dependencies:
+    allure-store: "npm:^1.1.0"
+    bunyamin: "npm:^1.6.1"
+    handlebars: "npm:^4.7.8"
+    import-from: "npm:^4.0.0"
+    jest-metadata: "npm:^1.6.0"
+    lodash: "npm:^4.17.21"
+    node-fetch: "npm:^2.6.7"
+    pkg-up: "npm:^3.1.0"
+    properties: "npm:^1.2.1"
+    stacktrace-js: "npm:^2.0.2"
+    strip-ansi: "npm:^6.0.0"
+    uuid: "npm:^8.3.2"
+  peerDependencies:
+    jest: ">=27.2.5"
+    jest-docblock: ">=27.2.5"
+  dependenciesMeta:
+    dtrace-provider:
+      built: false
+  peerDependenciesMeta:
+    jest:
+      optional: true
+    jest-docblock:
+      optional: true
+  checksum: 10c0/71361dee21e10b4a9bdb7e8e4c1e760d127664d64e8e1824c72b9c1c59090c6d572687c6b6dc7182be5a3edbe5b2d972321624bfc0b01796e63e405df4c06545
+  languageName: node
+  linkType: hard
+
 "jest-changed-files@npm:30.4.1":
   version: 30.4.1
   resolution: "jest-changed-files@npm:30.4.1"
@@ -13339,7 +13412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-emit@npm:^1.2.0":
+"jest-environment-emit@npm:^1.0.8, jest-environment-emit@npm:^1.2.0":
   version: 1.2.0
   resolution: "jest-environment-emit@npm:1.2.0"
   dependencies:
@@ -13590,6 +13663,42 @@ __metadata:
     slash: "npm:^3.0.0"
     stack-utils: "npm:^2.0.3"
   checksum: 10c0/850ae35477f59f3e6f27efac5215f706296e2104af39232bb14e5403e067992afb5c015e87a9243ec4d9df38525ef1ca663af9f2f4766aa116f127247008bd22
+  languageName: node
+  linkType: hard
+
+"jest-metadata@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "jest-metadata@npm:1.6.0"
+  dependencies:
+    bunyamin: "npm:^1.5.2"
+    funpermaproxy: "npm:^1.1.0"
+    jest-environment-emit: "npm:^1.0.8"
+    lodash.merge: "npm:^4.6.2"
+    lodash.snakecase: "npm:^4.1.1"
+    node-ipc: "npm:9.2.1"
+    strip-ansi: "npm:^6.0.0"
+    tslib: "npm:^2.5.3"
+  peerDependencies:
+    "@jest/environment": ">=27.2.5"
+    "@jest/reporters": ">=27.2.5"
+    "@jest/types": ">=27.2.5"
+    jest: ">=27.2.5"
+    jest-environment-jsdom: ">=27.2.5"
+    jest-environment-node: ">=27.2.5"
+  peerDependenciesMeta:
+    "@jest/environment":
+      optional: true
+    "@jest/reporters":
+      optional: true
+    "@jest/types":
+      optional: true
+    jest:
+      optional: true
+    jest-environment-jsdom:
+      optional: true
+    jest-environment-node:
+      optional: true
+  checksum: 10c0/a0c16f76ed62095c4512f6d6c4a6402f232e415d3edfdf08a81bedd8e9abf6cc5022a8638a1d8c12d9742c5692d7001611cc142cb9092fa477a54c74d1123cc5
   languageName: node
   linkType: hard
 
@@ -14662,6 +14771,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.snakecase@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "lodash.snakecase@npm:4.1.1"
+  checksum: 10c0/f0b3f2497eb20eea1a1cfc22d645ecaeb78ac14593eb0a40057977606d2f35f7aaff0913a06553c783b535aafc55b718f523f9eb78f8d5293f492af41002eaf9
+  languageName: node
+  linkType: hard
+
 "lodash.throttle@npm:^4.1.1":
   version: 4.1.1
   resolution: "lodash.throttle@npm:4.1.1"
@@ -14676,7 +14792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.18.1, lodash@npm:^4.17.11, lodash@npm:^4.17.15, lodash@npm:^4.17.4":
+"lodash@npm:4.18.1, lodash@npm:^4.17.11, lodash@npm:^4.17.15, lodash@npm:^4.17.21, lodash@npm:^4.17.4":
   version: 4.18.1
   resolution: "lodash@npm:4.18.1"
   checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
@@ -15550,7 +15666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.3, minimist@npm:^1.2.5, minimist@npm:^1.2.6":
+"minimist@npm:^1.2.0, minimist@npm:^1.2.3, minimist@npm:^1.2.5, minimist@npm:^1.2.6, minimist@npm:^1.2.8":
   version: 1.2.8
   resolution: "minimist@npm:1.2.8"
   checksum: 10c0/19d3fcdca050087b84c2029841a093691a91259a47def2f18222f41e7645a0b7c44ef4b40e88a1e58a40c84d2ef0ee6047c55594d298146d0eb3f6b737c20ce6
@@ -15905,7 +16021,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.7.0":
+"node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -17292,6 +17408,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"properties@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "properties@npm:1.2.1"
+  checksum: 10c0/c6ed008981dbe66e5d622064559166924d6bd56a0b9c4dcb41889457c47467683bda4091c69c348bf703051f95d8fa53cac4dc658172f9f752c00b8622dbc708
+  languageName: node
+  linkType: hard
+
 "property-information@npm:^7.0.0":
   version: 7.2.0
   resolution: "property-information@npm:7.2.0"
@@ -18558,7 +18681,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^10.0.0"
+    stream-chat: "npm:^10.0.1"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -19070,6 +19193,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"source-map@npm:0.5.6":
+  version: 0.5.6
+  resolution: "source-map@npm:0.5.6"
+  checksum: 10c0/beb2c5974bb58954d75e86249953d47ae16f7df1a8531abb9fcae0cd262d9fa09c2db3a134e20e99358b1adba42b6b054a32c8e16b571b3efcf6af644c329f0d
+  languageName: node
+  linkType: hard
+
 "source-map@npm:^0.5.6":
   version: 0.5.7
   resolution: "source-map@npm:0.5.7"
@@ -19167,6 +19297,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stack-generator@npm:^2.0.5":
+  version: 2.0.10
+  resolution: "stack-generator@npm:2.0.10"
+  dependencies:
+    stackframe: "npm:^1.3.4"
+  checksum: 10c0/c3f6f6c580488e65c0fee806a57f6ae4b79e6435f144be471c1f20328a8d9d8492d4f3beed31840f6dae03e2633325e2764fd3aca5c3126a0639e7c9ddfa45ce
+  languageName: node
+  linkType: hard
+
 "stack-trace@npm:0.0.x":
   version: 0.0.10
   resolution: "stack-trace@npm:0.0.10"
@@ -19187,6 +19326,27 @@ __metadata:
   version: 1.3.4
   resolution: "stackframe@npm:1.3.4"
   checksum: 10c0/18410f7a1e0c5d211a4effa83bdbf24adbe8faa8c34db52e1cd3e89837518c592be60b60d8b7270ac53eeeb8b807cd11b399a41667f6c9abb41059c3ccc8a989
+  languageName: node
+  linkType: hard
+
+"stacktrace-gps@npm:^3.0.4":
+  version: 3.1.2
+  resolution: "stacktrace-gps@npm:3.1.2"
+  dependencies:
+    source-map: "npm:0.5.6"
+    stackframe: "npm:^1.3.4"
+  checksum: 10c0/0dcc1aa46e364a2b4d1eabce4777fecf337576a11ee3cfc92f07b9ec79ccb76810752431eeb9771289d250d0bb58dbe19a178b96bf7b2e9f773334d03aa96bb9
+  languageName: node
+  linkType: hard
+
+"stacktrace-js@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "stacktrace-js@npm:2.0.2"
+  dependencies:
+    error-stack-parser: "npm:^2.0.6"
+    stack-generator: "npm:^2.0.5"
+    stacktrace-gps: "npm:^3.0.4"
+  checksum: 10c0/9a10c222524ca03690bcb27437b39039885223e39320367f2be36e6f750c2d198ae99189869a22c255bf60072631eb609d47e8e33661e95133686904e01121ec
   languageName: node
   linkType: hard
 
@@ -19371,7 +19531,7 @@ __metadata:
     react-syntax-highlighter: "npm:^16.1.0"
     react-test-renderer: "npm:19.3.0"
     rimraf: "npm:^6.0.1"
-    stream-chat: "npm:^10.0.0"
+    stream-chat: "npm:^10.0.1"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.7.0"
     uuid: "npm:^11.1.0"
@@ -19459,9 +19619,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "stream-chat@npm:10.0.0"
+"stream-chat@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "stream-chat@npm:10.0.1"
   dependencies:
     "@stream-io/logger": "npm:^2.1.0"
     "@stream-io/state-store": "npm:^1.2.0"
@@ -19472,7 +19632,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/d44d6ddc3c417844f0d43b10ccf30dd483291fb7e7843173f00129759aa20020f05167e6037f6e8fbefc25f65c19a0c967058fa559bb4b23a4d8b255180a5b4c
+  checksum: 10c0/23e1acfee4320a99f63d9b8a9de9cfcf01ad34af9e2efa96daf4d6c0ef6d6752e39e8d9e787c78490bed21aaf6f9405dd9a9d5ca86bcc54568f54c5a35c8bc47
   languageName: node
   linkType: hard
 
@@ -20676,6 +20836,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10c0/2eee5723b0fcce8256f5bfd3112af6c453b5471db00af9c3533e3d5a6e57de83513f9a145a570890457bd7abf2c2aa05797291d950ac666e5a074895dc63168b
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^8.3.2":
+  version: 8.3.2
+  resolution: "uuid@npm:8.3.2"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 10c0/bcbb807a917d374a49f475fae2e87fdca7da5e5530820ef53f65ba1d12131bd81a92ecf259cc7ce317cbe0f289e7d79fdfebcef9bfa3087c8c8a2fa304c9be54
   languageName: node
   linkType: hard
 

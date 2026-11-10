@@ -9,7 +9,7 @@ const { execFileSync } = require('child_process');
 const sdkRoot = process.env.ANDROID_HOME ?? process.env.ANDROID_SDK_ROOT;
 const adbPath = sdkRoot ? `${sdkRoot}/platform-tools/adb` : 'adb';
 
-const adb = (...args: string[]) => {
+export const adb = (...args: string[]) => {
   const serial = process.env.DETOX_ADB_NAME;
   const deviceArgs = serial && !serial.includes('*') ? ['-s', serial] : [];
   return execFileSync(adbPath, [...deviceArgs, ...args], { encoding: 'utf8' });
