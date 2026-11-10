@@ -10,6 +10,7 @@ import {
 import { dismissAnrDialog } from './AndroidSystemDialogs';
 import { CoverageCollector } from './Coverage';
 import { enableInternetConnection } from './Device';
+import { grantIOSPermissions } from './IOSSimulator';
 
 import { MockServer } from '../mock-server/MockServer';
 import { BackendRobot, ParticipantRobot, UserRobot } from '../robots';
@@ -55,6 +56,9 @@ export const setUpStreamTestCase = ({
 }: StreamTestCaseOptions = {}): StreamTestCase => {
   const testCase = new StreamTestCase();
   const coverage = CoverageCollector.enabled ? new CoverageCollector() : undefined;
+
+  // After Detox installed the app for this suite: a reinstall resets its privacy settings.
+  beforeAll(() => grantIOSPermissions());
 
   if (coverage) {
     beforeAll(() => coverage.start());

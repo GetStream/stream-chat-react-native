@@ -174,7 +174,10 @@ jobs:
         working-directory: examples/SampleApp
         run: bundle exec fastlane allure_launch cron:true
         continue-on-error: true
+      # Below the job timeout, so an overrunning suite fails instead of cancelling the job, and the
+      # Allure upload, the logs and the Slack report still run.
       - name: Run e2e tests
+        timeout-minutes: 120
         working-directory: examples/SampleApp
         run: bundle exec fastlane test_e2e platform:ios skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
       - name: Upload Allure results
@@ -236,9 +239,11 @@ jobs:
 
       # --- App binary, instrumented (E2E_COVERAGE): never cached with the pull requests' builds ---
       # Built before the emulator boots so the emulator doesn't idle through the Gradle build.
+      # The nightly build is always cold, so every Gradle plugin and dependency is downloaded; a
+      # transient repository outage (plugin portal, 2026-11-10) must not cost the whole night.
       - name: Build app
         working-directory: examples/E2ETestApp
-        run: yarn e2e:build -c android.att.release
+        run: yarn e2e:build -c android.att.release || { sleep 60; yarn e2e:build -c android.att.release; }
         env:
           E2E_COVERAGE: "1"
       # Frees the daemons' memory for the emulator, which otherwise can get killed mid-run.
@@ -270,6 +275,7 @@ jobs:
         run: bundle exec fastlane allure_launch cron:true
         continue-on-error: true
       - name: Run e2e tests (Android emulator)
+        id: tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ env.ANDROID_API_LEVEL }}
@@ -279,13 +285,15 @@ jobs:
           disable-animations: true
           working-directory: examples/SampleApp
           script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" coverage:true
-      # Also when tests failed: those keep their coverage from the previous map.
+      # Also when tests failed: those keep their coverage from the previous map. Not when they never
+      # ran (a failed build): there is no coverage to build a map from.
       - name: Build e2e coverage map
-        if: success() || failure()
+        id: coverage-map
+        if: (success() || failure()) && (steps.tests.outcome == 'success' || steps.tests.outcome == 'failure')
         working-directory: examples/SampleApp
         run: bundle exec fastlane build_e2e_coverage_map
       - uses: actions/upload-artifact@v6
-        if: success() || failure()
+        if: (success() || failure()) && steps.coverage-map.outcome == 'success'
         with:
           name: e2e-coverage-map
           path: examples/E2ETestApp/e2e_coverage_map.json
@@ -314,3 +322,20 @@ jobs:
             examples/E2ETestApp/stream-chat-test-mock-server/logs
             examples/E2ETestApp/artifacts
             /tmp/android-runner
+
+  slack:
+    name: Slack Report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [ios, android]
+    # always(): a job that hit its timeout is `cancelled`, which failure() alone doesn't see.
+    if: always() && github.event_name == 'schedule' && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
+    steps:
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: cancelled
+          text: 'You shall not pass!'
+          job_name: '${{ github.workflow }}: ${{ github.job }}'
+          fields: repo,commit,author,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_NIGHTLY_CHECKS }}

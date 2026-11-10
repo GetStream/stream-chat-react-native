@@ -285,7 +285,8 @@ jobs:
       - name: Build app
         if: steps.apk.outputs.cache-hit != 'true'
         working-directory: examples/E2ETestApp
-        run: yarn e2e:build -c android.att.release
+        # Retried once: a cold build downloads every Gradle plugin, and the repositories flake.
+        run: yarn e2e:build -c android.att.release || { sleep 60; yarn e2e:build -c android.att.release; }
       - name: Save APKs
         if: steps.apk.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
