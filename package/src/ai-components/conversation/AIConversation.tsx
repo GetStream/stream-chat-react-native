@@ -181,6 +181,8 @@ const DefaultAssistantMessage = ({
 // shrinks (a sign-in going, reasoning folding, the thinking going) only a frame later, and in that
 // frame the question would be pulled down. Below a pinned turn there is room anyway, so it looks
 // the same, and the room stays the list's, which the keyboard takes before it lifts anything.
+// The person's own message is left free: something folding in it, such as a transcript, would
+// leave a gap above the reply.
 type TurnFloor = { heights: Map<string, number>; turnKey: string | undefined };
 
 type ConversationContextValue = {
@@ -327,7 +329,10 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
   // a worklet sent to the UI thread. The floor only rises, long before a row shrinks, so it can
   // follow a frame after the row grows.
   const turnFloor = context?.turnFloor;
-  const isHeld = !!turnFloor && row.turnKey === turnFloor.turnKey;
+  const isHeld =
+    !!turnFloor &&
+    row.turnKey === turnFloor.turnKey &&
+    !(row.kind === 'entry' && row.entry.isFromUser);
   const floor = isHeld ? (turnFloor?.heights.get(row.key) ?? 0) : 0;
   const [, setFloorRaised] = useState(0);
   const onLayout = isHeld

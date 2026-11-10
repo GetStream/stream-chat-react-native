@@ -1,5 +1,5 @@
 import React, { type ReactElement, useEffect } from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
@@ -337,6 +337,44 @@ describe('AIConversation', () => {
     expect(screen.getByText('user:Hi')).toBeTruthy();
     expect(screen.getByText('agent:a1:Hello')).toBeTruthy();
     expect(screen.getByText('actions')).toBeTruthy();
+  });
+
+  it('keeps the latest reply at its tallest, and lets the person’s message shrink', async () => {
+    const UserMessage = ({ text }: AIConversationUserMessageProps) => <Text>{text}</Text>;
+    const AssistantMessage = ({ text }: AIConversationAssistantMessageProps) => <Text>{text}</Text>;
+    await renderConversation(
+      <AIConversation
+        AssistantMessage={AssistantMessage}
+        messages={[user('u1', 'Hi'), reply('a1', 'Hello')]}
+        ReplyActions={null}
+        UserMessage={UserMessage}
+      />,
+    );
+    // The row is the view around the message with the list's side and top gaps.
+    const rowOf = (text: string) => {
+      let node = screen.getByText(text).parent;
+      while (node) {
+        const style = typeof node.type === 'string' ? StyleSheet.flatten(node.props.style) : null;
+        if (style?.paddingHorizontal !== undefined && style.paddingTop !== undefined) return node;
+        node = node.parent;
+      }
+      return null;
+    };
+    const minHeightOf = (text: string) =>
+      StyleSheet.flatten(rowOf(text)?.props.style)?.minHeight ?? 0;
+    const layOutRow = (text: string, height: number) =>
+      act(() => {
+        rowOf(text)?.props.onLayout?.(layoutOf(height));
+      });
+
+    layOutRow('Hello', 120);
+    layOutRow('Hello', 60);
+    expect(minHeightOf('Hello')).toBe(120);
+
+    layOutRow('Hi', 120);
+    layOutRow('Hi', 60);
+    expect(rowOf('Hi')?.props.onLayout).toBeUndefined();
+    expect(minHeightOf('Hi')).toBe(0);
   });
 
   it('renders again only the messages that changed', async () => {
