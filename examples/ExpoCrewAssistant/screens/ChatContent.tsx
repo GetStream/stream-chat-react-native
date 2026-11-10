@@ -11,7 +11,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Attachment, LocalMessage } from 'stream-chat';
@@ -238,26 +244,48 @@ const VoiceNotes = ({
 );
 
 /** What the router heard in a voice memo, folded away until asked for. */
+// The spring the agent's reasoning folds with.
+const FOLD_SPRING = { damping: 26.5, mass: 1, stiffness: 195 };
+
 const Transcript = ({ text }: { text: string }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const height = useSharedValue(0);
+  const progress = useSharedValue(0);
+  const foldStyle = useAnimatedStyle(() => ({
+    height: height.value * progress.value,
+    opacity: progress.value,
+  }));
+  const toggle = () => {
+    progress.value = withSpring(isOpen ? 0 : 1, FOLD_SPRING);
+    setIsOpen(!isOpen);
+  };
   return (
     <View style={styles.transcript}>
       <Pressable
         accessibilityRole='button'
         accessibilityState={{ expanded: isOpen }}
         hitSlop={8}
-        onPress={() => setIsOpen((open) => !open)}
+        onPress={toggle}
         testID='voice-memo-transcript-toggle'
       >
         <Text style={styles.transcriptToggle}>
           {isOpen ? 'Hide transcript' : 'Show transcript'}
         </Text>
       </Pressable>
-      {isOpen ? (
-        <Animated.Text entering={FadeIn.duration(150)} style={styles.transcriptText}>
-          {text}
-        </Animated.Text>
-      ) : null}
+      <Animated.View
+        accessibilityElementsHidden={!isOpen}
+        importantForAccessibility={isOpen ? 'auto' : 'no-hide-descendants'}
+        style={[styles.transcriptFold, foldStyle]}
+      >
+        <View
+          onLayout={({ nativeEvent }) => {
+            height.value = nativeEvent.layout.height;
+          }}
+          style={styles.transcriptPanel}
+        >
+          <Text style={styles.transcriptText}>{text}</Text>
+        </View>
+      </Animated.View>
     </View>
   );
 };
@@ -476,7 +504,9 @@ const styles = StyleSheet.create({
   },
   sourcesTitle: { color: '#5C6370', fontSize: 12, fontWeight: '700', marginBottom: 4 },
   trailing: { alignItems: 'center', flexDirection: 'row', gap: 8 },
-  transcript: { alignItems: 'flex-end', gap: 4, paddingHorizontal: 20, paddingTop: 6 },
+  transcript: { alignItems: 'flex-end', paddingHorizontal: 20, paddingTop: 6 },
+  transcriptFold: { alignSelf: 'stretch', overflow: 'hidden' },
+  transcriptPanel: { alignItems: 'flex-end', paddingTop: 4, position: 'absolute', width: '100%' },
   transcriptText: { color: '#5C6370', fontSize: 14, lineHeight: 20 },
   transcriptToggle: { color: '#C8102E', fontSize: 13, fontWeight: '600' },
   voiceNotes: { alignItems: 'flex-end', gap: 6, paddingHorizontal: 16, paddingTop: 8 },
