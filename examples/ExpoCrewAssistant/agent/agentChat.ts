@@ -108,7 +108,7 @@ export class AgentChat {
         const messages = [...channel.state.messages];
         this.state.partialNext({
           messages,
-          ...(messages.some(isAgentReply) ? { awaitingAgent: false } : {}),
+          ...(messages.some(showsAgentReply) ? { awaitingAgent: false } : {}),
         });
       }
     });
@@ -215,3 +215,11 @@ export class AgentChat {
 
 /** A reply the agent wrote. */
 export const isAgentReply = (message: LocalMessage) => message.ai_generated === true;
+
+/**
+ * A reply of the agent's that has something to show: the router writes it empty first and fills
+ * it in, and the conversation hides it until then.
+ */
+const showsAgentReply = (message: LocalMessage) =>
+  isAgentReply(message) &&
+  (message.generating !== true || !!message.text || (message.attachments?.length ?? 0) > 0);
