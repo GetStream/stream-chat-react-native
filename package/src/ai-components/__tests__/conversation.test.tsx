@@ -674,6 +674,27 @@ describe('AIConversation with a controller', () => {
     controller.dispose();
   });
 
+  it('leaves the other messages alone while a reply is written', async () => {
+    let renders = 0;
+    const UserMessage = ({ text }: AIConversationUserMessageProps) => {
+      renders++;
+      return <Text>{text}</Text>;
+    };
+    const history = [user('u1', 'Hello'), reply('a1', 'Hi!'), user('u2', 'Plan my day')];
+    const { controller, update } = conversationOf(history);
+    await renderConversation(
+      <AIConversation conversation={controller} UserMessage={UserMessage} />,
+    );
+    await update([...history, reply('a2', 'Here', { isGenerating: true })]);
+    const before = renders;
+    for (const text of ['Here is', 'Here is your', 'Here is your plan.']) {
+      await update([...history, reply('a2', text, { isGenerating: true })]);
+    }
+    expect(screen.getByText('Here is your plan.')).toBeTruthy();
+    expect(renders).toBe(before);
+    controller.dispose();
+  });
+
   it('shows the agent thinking while a reply is written again', async () => {
     const { controller } = conversationOf([user('u1', 'Hello'), reply('a1', 'Hi!')]);
     await renderConversation(<AIConversation conversation={controller} />);

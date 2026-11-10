@@ -21,7 +21,11 @@ import type {
   AIConversationController,
   AIConversationControllerState,
 } from '../conversation-state/controller/AIConversationController';
-import { editActionOf, replyActionsOf } from '../conversation-state/controller/offers';
+import {
+  editActionOf,
+  latestUserMessageIdOf,
+  replyActionsOf,
+} from '../conversation-state/controller/offers';
 import { useAIConversationState } from '../conversation-state/controller/useAIConversationState';
 import type { AIMessage, AIPendingMessage } from '../conversation-state/types';
 import type { AIUIHost } from '../generative-ui/AIUIHost';
@@ -469,9 +473,10 @@ const ControlledConversation = ({
         replyActionsOf(conversation, { ratings, status }, message, isLatestReply),
     [conversation, ratings, status],
   );
+  const latestUserMessageId = latestUserMessageIdOf(messages);
   const editAction = useMemo<EditAction>(
-    () => (message) => editActionOf(conversation, { messages, status }, message),
-    [conversation, messages, status],
+    () => (message) => editActionOf(conversation, { latestUserMessageId, status }, message),
+    [conversation, latestUserMessageId, status],
   );
   const { ui } = props;
   // A reply that shows only its UI has started, which the controller can't tell without the
