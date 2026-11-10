@@ -214,7 +214,10 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       approver: approverFor(next),
       transport: createAgentTransport(next, {
         onCreated: () => setConversationsVersion((version) => version + 1),
-        respond,
+        respond: (...asked) => {
+          setFailure(undefined);
+          return respond(...asked);
+        },
       }),
     });
     current.current = { chat: next, conversation };
@@ -255,6 +258,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     const opened = current.current;
     if (!opened) return;
     const { chat } = opened;
+    setFailure(undefined);
     try {
       const wasNew = chat.id === undefined;
       const session = await chat.session();
@@ -275,6 +279,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     const opened = current.current;
     const last = opened?.chat.lastRequest;
     if (!opened || !last) return;
+    setFailure(undefined);
     if ('voiceMemoUrl' in last) {
       void opened.chat
         .session()
