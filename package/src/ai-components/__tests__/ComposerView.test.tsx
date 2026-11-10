@@ -345,7 +345,7 @@ describe('ComposerView with a conversation', () => {
 
     act(() => controller.edit(message));
 
-    expect(screen.getByText('Editing message')).toBeTruthy();
+    expect(screen.getByText('Editing')).toBeTruthy();
     expect(screen.getByPlaceholderText('Ask anything').props.value).toBe('Plan Lisbon');
 
     fireEvent.press(screen.getByRole('button', { name: 'Cancel editing' }));
