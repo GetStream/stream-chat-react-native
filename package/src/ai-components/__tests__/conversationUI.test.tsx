@@ -264,6 +264,26 @@ describe('AIConversation with generated UI', () => {
     expect(stageOpacityOf('Being written')).toBe(0);
   });
 
+  it('brings in a UI that arrives whole once a reply seen being written finishes', async () => {
+    const ui = makeHost();
+    const { rerender } = await renderConversation(
+      <AIConversation
+        messages={[user('u1', 'Plan'), reply('a1', 'Planning', undefined, { generating: true })]}
+        ui={ui}
+      />,
+    );
+    await rerender(
+      <AIConversation
+        messages={[
+          user('u1', 'Plan'),
+          reply('a1', '', { content: 'Arrived whole', format: 'a2ui' }),
+        ]}
+        ui={ui}
+      />,
+    );
+    expect(stageOpacityOf('Arrived whole')).toBe(0);
+  });
+
   it('hands the replies’ documents to the host as they change', async () => {
     const ui = makeHost();
     const receive = jest.spyOn(ui, 'receive');

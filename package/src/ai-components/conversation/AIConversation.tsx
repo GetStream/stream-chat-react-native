@@ -296,7 +296,7 @@ const EntryView = ({
       />
       {showsUI ? (
         <AIUIGenerated
-          isStreaming={uiDocument.isStreaming}
+          isStreaming={uiDocument.isStreaming || wasWatched}
           messageId={message.id}
           onError={(error) => ui?.fail(message.id, error)}
         >
