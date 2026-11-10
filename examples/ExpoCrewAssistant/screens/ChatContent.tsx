@@ -98,6 +98,7 @@ const ComposerArea = ({
           ) : null}
         </>
       }
+      SpeechToTextButton={null}
       trailing={
         <View style={styles.trailing}>
           <VoiceMemoButton />
