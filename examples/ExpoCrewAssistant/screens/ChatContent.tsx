@@ -1,4 +1,12 @@
-import { useMemo, useState } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,11 +20,13 @@ import {
   View,
 } from 'react-native';
 import Animated, {
+  Easing,
   FadeIn,
   FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -168,21 +178,67 @@ const EmptyContent = ({
 
 type Source = { id: string; title: string; url: string; citation?: string };
 
+const NO_SOURCES: Source[] = [];
+
 const sourcesOf = (message: LocalMessage | undefined): Source[] => {
   const support = (message as { support_message?: { sources?: Source[] } } | undefined)
     ?.support_message;
-  return support?.sources ?? [];
+  return support?.sources ?? NO_SOURCES;
 };
 
-const messagesSelector = ({ messages }: AgentChatState) => ({ messages });
+/** The chat the open conversation is kept in, for the views of its messages. */
+const ConversationChatContext = createContext<AgentChat | undefined>(undefined);
+
+/** The message of the conversation with `messageId`, following only that message. */
+const useChatMessage = (messageId: string | undefined) => {
+  const chat = useContext(ConversationChatContext);
+  const selector = useMemo(
+    () =>
+      ({ messages }: AgentChatState) => ({
+        message: messages.find(({ id }) => id === messageId),
+      }),
+    [messageId],
+  );
+  return useStateStore(chat?.state, selector)?.message;
+};
+
+const SOURCES_OPEN = { duration: 300, easing: Easing.out(Easing.ease) };
+
+/** Opens what it holds from nothing as it shows, so what is below it moves down rather than jumps. */
+const Opening = ({ children }: { children: ReactNode }) => {
+  const height = useSharedValue(0);
+  const progress = useSharedValue(0);
+  const style = useAnimatedStyle(() => ({
+    height: height.value * progress.value,
+    opacity: progress.value,
+  }));
+  return (
+    <Animated.View style={[styles.opening, style]}>
+      <View
+        onLayout={({ nativeEvent }) => {
+          height.value = nativeEvent.layout.height;
+          if (progress.value === 0) progress.value = withTiming(1, SOURCES_OPEN);
+        }}
+        style={styles.openingContent}
+      >
+        {children}
+      </View>
+    </Animated.View>
+  );
+};
 
 /** The handbook passages and pages a reply was answered from, under it. */
-const ReplySources = ({ chat, messageId }: { chat: AgentChat; messageId: string }) => {
-  const { messages } = useStateStore(chat.state, messagesSelector);
-  const message = useMemo(() => messages.find(({ id }) => id === messageId), [messageId, messages]);
-  const sources = useMemo(() => sourcesOf(message), [message]);
+const ReplySources = ({
+  messageId,
+  opens,
+}: {
+  messageId: string;
+  /** Whether it opens as it shows, rather than show at once. */
+  opens: boolean;
+}) => {
+  const sources = sourcesOf(useChatMessage(messageId));
   if (sources.length === 0) return null;
-  return (
+  const card = (
     <View style={styles.sources} testID='reply-sources'>
       <Text style={styles.sourcesTitle}>Sources</Text>
       {sources.map((source, index) => (
@@ -205,6 +261,7 @@ const ReplySources = ({ chat, messageId }: { chat: AgentChat; messageId: string 
       ))}
     </View>
   );
+  return opens ? <Opening>{card}</Opening> : card;
 };
 
 // One player pool for the conversation, as a channel has: starting one memo pauses another.
@@ -215,14 +272,6 @@ const voiceNotesOf = (message: LocalMessage | undefined) =>
     (attachment): attachment is Attachment & { asset_url: string } =>
       attachment.type === 'voiceRecording' && !!attachment.asset_url,
   );
-
-/** The person's message as the channel has it now, with the voice memos it carries. */
-const useStoredMessage = (chat: AgentChat | undefined, messageId: string | undefined) => {
-  const { messages } = useStateStore(chat?.state, messagesSelector) ?? { messages: [] };
-  const message = useMemo(() => messages.find(({ id }) => id === messageId), [messageId, messages]);
-  const notes = useMemo(() => voiceNotesOf(message), [message]);
-  return { message, notes };
-};
 
 /** The voice memos on a person's message, played with the chat SDK's own voice recording view. */
 const VoiceNotes = ({
@@ -248,49 +297,59 @@ const VoiceNotes = ({
   </View>
 );
 
-/** What the router heard in a voice memo, folded away until asked for. */
 // The spring the agent's reasoning folds with.
 const FOLD_SPRING = { damping: 26.5, mass: 1, stiffness: 195 };
 
-const Transcript = ({ text }: { text: string }) => {
-  const [isOpen, setIsOpen] = useState(false);
+/** The transcript, springing open and folded with `isOpen`. */
+const TranscriptFold = ({ isOpen, text }: { isOpen: boolean; text: string }) => {
   const height = useSharedValue(0);
   const progress = useSharedValue(0);
-  const foldStyle = useAnimatedStyle(() => ({
+  useEffect(() => {
+    progress.value = withSpring(isOpen ? 1 : 0, FOLD_SPRING);
+  }, [isOpen, progress]);
+  const style = useAnimatedStyle(() => ({
     height: height.value * progress.value,
     opacity: progress.value,
   }));
-  const toggle = () => {
-    progress.value = withSpring(isOpen ? 0 : 1, FOLD_SPRING);
-    setIsOpen(!isOpen);
-  };
+  return (
+    <Animated.View
+      accessibilityElementsHidden={!isOpen}
+      importantForAccessibility={isOpen ? 'auto' : 'no-hide-descendants'}
+      style={[styles.transcriptFold, style]}
+    >
+      <View
+        onLayout={({ nativeEvent }) => {
+          height.value = nativeEvent.layout.height;
+        }}
+        style={styles.transcriptPanel}
+      >
+        <Text style={styles.transcriptText}>{text}</Text>
+      </View>
+    </Animated.View>
+  );
+};
+
+/** What the router heard in a voice memo, folded away until asked for. */
+const Transcript = ({ text }: { text: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasOpened, setHasOpened] = useState(false);
   return (
     <View style={styles.transcript}>
       <Pressable
         accessibilityRole='button'
         accessibilityState={{ expanded: isOpen }}
         hitSlop={8}
-        onPress={toggle}
+        onPress={() => {
+          setHasOpened(true);
+          setIsOpen(!isOpen);
+        }}
         testID='voice-memo-transcript-toggle'
       >
         <Text style={styles.transcriptToggle}>
           {isOpen ? 'Hide transcript' : 'Show transcript'}
         </Text>
       </Pressable>
-      <Animated.View
-        accessibilityElementsHidden={!isOpen}
-        importantForAccessibility={isOpen ? 'auto' : 'no-hide-descendants'}
-        style={[styles.transcriptFold, foldStyle]}
-      >
-        <View
-          onLayout={({ nativeEvent }) => {
-            height.value = nativeEvent.layout.height;
-          }}
-          style={styles.transcriptPanel}
-        >
-          <Text style={styles.transcriptText}>{text}</Text>
-        </View>
-      </Animated.View>
+      {hasOpened ? <TranscriptFold isOpen={isOpen} text={text} /> : null}
     </View>
   );
 };
@@ -300,12 +359,12 @@ const Transcript = ({ text }: { text: string }) => {
  * the words the router heard in it only when asked for.
  */
 const UserMessage = ({ attachments, message, onEdit, text }: AIConversationUserMessageProps) => {
-  const { chat } = useAppContext();
-  const stored = useStoredMessage(chat, message?.id);
-  if (stored.message && stored.notes.length > 0) {
+  const stored = useChatMessage(message?.id);
+  const notes = useMemo(() => voiceNotesOf(stored), [stored]);
+  if (stored && notes.length > 0) {
     return (
       <View>
-        <VoiceNotes message={stored.message} notes={stored.notes} />
+        <VoiceNotes message={stored} notes={notes} />
         {text ? <Transcript text={text} /> : null}
         {attachments.length > 0 ? <AIUserMessage attachments={attachments} text='' /> : null}
       </View>
@@ -327,7 +386,16 @@ const AssistantMessage = ({
   reasoningText,
   text,
 }: AIConversationAssistantMessageProps) => {
-  const { chat } = useAppContext();
+  const [watched, setWatched] = useState<string>();
+  if (isGenerating && watched !== message.id) setWatched(message.id);
+  const [writing, setWriting] = useState<string>();
+  const onWriting = useCallback(
+    (isWriting: boolean) => {
+      setWriting(isWriting ? message.id : undefined);
+      onWritingChange?.(isWriting);
+    },
+    [message.id, onWritingChange],
+  );
   return (
     <View>
       <AIAssistantMessage
@@ -335,12 +403,14 @@ const AssistantMessage = ({
         attachments={attachments}
         id={message.id}
         isGenerating={isGenerating}
-        onWritingChange={onWritingChange}
+        onWritingChange={onWriting}
         parts={parts}
         reasoningText={reasoningText}
         text={text}
       />
-      {chat && !isGenerating ? <ReplySources chat={chat} messageId={message.id} /> : null}
+      {isGenerating || writing === message.id ? null : (
+        <ReplySources messageId={message.id} opens={watched === message.id} />
+      )}
     </View>
   );
 };
@@ -415,14 +485,16 @@ const Conversation = ({
 
   return (
     <AudioPlayerProvider value={AUDIO_PLAYER}>
-      <AIConversation
-        AssistantMessage={AssistantMessage}
-        conversation={conversation}
-        emptyContent={<EmptyContent chat={chat} conversation={conversation} />}
-        footer={footer}
-        ui={ui}
-        UserMessage={UserMessage}
-      />
+      <ConversationChatContext.Provider value={chat}>
+        <AIConversation
+          AssistantMessage={AssistantMessage}
+          conversation={conversation}
+          emptyContent={<EmptyContent chat={chat} conversation={conversation} />}
+          footer={footer}
+          ui={ui}
+          UserMessage={UserMessage}
+        />
+      </ConversationChatContext.Provider>
     </AudioPlayerProvider>
   );
 };
@@ -500,6 +572,8 @@ const styles = StyleSheet.create({
     width: 20,
   },
   sourceTitle: { color: '#0B1220', fontSize: 14, fontWeight: '600' },
+  opening: { overflow: 'hidden' },
+  openingContent: { left: 0, position: 'absolute', right: 0, top: 0 },
   sources: {
     backgroundColor: '#F7F8FA',
     borderRadius: 12,
