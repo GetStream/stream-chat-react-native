@@ -50,6 +50,19 @@ export const waitToAppearAndClick = async (selector: Selector, options?: WaitOpt
   return target;
 };
 
+/**
+ * Taps an element of something that animates in: a menu, a bottom sheet, a swipe action. iOS runs
+ * without Detox's idle sync, so a tap that lands during the animation is reported done but never
+ * fires. On iOS this lets the animation settle first; Android's Espresso sync already waits.
+ */
+export const waitToSettleAndClick = async (selector: Selector, options?: WaitOptions) => {
+  if (device.getPlatform() === 'ios') {
+    await waitToAppear(selector, options);
+    await sleep(1000);
+  }
+  return waitToAppearAndClick(selector, options);
+};
+
 export const waitToAppearAndLongPress = async (selector: Selector, options?: WaitOptions) => {
   const target = await waitToAppear(selector, options);
   await retryWhileNotHittable(() => target.longPress(), options?.timeout);
@@ -102,6 +115,17 @@ export const isDisplayed = async (selector: Selector, index?: number) => {
     return false;
   }
 };
+
+/**
+ * Whether any element matching `selector` is on screen. Unlike `isDisplayed` without an index, it
+ * copes with several matches: Detox iOS also reports the list's off-screen cells (a message text and
+ * the same text inside a quote further down), where `isDisplayed` throws "multiple elements" and so
+ * answers `false` even with the text in view.
+ */
+export const isAnyDisplayed = async (selector: Selector) =>
+  device.getPlatform() === 'ios'
+    ? (await allAttributes(selector)).some((attributes) => attributes.visible)
+    : isDisplayed(selector);
 
 /** Polls until `predicate` holds, then returns `true`; returns `false` once `timeout` elapses. */
 export const waitUntil = async (

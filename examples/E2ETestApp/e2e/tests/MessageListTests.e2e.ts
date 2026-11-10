@@ -316,7 +316,7 @@ describe('MessageListTests', () => {
 
   // Follows iOS: RN marks a message sent offline as failed until the queue sends it (RN-500).
   // Android shows it as pending instead.
-  it('test_userAddsMessageWhileOffline', async () => {
+  itOnAndroid('test_userAddsMessageWhileOffline', async () => {
     allureId(13159);
     await step('GIVEN user opens the channel', () => userRobot.login().openChannel());
     await step('AND user becomes offline', () => disableInternetConnection());

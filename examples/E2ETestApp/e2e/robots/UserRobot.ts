@@ -11,17 +11,71 @@ import {
   allAttributes,
   frameOf,
   indexFromBottom,
+  isAnyDisplayed,
   isDisplayed,
   sleep,
+  waitForExistence,
   waitToAppear,
   waitToAppearAndClick,
   waitToAppearAndLongPress,
   waitToDisappear,
+  waitToSettleAndClick,
   waitUntil,
 } from '../support/Element';
 
 const { ChannelList } = ChannelListPage;
 const { Alert, Composer, ContextMenu, Header, MessageList } = MessageListPage;
+
+/**
+ * One step of a scroll that looks for a message. iOS runs without Detox's idle sync, so the list
+ * still coasts when the next check runs and can fling past the message (to the oldest page): it
+ * takes shorter swipes there and lets the list come to rest before the check.
+ */
+const stepScroll = async (direction: 'up' | 'down') => {
+  const ios = device.getPlatform() === 'ios';
+  await (
+    await waitToAppear(MessageList.scrollTarget, { index: 0 })
+  ).swipe(direction, 'slow', ios ? 0.3 : 0.5);
+  await sleep(ios ? 1000 : 300);
+};
+
+/**
+ * Taps an item of the message menu (an action, a reaction). iOS runs without Detox's idle sync, so
+ * a tap can land while the menu is still animating in: Detox reports it done, but nothing fires.
+ * Lets the animation settle first. Menu items match twice (the overlay portal), hence index 0.
+ */
+const tapInContextMenu = async (selector: Detox.NativeMatcher) => {
+  await waitToSettleAndClick(selector, { index: 0 });
+  if (device.getPlatform() === 'ios') {
+    // The menu animates out after an action, and its closing layer swallows the next tap (a back
+    // button, a reaction): wait until it is gone. Resolves anyway when an action keeps it open.
+    // An existence check: the backdrop is transparent, so it never counts as visible.
+    await waitForExistence(ContextMenu.backdrop, { shouldExist: false, timeout: 5000 });
+    await sleep(500);
+  }
+};
+
+/**
+ * Long-presses a message until its menu opens. iOS runs without Detox's idle sync, so a long press
+ * that lands while the list is still settling after a scroll is cancelled by the movement, and the
+ * menu never opens. `target` is re-resolved on each attempt, since the frames may have moved.
+ */
+const longPressUntilMenuOpens = async (
+  target: () => Promise<{ index: number; selector: Detox.NativeMatcher }>,
+  attempts = 3,
+) => {
+  for (let attempt = 1; ; attempt++) {
+    const { index, selector } = await target();
+    await waitToAppearAndLongPress(selector, { index });
+    if (
+      device.getPlatform() !== 'ios' ||
+      attempt >= attempts ||
+      (await waitForExistence(ContextMenu.backdrop, { timeout: 3000 }))
+    ) {
+      return;
+    }
+  }
+};
 
 const extendedPickerEmoji: Record<ReactionType, string> = {
   [ReactionType.LIKE]: '👍',
@@ -60,8 +114,10 @@ export class UserRobot extends Robot {
   /** Long-presses the `messageCellIndex`-th message counted from the newest (0). */
   openContextMenu(messageCellIndex = 0): this {
     return this.perform(async () => {
-      const index = await indexFromBottom(MessageList.messageContents, messageCellIndex);
-      await waitToAppearAndLongPress(MessageList.messageContents, { index });
+      await longPressUntilMenuOpens(async () => ({
+        index: await indexFromBottom(MessageList.messageContents, messageCellIndex),
+        selector: MessageList.messageContents,
+      }));
     });
   }
 
@@ -82,17 +138,19 @@ export class UserRobot extends Robot {
             frame.y >= box.y &&
             frame.y + frame.height <= box.y + box.height + 1,
         );
-      await waitToAppear(selector, { index: 0 });
-      const candidates = (await allAttributes(selector))
-        .map((attributes, index) => ({ frame: attributes.frame, index }))
-        .filter(({ frame }) => !inQuote(frame))
-        .sort((a, b) => (b.frame?.y ?? 0) - (a.frame?.y ?? 0));
-      await waitToAppearAndLongPress(selector, { index: candidates[0]?.index ?? 0 });
+      await longPressUntilMenuOpens(async () => {
+        await waitToAppear(selector, { index: 0 });
+        const candidates = (await allAttributes(selector))
+          .map((attributes, index) => ({ frame: attributes.frame, index }))
+          .filter(({ frame }) => !inQuote(frame))
+          .sort((a, b) => (b.frame?.y ?? 0) - (a.frame?.y ?? 0));
+        return { index: candidates[0]?.index ?? 0, selector };
+      });
     });
   }
 
   tapOnContextMenuAction(actionType: string): this {
-    return this.perform(() => waitToAppearAndClick(ContextMenu.action(actionType), { index: 0 }));
+    return this.perform(() => tapInContextMenu(ContextMenu.action(actionType)));
   }
 
   closeContextMenu(): this {
@@ -233,12 +291,14 @@ export class UserRobot extends Robot {
         // on the composer while it is up lands on it (and opens Quick Share).
         await sleep(6000);
       }
-      const inputField = await waitToAppearAndClick(Composer.inputField);
+      await waitToAppearAndClick(Composer.inputField);
       if (device.getPlatform() === 'android') {
         adb('shell', 'input', 'keyevent', 'KEYCODE_PASTE');
       } else {
-        await inputField.longPress();
-        await waitToAppearAndClick(by.label('Paste'), { index: 0 });
+        // The composer moves up with the keyboard: long-press it once it has settled.
+        await sleep(1000);
+        await waitToAppearAndLongPress(Composer.inputField);
+        await waitToSettleAndClick(by.label('Paste'), { index: 0 });
       }
     });
   }
@@ -256,35 +316,40 @@ export class UserRobot extends Robot {
     return this.openAttachmentsMenu().perform(async () => {
       // A picked image is relabelled "Deselect image", so the next one is always the first match.
       for (let i = 0; i < count; i++) {
-        await waitToAppearAndClick(MessageListPage.AttachmentPicker.images, { index: 0 });
+        // The picker slides up first.
+        await waitToSettleAndClick(MessageListPage.AttachmentPicker.images, { index: 0 });
       }
     });
   }
 
   createPoll(question: string, options: string[], { multipleVotes = false } = {}): this {
     const { CreatePoll } = MessageListPage;
-    return this.openAttachmentsMenu()
-      .perform(() => waitToAppearAndClick(by.id('create-poll-touchable')))
-      .perform(async () => {
-        await (await waitToAppearAndClick(CreatePoll.fields, { index: 0 })).replaceText(question);
-        for (const [index, option] of options.entries()) {
-          await (
-            await waitToAppearAndClick(CreatePoll.fields, { index: index + 1 })
-          ).replaceText(option);
-        }
-        if (multipleVotes) {
-          // The keyboard covers the switches below the options.
-          if (device.getPlatform() === 'android') {
-            // A tap outside the fields hides the keyboard (the sheet's ScrollView doesn't persist
-            // taps). Back would close the sheet when a CI emulator has shown no keyboard.
-            await element(CreatePoll.questionLabel).tap();
-          } else {
-            await element(CreatePoll.fields).atIndex(0).tapReturnKey();
+    return (
+      this.openAttachmentsMenu()
+        // The attachment picker slides up.
+        .perform(() => waitToSettleAndClick(by.id('create-poll-touchable')))
+        .perform(async () => {
+          await (await waitToAppearAndClick(CreatePoll.fields, { index: 0 })).replaceText(question);
+          for (const [index, option] of options.entries()) {
+            await (
+              await waitToAppearAndClick(CreatePoll.fields, { index: index + 1 })
+            ).replaceText(option);
           }
-          await waitToAppearAndClick(CreatePoll.multipleVotesSwitch, { index: 0 });
-        }
-        await waitToAppearAndClick(CreatePoll.createButton);
-      });
+          if (multipleVotes) {
+            // The keyboard covers the switches below the options.
+            if (device.getPlatform() === 'android') {
+              // A tap outside the fields hides the keyboard (the sheet's ScrollView doesn't persist
+              // taps). Back would close the sheet when a CI emulator has shown no keyboard.
+              await element(CreatePoll.questionLabel).tap();
+            } else {
+              await element(CreatePoll.fields).atIndex(0).tapReturnKey();
+            }
+            await waitToAppearAndClick(CreatePoll.multipleVotesSwitch, { index: 0 });
+          }
+          // iOS reports the label on both the gesture-handler view and its inner button.
+          await waitToAppearAndClick(CreatePoll.createButton, { index: 0 });
+        })
+    );
   }
 
   castPollVote(option: string): this {
@@ -357,13 +422,13 @@ export class UserRobot extends Robot {
 
   tapOnMoreSwipeAction(): this {
     return this.perform(() =>
-      waitToAppearAndClick(ChannelList.Channel.swipeAction('openSheet'), { index: 0 }),
+      waitToSettleAndClick(ChannelList.Channel.swipeAction('openSheet'), { index: 0 }),
     );
   }
 
   tapOnMuteSwipeAction(): this {
     return this.perform(() =>
-      waitToAppearAndClick(ChannelList.Channel.swipeAction('mute'), { index: 0 }),
+      waitToSettleAndClick(ChannelList.Channel.swipeAction('mute'), { index: 0 }),
     );
   }
 
@@ -393,7 +458,7 @@ export class UserRobot extends Robot {
    */
   tapOnChannelAction(label: string): this {
     return this.perform(() =>
-      waitToAppearAndClick(ChannelListPage.ChannelActions.item(label), {
+      waitToSettleAndClick(ChannelListPage.ChannelActions.item(label), {
         index: 0,
         timeout: 30000,
       }),
@@ -424,7 +489,7 @@ export class UserRobot extends Robot {
 
   addReaction(type: string, messageCellIndex = 0): this {
     return this.openContextMenu(messageCellIndex).perform(() =>
-      waitToAppearAndClick(ContextMenu.reaction(type), { index: 0 }),
+      tapInContextMenu(ContextMenu.reaction(type)),
     );
   }
 
@@ -441,7 +506,7 @@ export class UserRobot extends Robot {
     const emoji = extendedPickerEmoji[type];
     return (
       this.openContextMenu(messageCellIndex)
-        .perform(() => waitToAppearAndClick(ContextMenu.showMoreReactions, { index: 0 }))
+        .perform(() => tapInContextMenu(ContextMenu.showMoreReactions))
         // The sheet renders every emoji up front, which takes a few seconds on an emulator.
         .perform(() => waitToAppearAndClick(ContextMenu.emoji(emoji), { index: 0, timeout: 30000 }))
     );
@@ -449,7 +514,8 @@ export class UserRobot extends Robot {
 
   tapOnMessageReaction(type: string): this {
     return this.perform(() =>
-      waitToAppearAndClick(MessageList.Message.Reactions.reaction(type), { index: 0 }),
+      // The reaction pill animates in when the reaction lands.
+      waitToSettleAndClick(MessageList.Message.Reactions.reaction(type), { index: 0 }),
     );
   }
 
@@ -530,7 +596,7 @@ export class UserRobot extends Robot {
     return this.perform(async () => {
       // The thread stacks over the channel, each with its own header: the top one is the last.
       const backButtons = await indexFromBottom(Header.backButton, 0).catch(() => 0);
-      await waitToAppearAndClick(Header.backButton, { index: backButtons });
+      await waitToSettleAndClick(Header.backButton, { index: backButtons });
     });
   }
 
@@ -611,20 +677,24 @@ export class UserRobot extends Robot {
 
   scrollMessageListDownToMessage(text: string, maxScrolls = 10): this {
     return this.perform(async () => {
-      for (let i = 0; i < maxScrolls && !(await isDisplayed(MessageList.Message.text(text))); i++) {
-        await (await waitToAppear(MessageList.scrollTarget, { index: 0 })).swipe('up', 'slow', 0.5);
-        await sleep(300);
+      for (
+        let i = 0;
+        i < maxScrolls && !(await isAnyDisplayed(MessageList.Message.text(text)));
+        i++
+      ) {
+        await stepScroll('up');
       }
     });
   }
 
   scrollMessageListUpToMessage(text: string, maxScrolls = 10): this {
     return this.perform(async () => {
-      for (let i = 0; i < maxScrolls && !(await isDisplayed(MessageList.Message.text(text))); i++) {
-        await (
-          await waitToAppear(MessageList.scrollTarget, { index: 0 })
-        ).swipe('down', 'slow', 0.5);
-        await sleep(300);
+      for (
+        let i = 0;
+        i < maxScrolls && !(await isAnyDisplayed(MessageList.Message.text(text)));
+        i++
+      ) {
+        await stepScroll('down');
       }
     });
   }
@@ -672,9 +742,11 @@ export const typeIntoComposer = async (text: string, replace = false) => {
 
 /** Edits the `messageCellIndex`-th message from the newest, outside a robot chain. */
 export const editMessageNow = async (newText: string, messageCellIndex = 0) => {
-  const index = await indexFromBottom(MessageList.messageContents, messageCellIndex);
-  await waitToAppearAndLongPress(MessageList.messageContents, { index });
-  await waitToAppearAndClick(ContextMenu.action('editMessage'), { index: 0 });
+  await longPressUntilMenuOpens(async () => ({
+    index: await indexFromBottom(MessageList.messageContents, messageCellIndex),
+    selector: MessageList.messageContents,
+  }));
+  await tapInContextMenu(ContextMenu.action('editMessage'));
   // Typing before the composer enters edit mode sends the text as a new message.
   await waitToAppear(Composer.editPreview);
   await typeIntoComposer(newText, true);

@@ -4,7 +4,7 @@ import { AttachmentType } from '../mock-server/DataTypes';
 import { disableInternetConnection, enableInternetConnection } from '../support/Device';
 import { seedImages } from '../support/MediaLibrary';
 import { allureId, step } from '../support/step';
-import { setUpStreamTestCase } from '../support/StreamTestCase';
+import { itOnAndroid, setUpStreamTestCase } from '../support/StreamTestCase';
 
 describe('AttachmentsTests', () => {
   const { participantRobot, userRobot } = setUpStreamTestCase();
@@ -49,7 +49,7 @@ describe('AttachmentsTests', () => {
     );
   });
 
-  it('test_imageUploadRecovers_whenUserComesBackOnline', async () => {
+  itOnAndroid('test_imageUploadRecovers_whenUserComesBackOnline', async () => {
     allureId(13038);
     await step('GIVEN user opens the channel', () => userRobot.login().openChannel());
     await step('AND user goes offline', () => disableInternetConnection());

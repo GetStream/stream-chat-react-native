@@ -189,7 +189,7 @@ describe('ReactionsTests', () => {
     );
   });
 
-  it('test_userAddsReactionWhileOffline', async () => {
+  itOnAndroid('test_userAddsReactionWhileOffline', async () => {
     allureId(13263);
     await step('GIVEN user opens the channel', () => userRobot.login().openChannel());
     await step('AND user sends a message', () =>

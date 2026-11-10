@@ -10,6 +10,7 @@ import {
   defaultTimeout,
   frameOf,
   indexFromBottom,
+  isAnyDisplayed,
   isDisplayed,
   sleep,
   textOf,
@@ -109,7 +110,17 @@ export const assertVisibility = async (
   timeout = defaultTimeout,
 ) => {
   if (shouldBeDisplayed) {
-    await waitToAppear(selector, { index: 0, timeout });
+    // iOS: any match on screen, not just the first, which can be an off-screen list cell there.
+    if (
+      device.getPlatform() !== 'ios' ||
+      !(await waitUntil(() => isAnyDisplayed(selector), timeout))
+    ) {
+      // Android, or the iOS wait failed: fails with Detox's own description of the selector.
+      await waitToAppear(selector, {
+        index: 0,
+        timeout: device.getPlatform() === 'ios' ? 1000 : timeout,
+      });
+    }
   } else {
     await waitToDisappear(selector, { index: 0, timeout });
     jestExpect(await isDisplayed(selector, 0)).toBe(false);
@@ -127,9 +138,12 @@ UserRobot.prototype.assertMessage = function (text, shouldBeDisplayed = true) {
   return this.perform(async () => {
     await assertVisibility(Message.text(text), shouldBeDisplayed);
     if (shouldBeDisplayed) {
-      // Any timestamp on screen: the first match can be one scrolled out of view.
-      const timestamps = await allAttributes(Message.timestamp);
-      jestExpect(timestamps.some((timestamp) => timestamp.visible)).toBe(true);
+      // Any timestamp on screen: the first match can be one scrolled out of view. Waited for: when
+      // messages arrive back to back, the group's footer moves to the newest one after its text.
+      const shown = await waitUntil(async () =>
+        (await allAttributes(Message.timestamp)).some((timestamp) => timestamp.visible),
+      );
+      jestExpect(shown).toBe(true);
     }
   });
 };
@@ -207,7 +221,9 @@ UserRobot.prototype.assertDeletedMessage = function (text, hard = false) {
     if (hard) {
       await assertVisibility(Message.deletedMessage, false);
     } else {
-      await waitToAppear(Message.deletedMessage, { index: 0 });
+      // An existence check: Fabric mounts the testID'd container without its content on iOS, so
+      // Detox iOS (pixel-based visibility) never reports it visible.
+      jestExpect(await waitForExistence(Message.deletedMessage, { index: 0 })).toBe(true);
       jestExpect(await isDisplayed(Message.timestamp, 0)).toBe(true);
     }
   });
@@ -236,8 +252,14 @@ UserRobot.prototype.assertMessageSizeChangesAfterEditing = function (increased) 
   let newText = '';
   return this.perform(async () => {
     initialHeight = await newestMessageHeight();
-    const index = await indexFromBottom(MessageList.messageContents, 0);
-    const messageText = await textOf(MessageList.messageContents, index);
+    // Android rolls the bubble's text up into the container; iOS gives the container no label, so
+    // the text comes from the newest bubble's paragraph there.
+    const source =
+      device.getPlatform() === 'ios'
+        ? by.type('RCTParagraphComponentView').withAncestor(by.id('message-content-wrapper'))
+        : MessageList.messageContents;
+    const index = await indexFromBottom(source, 0);
+    const messageText = await textOf(source, index);
     newText = increased ? `ok\n${messageText}\nnew line` : 'new line';
   })
     .perform(async () => {
@@ -325,8 +347,9 @@ UserRobot.prototype.assertAlsoInTheChannelLabelInThread = function () {
 UserRobot.prototype.assertMessageListPagination = function (messagesCount) {
   const oldest = Message.text('1');
   return this.perform(async () => {
-    jestExpect(await isDisplayed(Message.text(`${messagesCount}`))).toBe(true);
-    for (let i = 0; i < 30 && !(await isDisplayed(oldest)); i++) {
+    // Waited for: right after a thread opens its replies are still loading.
+    await waitToAppear(Message.text(`${messagesCount}`), { index: 0 });
+    for (let i = 0; i < 30 && !(await isAnyDisplayed(oldest)); i++) {
       await (await waitToAppear(MessageList.scrollTarget, { index: 0 })).swipe('down', 'fast', 0.8);
     }
     await waitToAppear(oldest, { index: 0 });
@@ -357,7 +380,11 @@ UserRobot.prototype.assertContextMenuActionNotAvailable = function (
  * label), so Detox doesn't match its texts as descendants: a text inside its frame counts instead.
  */
 export const isQuoteDisplayed = async (quote?: string) => {
-  const quotes = (await allAttributes(Message.quotedMessage)).map((attributes) => attributes.frame);
+  // Detox iOS also reports the list's off-screen cells (Android's UiAutomator doesn't), so only the
+  // quotes on screen count.
+  const quotes = (await allAttributes(Message.quotedMessage))
+    .filter((attributes) => attributes.visible !== false)
+    .map((attributes) => attributes.frame);
   if (quote === undefined) {
     return quotes.length > 0;
   }
@@ -421,8 +448,10 @@ UserRobot.prototype.assertThreadReplyLabel = function (replies, inThread = false
   const expected = replies === 1 ? '1 Reply' : `${replies} Replies`;
   return this.perform(async () => {
     if (inThread) {
-      // The label sits in a labelled container, which hides it from descendant matching.
-      await waitToAppear(MessageListPage.ThreadPage.repliesCountLabel);
+      // The label sits in a labelled container, which hides it from descendant matching. The
+      // container itself is checked for existence: Fabric mounts it without its content on iOS, so
+      // Detox iOS never reports it visible. The label's own visibility is asserted below.
+      jestExpect(await waitForExistence(MessageListPage.ThreadPage.repliesCountLabel)).toBe(true);
       await waitToAppear(inList(by.text(expected)), { index: 0 });
       return;
     }
@@ -575,10 +604,15 @@ UserRobot.prototype.assertLinkPreviewInMessageList = function (shown) {
 UserRobot.prototype.assertMessageContaining = function (text) {
   return this.perform(async () => {
     const contents = MessageList.messageContents;
+    // Android rolls the bubble's texts up into the container's description; iOS gives the
+    // container no label, but Fabric flattens the text and its link spans into one paragraph.
+    const paragraphs = Message.text(text);
     const found = await waitUntil(async () =>
-      (await allAttributes(contents)).some((content) =>
-        (content.label ?? content.text ?? '').includes(text),
-      ),
+      device.getPlatform() === 'ios'
+        ? (await allAttributes(paragraphs)).length > 0
+        : (await allAttributes(contents)).some((content) =>
+            (content.label ?? content.text ?? '').includes(text),
+          ),
     );
     jestExpect(found).toBe(true);
   });
@@ -586,10 +620,13 @@ UserRobot.prototype.assertMessageContaining = function (text) {
 
 UserRobot.prototype.assertMediaAttachmentInPreview = function (shown, expected = 1) {
   return this.perform(async () => {
-    await assertVisibility(Composer.mediaAttachmentPreview, shown);
-    if (shown) {
-      jestExpect(await waitForCount(Composer.mediaAttachmentPreview, expected)).toBe(expected);
+    if (!shown) {
+      return assertVisibility(Composer.mediaAttachmentPreview, false);
     }
+    // Fabric mounts the preview container without its content on iOS, so Detox iOS never reports
+    // it visible.
+    jestExpect(await waitForExistence(Composer.mediaAttachmentPreview, { index: 0 })).toBe(true);
+    jestExpect(await waitForCount(Composer.mediaAttachmentPreview, expected)).toBe(expected);
   });
 };
 
@@ -604,7 +641,14 @@ UserRobot.prototype.assertImage = function (shown, expected = 1) {
 };
 
 UserRobot.prototype.assertVideo = function (shown) {
-  return this.perform(() => assertVisibility(Message.gallery, shown, 30000));
+  return this.perform(async () => {
+    if (!shown) {
+      return assertVisibility(Message.gallery, false);
+    }
+    // Like `assertImage`: Fabric mounts the gallery container without its content on iOS, so
+    // Detox iOS never reports it visible.
+    jestExpect(await waitForExistence(Message.gallery, { index: 0, timeout: 30000 })).toBe(true);
+  });
 };
 
 UserRobot.prototype.assertPollMessage = function (question, multipleVotes = false) {
