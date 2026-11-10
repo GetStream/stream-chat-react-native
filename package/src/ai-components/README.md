@@ -36,6 +36,14 @@ yarn add victory-native @shopify/react-native-skia
 
 `react-native-reanimated`, `react-native-gesture-handler` and `react-native-svg` are already required by the chat SDK.
 
+`AIConversation` comes from its own entry point, `stream-chat-react-native/ai-components/conversation` (or `stream-chat-expo/ai-components/conversation`), and needs [`react-native-keyboard-controller`](https://kirillzyusko.github.io/react-native-keyboard-controller/) with its `KeyboardProvider` above it:
+
+```bash
+yarn add react-native-keyboard-controller
+```
+
+The rest of the AI components work without it. With it installed and a `KeyboardProvider` above them, `ComposerView` rides the keyboard up; without it, the composer doesn't move with the keyboard.
+
 The `zod` dependency ships `export * as` syntax, which the React Native Babel preset does not transform, so add the `export-namespace-from` plugin to your `babel.config.js`:
 
 ```bash
@@ -299,7 +307,8 @@ An agent can answer with UI instead of text: a form, a list of options, a card w
 
 ```tsx
 import { createA2UIRenderer } from 'stream-chat-react-native/a2ui'; // or 'stream-chat-expo/a2ui'
-import { AIConversation, AIUIHost, aiUIActionJSON } from 'stream-chat-react-native/ai-components';
+import { AIUIHost, aiUIActionJSON } from 'stream-chat-react-native/ai-components';
+import { AIConversation } from 'stream-chat-react-native/ai-components/conversation';
 
 const Conversation = ({ messages, session }) => {
   // One host per conversation, kept for as long as it shows, so what a reply's UI holds (a

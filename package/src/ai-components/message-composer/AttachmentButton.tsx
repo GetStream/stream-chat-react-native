@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { KeyboardController } from 'react-native-keyboard-controller';
 
 import { useTheme } from '../contexts';
+import { dismissKeyboard } from '../internal/keyboard';
 import { sheetStoreApi } from '../store';
 
 // The sheet opens once the keyboard has closed. A sheet opening over the keyboard takes the focus
 // from the composer: on Android the keyboard then closes with stray events, which move the
 // conversation following it too far, and again as the sheet closes.
 const openSheet = () => {
-  void KeyboardController.dismiss().then(sheetStoreApi.openSheet);
+  void dismissKeyboard().then(sheetStoreApi.openSheet);
 };
 
 export const AttachmentButton = () => {

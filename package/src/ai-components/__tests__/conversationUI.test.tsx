@@ -3,8 +3,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
+import { AIConversation } from '../conversation';
 import {
-  AIConversation,
   AIConversationController,
   type AIMessage,
   AIUIComponentView,
