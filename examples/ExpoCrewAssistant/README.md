@@ -42,18 +42,20 @@ Known assets and codes: `FRY-02` (`E-41`, `E-07`), `POS-1` (`E-NET`), `ICE-1` (`
 
 ## Run it
 
-1. Run the router as in Vision-Agents' `swift_demo` README, then store the agent and start its
-   backend:
+The agent runs on Stream's hosted Agents.
+
+1. Sync the agent and start its backend, as Vision-Agents' `crew_assistant` README says: with the
+   beta Stream CLI (`curl -fsSL https://getstream.io/cli/beta/install.sh | bash`) and your Stream
+   app's key and secret, from the Vision-Agents root:
 
    ```bash
-   cd examples/voice_agents/crew_assistant/configure
-   STREAM_ACCELERATION_URL=http://localhost:8080 STREAM_ACCELERATION_CUSTOMER_ID=examples GOWORK=off go run . -dir ..
-   cd ../backend
-   STREAM_API_KEY=<the router's> STREAM_API_SECRET=<the router's> STREAM_ACCELERATION_URL=http://localhost:8080 STREAM_ACCELERATION_CUSTOMER_ID=examples GOWORK=off go run .
+   export STREAM_API_KEY=<your Stream app's key> STREAM_API_SECRET=<its secret>
+   getstream agents sync ./examples/voice_agents/crew_assistant
+   (cd examples/voice_agents/crew_assistant/configure && GOWORK=off go run . -dir ..)
+   (cd examples/voice_agents/crew_assistant/backend && GOWORK=off go run .)
    ```
 
-2. Copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_STREAM_API_KEY` to the router's
-   Stream app.
+2. Copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_STREAM_API_KEY` to the same Stream app.
 
 3. Build and run the app:
 
@@ -64,8 +66,9 @@ Known assets and codes: `FRY-02` (`E-41`, `E-07`), `POS-1` (`E-NET`), `ICE-1` (`
    yarn android   # or yarn ios
    ```
 
-   On an Android emulator, `adb reverse tcp:8080 tcp:8080 && adb reverse tcp:8097 tcp:8097` lets
-   the app reach the router and the backend on `localhost`.
+   On an Android emulator, `adb reverse tcp:8097 tcp:8097` lets the app reach the backend on
+   `localhost`. To use a router of your own instead of the hosted one, set
+   `EXPO_PUBLIC_AGENT_ROUTER_URL`, as `.env.example` shows.
 
 ## How it's built
 

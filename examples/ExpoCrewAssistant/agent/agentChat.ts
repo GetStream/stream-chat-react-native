@@ -1,3 +1,5 @@
+import { AppState } from 'react-native';
+
 import { LiveReasoning, type Session } from '@stream-io/calypso';
 import { type Channel, type Event, type LocalMessage, StateStore } from 'stream-chat';
 
@@ -117,6 +119,11 @@ export class AgentChat {
     });
     this.stops.push(() => reconnected.unsubscribe());
 
+    const foregrounded = AppState.addEventListener('change', (state) => {
+      if (state === 'active' && this.dropped()) void this.session().catch(() => {});
+    });
+    this.stops.push(() => foregrounded.remove());
+
     // A channel this client read before shows what it had at once, while the latest page loads.
     if (channel.state.messages.length > 0) {
       this.state.partialNext({ isLoaded: true, messages: [...channel.state.messages] });
@@ -126,9 +133,11 @@ export class AgentChat {
 
   /**
    * The conversation's session, opened the first time it is needed. A new conversation is created
-   * then, and its channel followed. Rejects when it can't open, to be asked again.
+   * then, and its channel followed. A session whose socket dropped, as it does once the app has been
+   * in the background, is carried on in a new one. Rejects when it can't open, to be asked again.
    */
   session(): Promise<Session> {
+    if (this.dropped()) this.opening = undefined;
     this.opening ??= this.open().catch((error: unknown) => {
       this.opening = undefined;
       throw error;
@@ -168,11 +177,18 @@ export class AgentChat {
     await opened?.close();
   }
 
+  /** Whether the open session's socket has stopped carrying the conversation. */
+  private dropped() {
+    const { session } = this.state.getLatestValue();
+    return !this.closed && session !== undefined && !session.live;
+  }
+
   private async open() {
-    const session = await this.openSession(this.sessionId);
+    const opened = this.id;
+    const session = await this.openSession(opened);
     if (this.closed) {
       // The person moved on while it opened. A conversation created for them was never used.
-      await (this.sessionId === undefined ? session.delete() : session.close()).catch(() => {});
+      await (opened === undefined ? session.delete() : session.close()).catch(() => {});
       throw new Error('The conversation was closed');
     }
     if (!this.channel) {

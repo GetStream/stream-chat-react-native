@@ -15,15 +15,15 @@ if (!streamApiKey) {
 export const AgentConfig = {
   /** The Stream app the router runs in. Its channels hold the conversations. */
   streamApiKey,
-  /** The router. On an Android emulator, `adb reverse tcp:8080 tcp:8080` makes localhost reach it. */
-  routerUrl: process.env.EXPO_PUBLIC_AGENT_ROUTER_URL || 'http://localhost:8080',
+  /** A router of your own. Unset, the app talks to Stream's hosted router. */
+  routerUrl: process.env.EXPO_PUBLIC_AGENT_ROUTER_URL || undefined,
   /**
    * The crew backend (`crew_assistant/backend`): it mints this user's Stream token, holds the
    * restaurant's schedule, handbook, equipment and leaders' inbox, and makes the agent speak first.
    */
   backendUrl: process.env.EXPO_PUBLIC_CREW_BACKEND_URL || 'http://localhost:8097',
-  /** The customer `go run ./configure` stored the agent under. */
-  customerId: process.env.EXPO_PUBLIC_AGENT_CUSTOMER_ID || 'examples',
+  /** The customer a local router without keys stores the agent under. Unset on the hosted router. */
+  customerId: process.env.EXPO_PUBLIC_AGENT_CUSTOMER_ID || undefined,
   /** The agent, by the name in its `agent.yaml`. */
   agentName: process.env.EXPO_PUBLIC_AGENT_NAME || 'crew_assistant',
   user: {
