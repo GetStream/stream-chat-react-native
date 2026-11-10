@@ -3,10 +3,14 @@ import {
   type AIAgentActivity,
   AIAgentActivityStates,
   type AIConversationTransport,
+  type AIMessage,
+  type AIMessagePartData,
+  type AIStreamMessage,
   createFromStreamMessage,
 } from 'stream-chat-expo/ai-components';
 
 import type { AgentChat, AgentChatState } from './agentChat';
+import { DISPLAY_TITLES } from './crewTools';
 import { toDataUri } from './photos';
 
 /** What the person did in a reply's UI, which a request carries in its `custom` data. */
@@ -37,6 +41,40 @@ const activityOf = (snapshot: ConversationSnapshot): AIAgentActivity | undefined
 };
 
 /**
+ * Titles the steps of the backend's tools, which the router shows without one, from
+ * `DISPLAY_TITLES`. The same message gives back the same object, as `adapt` does.
+ */
+const withTitles = (adapt: (message: AIStreamMessage) => AIMessage) => {
+  const titled = new WeakMap<AIMessage, AIMessage>();
+  return (message: AIStreamMessage) => {
+    const adapted = adapt(message);
+    let shown = titled.get(adapted);
+    if (!shown) {
+      const untitled = (part: AIMessagePartData) =>
+        part.toolCall && !part.toolCall.displayTitle && DISPLAY_TITLES[part.toolCall.name];
+      shown = adapted.parts?.some(untitled)
+        ? {
+            ...adapted,
+            parts: adapted.parts.map((part) =>
+              untitled(part) && part.toolCall
+                ? {
+                    ...part,
+                    toolCall: {
+                      ...part.toolCall,
+                      displayTitle: DISPLAY_TITLES[part.toolCall.name],
+                    },
+                  }
+                : part,
+            ),
+          }
+        : adapted;
+      titled.set(adapted, shown);
+    }
+    return shown;
+  };
+};
+
+/**
  * The router's conversation as an `AIConversationController` follows it: the messages of the
  * channel `AgentChat` reads, and what the agent is doing from the session's socket. Asking goes
  * through the session, which records the question in the channel and answers it there. The
@@ -49,9 +87,11 @@ export const createAgentTransport = (
   connect: (feed) => {
     // The same message object for each Stream message that didn't change, so only the messages
     // an update touched render again. The live thinking is read through `chat.reasoning`.
-    const fromStreamMessage = createFromStreamMessage({
-      reasoningText: (messageId, stepId) => chat.reasoning.get(messageId, stepId),
-    });
+    const fromStreamMessage = withTitles(
+      createFromStreamMessage({
+        reasoningText: (messageId, stepId) => chat.reasoning.get(messageId, stepId),
+      }),
+    );
     let followedSession: Session | undefined;
     let stopFollowingSession: (() => void) | undefined;
     const update = ({ hasOlderMessages, messages, session }: AgentChatState) => {

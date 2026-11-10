@@ -2,7 +2,7 @@ import type { ToolApproval } from '@stream-io/calypso';
 
 import { type AIClientTool, completedToolResult } from 'stream-chat-expo/ai-components';
 
-import { AgentConfig } from './config';
+import { crewBackend } from './agents';
 
 type Schema = Record<string, unknown>;
 
@@ -12,27 +12,6 @@ const object = (properties: Record<string, Schema>, required: string[] = []): Sc
   type: 'object',
 });
 const text = (description: string): Schema => ({ description, type: 'string' });
-
-/** Asks the crew backend, which stands in for the restaurant's own systems. */
-const crew = async (path: string, body?: unknown) => {
-  const response = await fetch(`${AgentConfig.backendUrl}/crew/${path}`, {
-    ...(body === undefined
-      ? {}
-      : { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }),
-    method: body === undefined ? 'GET' : 'POST',
-  });
-  if (!response.ok) {
-    throw new Error(`The crew backend answered ${response.status}: ${await response.text()}`);
-  }
-  return (await response.json()) as Record<string, unknown>;
-};
-
-const query = (values: Record<string, unknown>) =>
-  new URLSearchParams(
-    Object.entries(values).flatMap(([key, value]) =>
-      typeof value === 'string' && value ? [[key, value]] : [],
-    ),
-  ).toString();
 
 const tool = (
   name: string,
@@ -70,40 +49,12 @@ const localContext: AIClientTool = {
   },
 };
 
-/** The phone's tools: what only it knows, and the restaurant's systems it reaches for the agent. */
+/**
+ * The phone's tools: its clock, and the three actions the person says yes to here before they
+ * run. The restaurant's other tools run on the crew backend, which hosts them on the router.
+ */
 export const CREW_TOOLS: AIClientTool[] = [
   localContext,
-  tool(
-    'get_my_schedule',
-    "The person's upcoming shifts, each with its id, station, start, end and shift leader.",
-    object({}),
-    () => crew('schedule'),
-    'Read your schedule',
-  ),
-  tool(
-    'check_callout',
-    "Whether the person may find their own cover for a shift, by the restaurant's call-out policy, given their symptoms. Call it before helping with coverage.",
-    object(
-      {
-        shift_id: text('The shift, from get_my_schedule'),
-        symptoms: {
-          description: 'What they said they have, in a few words each, such as "fever"',
-          items: { type: 'string' },
-          type: 'array',
-        },
-      },
-      ['shift_id', 'symptoms'],
-    ),
-    (input) => crew('callout-check', input),
-    'Checked the call-out policy',
-  ),
-  tool(
-    'find_coverage',
-    'Teammates trained for the shift’s station and free at that time.',
-    object({ shift_id: text('The shift to cover') }, ['shift_id']),
-    (input) => crew(`coverage?${query(input)}`),
-    'Found who can cover',
-  ),
   tool(
     'request_shift_swap',
     'Asks a teammate to take one of the person’s shifts. The phone asks the person first.',
@@ -115,42 +66,9 @@ export const CREW_TOOLS: AIClientTool[] = [
       },
       ['shift_id', 'teammate_id'],
     ),
-    (input) => crew('swaps', input),
+    (body) => crewBackend('crew/swaps', { body }),
     'Asked for a swap',
     false,
-  ),
-  tool(
-    'notify_shift_leader',
-    "Sends the shift's leader a short status note, such as who is out and whether cover was asked for.",
-    object({ message: text('The note, one or two sentences'), shift_id: text('The shift') }, [
-      'message',
-    ]),
-    (input) => crew('leader-notes', input),
-    'Told the shift leader',
-    false,
-  ),
-  tool(
-    'search_handbook',
-    "Searches the team handbook: policies, uniform, food safety, allergens, breaks, swaps, time off, meals and values. The passages it finds are the only source for answers about them, and show as the reply's sources.",
-    object({ query: text('What to look for, in a few words') }, ['query']),
-    (input) => crew(`handbook?${query({ q: input.query })}`),
-    'Searched the handbook',
-  ),
-  tool(
-    'get_updates_since',
-    'Announcements and team news since a date.',
-    object({ since: text('The first day, as YYYY-MM-DD') }, ['since']),
-    (input) => crew(`updates?${query(input)}`),
-    'Read the announcements',
-  ),
-  tool(
-    'get_equipment_guide',
-    'The quick-fix guide for an error code on a piece of equipment, by its asset id, such as FRY-02, POS-1 or ICE-1.',
-    object({ asset: text('The asset id'), code: text('The error code it shows, such as E-41') }, [
-      'asset',
-    ]),
-    (input) => crew(`equipment?${query(input)}`),
-    'Found the quick fix',
   ),
   tool(
     'create_support_ticket',
@@ -164,16 +82,9 @@ export const CREW_TOOLS: AIClientTool[] = [
       },
       ['summary', 'details'],
     ),
-    (input) => crew('tickets', input),
+    (body) => crewBackend('crew/tickets', { body }),
     'Drafted a ticket',
     false,
-  ),
-  tool(
-    'get_team',
-    'The leadership team, the trainer and the onboarding buddy, with what each does.',
-    object({}),
-    () => crew('team'),
-    'Looked up the team',
   ),
   tool(
     'book_check_in',
@@ -186,35 +97,16 @@ export const CREW_TOOLS: AIClientTool[] = [
       },
       ['with', 'when'],
     ),
-    (input) => crew('check-ins', input),
+    (body) => crewBackend('crew/check-ins', { body }),
     'Booked a check-in',
-    false,
-  ),
-  tool(
-    'get_menu',
-    'The menu, with what each item contains and notes, for questions and quizzes.',
-    object({}),
-    () => crew('menu'),
-    'Read the menu',
-  ),
-  tool(
-    'save_shift_reflection',
-    'Saves the end-of-shift reflection. Only the themes, energy and win reach the leaders, never who wrote it.',
-    object(
-      {
-        energy: { description: 'From 1 to 5', type: 'integer' },
-        themes: { items: { type: 'string' }, type: 'array' },
-        win: text('Their win, in a short line'),
-      },
-      ['energy', 'themes'],
-    ),
-    (input) => crew('reflections', input),
-    'Saved your reflection',
     false,
   ),
 ];
 
-/** What a call says it is doing on the reply's step, by tool. */
+/**
+ * What a call says it is doing on the reply's step, by tool: the phone's own tools declare theirs,
+ * and the conversation gives the backend's theirs.
+ */
 export const DISPLAY_TITLES: Record<string, string> = {
   book_check_in: 'Booking a check-in',
   check_callout: 'Checking the call-out policy',

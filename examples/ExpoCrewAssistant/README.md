@@ -3,12 +3,13 @@
 An AI assistant for a restaurant's team members, built on the AI components and the Vision-Agents
 router. A team member opens it before, during or after a shift. The home screen lists what it
 helps with, and each flow starts a conversation with the agent: `AIConversation` for the chat,
-A2UI for checklists, quizzes and forms, and the phone's own tools for the restaurant's systems.
+A2UI for checklists, quizzes and forms, and approval cards for what the agent does in your name.
 
 The backend is `examples/voice_agents/crew_assistant` in Vision-Agents, forked from
-`swift_assistant`. It mints Stream tokens, stands in for the restaurant's schedule, handbook,
-equipment and leaders' inbox, and makes the agent speak first when something happens, such as a
-clock-in.
+`swift_assistant`. It stands in for the restaurant's schedule, handbook, equipment and leaders'
+inbox, hosts their tools on the router, signs each person's Stream token, and makes the agent
+speak first when something happens, such as a clock-in. Everything the app asks it carries the
+user's Stream token, and the backend acts for that user alone.
 
 ## What it shows
 
@@ -24,8 +25,10 @@ clock-in.
 | **Clock out**          | the agent speaks first        | An end-of-shift reflection form. What it saves shows in the team lead view, without your name.                                                                      |
 
 **Team lead** (top right) is what the shift leaders and the owner see: call-out notes, swap
-requests, drafted tickets, booked check-ins and the team's pulse from reflections. It refreshes
-every few seconds, so keep it open next to a flow.
+requests, drafted tickets, booked check-ins and the team's pulse from reflections. It signs in as
+a leader (`EXPO_PUBLIC_AGENT_LEADER_ID`, Maya by default), since the backend answers the leaders'
+inbox only to a user whose Stream user has `crew_role: "leader"`. It refreshes every few seconds,
+so keep it open next to a flow.
 
 **Scanning a machine.** A QR code on a machine holds a link such as
 `crewassistant://equipment?asset=FRY-02&code=E-41`. Opening it starts a conversation about that
@@ -46,7 +49,7 @@ Known assets and codes: `FRY-02` (`E-41`, `E-07`), `POS-1` (`E-NET`), `ICE-1` (`
    cd examples/voice_agents/crew_assistant/configure
    STREAM_ACCELERATION_URL=http://localhost:8080 STREAM_ACCELERATION_CUSTOMER_ID=examples GOWORK=off go run . -dir ..
    cd ../backend
-   STREAM_API_SECRET=<the router's> STREAM_ACCELERATION_URL=http://localhost:8080 STREAM_ACCELERATION_CUSTOMER_ID=examples GOWORK=off go run .
+   STREAM_API_KEY=<the router's> STREAM_API_SECRET=<the router's> STREAM_ACCELERATION_URL=http://localhost:8080 STREAM_ACCELERATION_CUSTOMER_ID=examples GOWORK=off go run .
    ```
 
 2. Copy `.env.example` to `.env.local` and set `EXPO_PUBLIC_STREAM_API_KEY` to the router's
@@ -69,9 +72,13 @@ Known assets and codes: `FRY-02` (`E-41`, `E-07`), `POS-1` (`E-NET`), `ICE-1` (`
 - `contexts/AppContext.tsx` opens conversations: new ones, ones from the drawer, ones that start
   with a question (`startConversationWith`), and ones the agent opens about an event
   (`startConversationAbout`), which asks the backend's `POST /events`.
-- `agent/crewTools.ts` declares the tools the phone runs for the agent. Each reads or writes the
-  backend. `request_shift_swap`, `create_support_ticket` and `book_check_in` ask first, with the
-  AI components' approval card.
+- `agent/crewTools.ts` declares the phone's tools: its clock (`get_local_context`), and
+  `request_shift_swap`, `create_support_ticket` and `book_check_in`, which ask first with the AI
+  components' approval card, then call the backend. The router asks for a yes only on a tool the
+  phone declares, so those stay here; the restaurant's other tools run on the backend.
+  `DISPLAY_TITLES` titles every tool's step, the backend's too (`agent/agentTransport.ts`).
+- `agent/agents.ts` signs in with the backend and asks it with the user's Stream token
+  (`crewBackend`).
 - The handbook is the agent's knowledge base on the router, filled from `crew_assistant/knowledge/`:
   Markdown files and documents such as PDFs. `search_handbook` answers with the passages that
   match as `{"status": "answered", "citations": [...]}`, which the router adds to the reply's

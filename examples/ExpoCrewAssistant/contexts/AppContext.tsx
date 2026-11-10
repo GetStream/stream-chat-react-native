@@ -13,7 +13,7 @@ import {
 } from 'stream-chat-expo/ai-components';
 
 import { AgentChat, type AgentChatState, isAgentReply, type OpenSession } from '../agent/agentChat';
-import { agents, agentSessions, streamToken } from '../agent/agents';
+import { agents, agentSessions, crewBackend, streamToken } from '../agent/agents';
 import { createAgentTransport } from '../agent/agentTransport';
 import { AgentConfig } from '../agent/config';
 import { createDeviceTools } from '../agent/deviceTools';
@@ -141,21 +141,14 @@ export const AppContext = React.createContext<AppContextValue>({
 export type CrewEvent = 'clock_in' | 'clock_out' | 'back_from_time_off' | 'onboarding';
 
 // Tells the backend what happened, which has the agent open the conversation about it.
-const tellBackend = async (kind: CrewEvent, sessionId: string) => {
-  const response = await fetch(`${AgentConfig.backendUrl}/events`, {
-    body: JSON.stringify({
+const tellBackend = (kind: CrewEvent, sessionId: string) =>
+  crewBackend('events', {
+    body: {
       kind,
       session_id: sessionId,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      user_id: AgentConfig.user.id,
-    }),
-    headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
+    },
   });
-  if (!response.ok) {
-    throw new Error(`The crew backend answered ${response.status}: ${await response.text()}`);
-  }
-};
 
 // Asks with a voice memo at `url`. calypso's `responses.create` has no voice note yet, so this is
 // the request it makes, with the voice note the router takes beside the text.

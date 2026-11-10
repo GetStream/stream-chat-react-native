@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { crewBackend } from '../agent/agents';
 import { AgentConfig } from '../agent/config';
 
 type InboxItem = {
@@ -30,21 +31,26 @@ const LABELS: Record<InboxItem['kind'], string> = {
 /**
  * What the shift leaders and the owner see of what the assistant did: call-out alerts, swap
  * requests, drafted repair tickets and booked check-ins, and the team's pulse from end-of-shift
- * reflections, without names. It is read from the crew backend, which the phone's tools wrote to.
+ * reflections, without names. It signs in as a leader, since the crew backend answers the
+ * leaders' inbox only to a user whose crew role is leader.
  */
 export default function LeaderView() {
   const [inbox, setInbox] = useState<InboxItem[]>([]);
   const [pulse, setPulse] = useState<Pulse>();
+  const [failure, setFailure] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     try {
-      const response = await fetch(`${AgentConfig.backendUrl}/crew/leader`);
-      const read = (await response.json()) as { inbox: InboxItem[]; pulse: Pulse };
+      const read = (await crewBackend('crew/leader', { userId: AgentConfig.leader.id })) as {
+        inbox: InboxItem[];
+        pulse: Pulse;
+      };
       setInbox(read.inbox);
       setPulse(read.pulse);
-    } catch {
-      // The next refresh tries again.
+      setFailure(undefined);
+    } catch (error) {
+      setFailure(error instanceof Error ? error.message : String(error));
     }
   }, []);
 
@@ -67,6 +73,8 @@ export default function LeaderView() {
       contentContainerStyle={styles.container}
       refreshControl={<RefreshControl onRefresh={refresh} refreshing={refreshing} />}
     >
+      <Text style={styles.meta}>Signed in as {AgentConfig.leader.name}, shift leader</Text>
+      {failure ? <Text style={styles.failure}>{failure}</Text> : null}
       <Text style={styles.heading}>Inbox</Text>
       {inbox.length === 0 ? (
         <Text style={styles.empty}>Nothing yet. Call-outs, swaps and tickets show up here.</Text>
@@ -125,6 +133,7 @@ const styles = StyleSheet.create({
   container: { backgroundColor: '#F7F8FA', flexGrow: 1, padding: 16 },
   details: { color: '#33394A', fontSize: 14 },
   empty: { color: '#5C6370', fontSize: 14, marginBottom: 12 },
+  failure: { color: '#C8102E', fontSize: 13, marginTop: 6 },
   heading: { color: '#0B1220', fontSize: 20, fontWeight: '800', marginBottom: 10, marginTop: 8 },
   kind: { color: '#C8102E', fontSize: 12, fontWeight: '700' },
   meta: { color: '#8A919E', fontSize: 12, marginTop: 4 },
