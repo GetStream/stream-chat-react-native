@@ -46,7 +46,7 @@ jobs:
     name: Test iOS ${{ matrix.ios }}
     if: github.event_name == 'schedule' || inputs.ios
     runs-on: macos-15
-    timeout-minutes: 180
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
@@ -197,10 +197,12 @@ jobs:
         working-directory: examples/SampleApp
         run: bundle exec fastlane allure_launch cron:true
         continue-on-error: true
-      # Below the job timeout, so an overrunning suite fails instead of cancelling the job, and the
-      # Allure upload, the logs and the Slack report still run.
+      # A macos-15 runner is about 4x slower than an M-series Mac: one pass takes well over an hour,
+      # and the retries come on top (the Flutter nightly allows 360 minutes too). Below the job
+      # timeout, so an overrunning suite fails instead of cancelling the job, and the Allure upload,
+      # the logs and the Slack report still run.
       - name: Run e2e tests
-        timeout-minutes: 120
+        timeout-minutes: 300
         working-directory: examples/SampleApp
         run: bundle exec fastlane test_e2e platform:ios skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH"
       - name: Upload Allure results

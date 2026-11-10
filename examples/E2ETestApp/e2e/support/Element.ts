@@ -30,7 +30,10 @@ export const waitToAppear = async (
  * Retries `action` while Detox reports the element as not hittable (e.g. covered by the keyboard
  * while it animates in). iOS runs without Detox's idle synchronization, which used to absorb that.
  */
-const retryWhileNotHittable = async (action: () => Promise<void>, timeout = defaultTimeout) => {
+export const retryWhileNotHittable = async (
+  action: () => Promise<void>,
+  timeout = defaultTimeout,
+) => {
   const deadline = Date.now() + timeout;
   for (;;) {
     try {

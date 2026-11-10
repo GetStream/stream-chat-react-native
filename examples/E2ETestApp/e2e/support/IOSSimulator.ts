@@ -38,3 +38,25 @@ export const grantIOSPermissions = () => {
   ]);
   run('xcrun', ['simctl', 'spawn', device.id, 'launchctl', 'stop', 'com.apple.tccd']);
 };
+
+/**
+ * The major iOS version of the simulator under test, from its runtime
+ * (`com.apple.CoreSimulator.SimRuntime.iOS-17-5`); `undefined` off iOS or when it can't be found.
+ */
+export const iosMajorVersion = (): number | undefined => {
+  if (device.getPlatform() !== 'ios') {
+    return undefined;
+  }
+  try {
+    const { devices } = JSON.parse(
+      execFileSync('xcrun', ['simctl', 'list', 'devices', '-j'], { encoding: 'utf8' }),
+    ) as { devices: Record<string, { udid: string }[]> };
+    const runtime = Object.keys(devices).find((key) =>
+      devices[key].some((simulator) => simulator.udid === device.id),
+    );
+    const major = runtime?.match(/iOS-(\d+)-/)?.[1];
+    return major === undefined ? undefined : Number(major);
+  } catch {
+    return undefined;
+  }
+};

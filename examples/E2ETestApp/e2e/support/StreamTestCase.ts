@@ -10,6 +10,7 @@ import {
 import { dismissAnrDialog } from './AndroidSystemDialogs';
 import { CoverageCollector } from './Coverage';
 import { enableInternetConnection } from './Device';
+import { iosMajorVersion } from './IOSSimulator';
 import { grantIOSPermissions } from './IOSSimulator';
 
 import { MockServer } from '../mock-server/MockServer';
@@ -118,3 +119,14 @@ export const itOnAndroid: typeof it = ((name: string, fn: () => Promise<void>, t
  */
 export const itOnIOS: typeof it = ((name: string, fn: () => Promise<void>, timeout?: number) =>
   device.getPlatform() === 'ios' ? it(name, fn, timeout) : it.skip(name, fn, timeout)) as typeof it;
+
+/**
+ * `it`, except `it.skip` on iOS below 18: for tests that hit an SDK bug only older iOS versions
+ * show. Name the ticket in a comment above each one. Runs when the version can't be read.
+ */
+export const itExceptOnOldIOS: typeof it = ((
+  name: string,
+  fn: () => Promise<void>,
+  timeout?: number,
+) =>
+  (iosMajorVersion() ?? 18) < 18 ? it.skip(name, fn, timeout) : it(name, fn, timeout)) as typeof it;
