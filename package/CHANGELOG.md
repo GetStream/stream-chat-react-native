@@ -1,5 +1,14 @@
 # Change Log
 
+## [10.0.1](https://github.com/GetStream/stream-chat-react-native/compare/v10.0.0...v10.0.1) (2026-11-10)
+
+### Bug Fixes
+
+* crash when editing messages with video attachments ([#3968](https://github.com/GetStream/stream-chat-react-native/issues/3968)) ([fafd509](https://github.com/GetStream/stream-chat-react-native/commit/fafd5098835445da2549eaf4d8125f1c454b1b63))
+* **expo:** ask for an audio library only when neither expo-audio nor expo-av is installed ([#3954](https://github.com/GetStream/stream-chat-react-native/issues/3954)) ([ac7e22e](https://github.com/GetStream/stream-chat-react-native/commit/ac7e22e06de09e8f3952e38a02044dc2bbe72d43))
+* **ReactionListClustered:** show the total reaction count per design ([#3961](https://github.com/GetStream/stream-chat-react-native/issues/3961)) ([321c6a2](https://github.com/GetStream/stream-chat-react-native/commit/321c6a2f8b7373c4b120b718c6a1e442ee913cb5))
+* **SampleApp:** start new conversations the way the UI cookbook does ([#3953](https://github.com/GetStream/stream-chat-react-native/issues/3953)) ([e6ad005](https://github.com/GetStream/stream-chat-react-native/commit/e6ad005c1024a4871f0f1ea613f88501f4717175)), closes [GetStream/stream-chat-js#2007](https://github.com/GetStream/stream-chat-js/issues/2007) [GetStream/stream-chat-js#2007](https://github.com/GetStream/stream-chat-js/issues/2007) [GetStream/stream-chat-js#2007](https://github.com/GetStream/stream-chat-js/issues/2007)
+
 ## [10.0.0](https://github.com/GetStream/stream-chat-react-native/compare/v9.12.1...v10.0.0) (2026-11-06)
 
 ### ⚠ BREAKING CHANGES
