@@ -43,12 +43,25 @@ env:
 
 jobs:
   ios:
+    name: Test iOS ${{ matrix.ios }}
     if: github.event_name == 'schedule' || inputs.ios
     runs-on: macos-15
     timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ios: "26.2"
+            device: "iPhone 17 Pro"
+            setup_runtime: false
+          # The oldest runtime the Flutter nightly covers; the runner image doesn't ship it.
+          - ios: "17.5"
+            device: "iPhone 15 Pro"
+            setup_runtime: true
     env:
-      DETOX_IOS_DEVICE: "iPhone 17 Pro"
-      IOS_VERSION: "26.2"
+      DETOX_IOS_DEVICE: ${{ matrix.device }}
+      IOS_VERSION: ${{ matrix.ios }}
+      # Pinned to match the simulator runtimes this job selects.
       XCODE_VERSION: "26.2"
       APP_PATH: examples/E2ETestApp/ios/build/detox/Build/Products/Release-iphonesimulator/E2ETestApp.app
       MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
@@ -62,6 +75,12 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
+      - uses: ./.github/actions/ruby-cache
+      - uses: ./.github/actions/setup-ios-runtime
+        if: matrix.setup_runtime
+        with:
+          version: ${{ matrix.ios }}
+          device: ${{ matrix.device }}
       # A fresh simulator takes minutes to boot on CI; boot it now so that overlaps with setup.
       - name: Boot simulator
         run: |
@@ -69,12 +88,16 @@ jobs:
           udid=$(xcrun simctl list devices available -j |
             jq -r --arg rt "$runtime" --arg name "$DETOX_IOS_DEVICE" '.devices[$rt][]? | select(.name == $name) | .udid' | head -1)
           if [ -z "$udid" ]; then
+            # Detox would pick a simulator of the same type on another iOS version.
+            if [ "${{ matrix.setup_runtime }}" = "true" ]; then
+              echo "::error::No $DETOX_IOS_DEVICE on iOS $IOS_VERSION"
+              exit 1
+            fi
             echo "::warning::No $DETOX_IOS_DEVICE on iOS $IOS_VERSION; Detox will pick and boot a simulator itself"
             exit 0
           fi
           echo "DETOX_IOS_UDID=$udid" >> "$GITHUB_ENV"
           nohup xcrun simctl boot "$udid" > /dev/null 2>&1 &
-      - uses: ./.github/actions/ruby-cache
 
       - name: Restore node_modules
         id: node-modules
@@ -191,21 +214,26 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: e2e-ios-nightly-logs
+          name: e2e-ios-nightly-logs-${{ matrix.ios }}
           path: |
             examples/E2ETestApp/stream-chat-test-mock-server/logs
             examples/E2ETestApp/artifacts
 
-  android:
+  # Built once per flavor and shared by the test jobs, as on pull requests.
+  android-build:
+    name: Build Android (${{ matrix.coverage && 'coverage' || 'plain' }})
     if: github.event_name == 'schedule' || inputs.android
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        # The coverage runs need a bundle instrumented with E2E_COVERAGE; the others test the plain app.
+        coverage: [true, false]
     env:
-      # Same as the native Android SDK e2e jobs
-      ANDROID_API_LEVEL: "36"
-      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
-      DETOX_ADB_NAME: "emulator-5554"
-      MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
+      APK_PATHS: |
+        examples/E2ETestApp/android/app/build/outputs/apk/release/app-release.apk
+        examples/E2ETestApp/android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk
       # The emulator is x86_64: skip compiling native code for the other ABIs.
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
     steps:
@@ -220,7 +248,6 @@ jobs:
           distribution: "zulu"
           java-version: "21"
       - uses: gradle/actions/setup-gradle@v4
-      - uses: ./.github/actions/ruby-cache
 
       - name: Restore node_modules
         id: node-modules
@@ -237,19 +264,68 @@ jobs:
           path: ${{ env.NODE_MODULES_PATHS }}
           key: ${{ steps.node-modules.outputs.cache-primary-key }}
 
-      # --- App binary, instrumented (E2E_COVERAGE): never cached with the pull requests' builds ---
-      # Built before the emulator boots so the emulator doesn't idle through the Gradle build.
-      # The nightly build is always cold, so every Gradle plugin and dependency is downloaded; a
+      # The nightly build is never cached, so every Gradle plugin and dependency is downloaded; a
       # transient repository outage (plugin portal, 2026-11-10) must not cost the whole night.
       - name: Build app
         working-directory: examples/E2ETestApp
         run: yarn e2e:build -c android.att.release || { sleep 60; yarn e2e:build -c android.att.release; }
         env:
-          E2E_COVERAGE: "1"
-      # Frees the daemons' memory for the emulator, which otherwise can get killed mid-run.
-      - name: Stop Gradle daemons
-        working-directory: examples/E2ETestApp/android
-        run: ./gradlew --stop
+          E2E_COVERAGE: ${{ matrix.coverage && '1' || '0' }}
+      - uses: actions/upload-artifact@v6
+        with:
+          name: e2e-android-apks-${{ matrix.coverage && 'coverage' || 'plain' }}
+          path: ${{ env.APK_PATHS }}
+          retention-days: 1
+
+  android:
+    name: Test Android API ${{ matrix.api-level }}${{ matrix.coverage && format(' coverage ({0})', matrix.batch) || '' }}
+    needs: android-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Coverage runs every test in its own app process for the map that selects e2e tests on
+          # pull requests. That is too slow for one runner, so its tests are split across batches.
+          # coverage_map's batch_count must match.
+          - { api-level: 36, coverage: true, batch: 0, batch_count: 4 }
+          - { api-level: 36, coverage: true, batch: 1, batch_count: 4 }
+          - { api-level: 36, coverage: true, batch: 2, batch_count: 4 }
+          - { api-level: 36, coverage: true, batch: 3, batch_count: 4 }
+          - { api-level: 34, batch: 0, batch_count: 1 }
+          - { api-level: 31, batch: 0, batch_count: 1 }
+          - { api-level: 28, batch: 0, batch_count: 1 }
+    env:
+      # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
+      # (RN-513).
+      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swangle_indirect -camera-back none -camera-front none
+      DETOX_ADB_NAME: "emulator-5554"
+      MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: "zulu"
+          java-version: "21"
+      - uses: ./.github/actions/ruby-cache
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.NODE_MODULES_PATHS }}
+          key: ${{ runner.os }}-e2e-node-modules-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies
+        run: yarn workspaces focus e2etestapp
+      - uses: actions/download-artifact@v7
+        with:
+          name: e2e-android-apks-${{ matrix.coverage && 'coverage' || 'plain' }}
+          path: examples/E2ETestApp/android/app/build/outputs/apk
 
       # --- Emulator: same setup as the native Android SDK's e2e jobs (AOSP image, no Play services) ---
       - name: Enable KVM
@@ -278,26 +354,33 @@ jobs:
         id: tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
+          api-level: ${{ matrix.api-level }}
           arch: x86_64
           profile: pixel
           emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
           working-directory: examples/SampleApp
-          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" coverage:true
+          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" coverage:${{ matrix.coverage == true }} batch:${{ matrix.batch }} batch_count:${{ matrix.batch_count }}
+
       # Also when tests failed: those keep their coverage from the previous map. Not when they never
-      # ran (a failed build): there is no coverage to build a map from.
-      - name: Build e2e coverage map
-        id: coverage-map
-        if: (success() || failure()) && (steps.tests.outcome == 'success' || steps.tests.outcome == 'failure')
+      # ran: a batch without its failed-tests file keeps the whole previous map.
+      - name: List the failed tests
+        id: failed-tests
+        if: ${{ !cancelled() && matrix.coverage && (steps.tests.outcome == 'success' || steps.tests.outcome == 'failure') }}
         working-directory: examples/SampleApp
-        run: bundle exec fastlane build_e2e_coverage_map
+        run: bundle exec fastlane e2e_failed_tests batch:${{ matrix.batch }}
+      # A tarball, as upload-artifact rejects some characters a test name (the folder name) may hold.
+      - name: Pack the coverage
+        if: ${{ !cancelled() && steps.failed-tests.outcome == 'success' }}
+        working-directory: examples/E2ETestApp
+        run: tar -czf e2e-coverage-batch-${{ matrix.batch }}.tgz e2e-coverage
       - uses: actions/upload-artifact@v6
-        if: (success() || failure()) && steps.coverage-map.outcome == 'success'
+        if: ${{ !cancelled() && steps.failed-tests.outcome == 'success' }}
         with:
-          name: e2e-coverage-map
-          path: examples/E2ETestApp/e2e_coverage_map.json
-          retention-days: 14
+          name: e2e-coverage-batch-${{ matrix.batch }}
+          path: examples/E2ETestApp/e2e-coverage-batch-${{ matrix.batch }}.tgz
+          retention-days: 3
+
       - name: Upload Allure results
         if: env.LAUNCH_ID != '' && (success() || failure())
         working-directory: examples/SampleApp
@@ -317,17 +400,46 @@ jobs:
       - uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: e2e-android-coverage-logs
+          name: e2e-nightly-android-${{ matrix.api-level }}-batch-${{ matrix.batch }}
           path: |
             examples/E2ETestApp/stream-chat-test-mock-server/logs
             examples/E2ETestApp/artifacts
             /tmp/android-runner
 
+  coverage_map:
+    name: Build e2e coverage map
+    needs: android
+    # Failed tests keep their previous coverage; only a batch that never finished blocks the map.
+    if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.android) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/ruby-cache
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: e2e-coverage-batch-*
+          path: examples/E2ETestApp/batches
+          merge-multiple: true
+      - name: Merge the batches
+        working-directory: examples/E2ETestApp
+        run: |
+          shopt -s nullglob
+          for batch in batches/*.tgz; do tar -xzf "$batch"; done
+      - name: Build the coverage map
+        working-directory: examples/SampleApp
+        run: bundle exec fastlane build_e2e_coverage_map batch_count:4
+      - uses: actions/upload-artifact@v6
+        with:
+          name: e2e-coverage-map
+          path: examples/E2ETestApp/e2e_coverage_map.json
+          retention-days: 14
+
   slack:
     name: Slack Report
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [ios, android]
+    needs: [ios, android-build, android, coverage_map]
     # always(): a job that hit its timeout is `cancelled`, which failure() alone doesn't see.
     if: always() && github.event_name == 'schedule' && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled'))
     steps:
