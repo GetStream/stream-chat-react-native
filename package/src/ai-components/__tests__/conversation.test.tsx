@@ -543,6 +543,27 @@ describe('fromStreamMessage', () => {
     expect(reasoningText).toHaveBeenCalledWith('m1', 'r1');
   });
 
+  it('leaves out the link previews Stream made from the text', () => {
+    const message = fromStreamMessage({
+      ai_generated: true,
+      attachments: [
+        {
+          image_url: 'https://cal.com/og/index.png',
+          og_scrape_url: 'Cal.com',
+          title: 'Cal.com | Scheduling Software for Online Bookings',
+          title_link: 'https://cal.com',
+          type: 'image',
+        },
+        { image_url: 'https://cdn.example.com/a.jpg', title: 'a.jpg', type: 'image' },
+      ],
+      id: 'm1',
+      text: 'Book it on Cal.com',
+    });
+    expect(message.attachments).toEqual([
+      { kind: 'image', mimeType: undefined, name: 'a.jpg', url: 'https://cdn.example.com/a.jpg' },
+    ]);
+  });
+
   it('adapts the person’s message', () => {
     expect(fromStreamMessage({ attachments: [], id: 'u1', text: 'Hi' })).toMatchObject({
       isGenerating: false,
