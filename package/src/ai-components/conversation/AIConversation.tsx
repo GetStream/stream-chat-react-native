@@ -21,7 +21,11 @@ import type {
   AIConversationController,
   AIConversationControllerState,
 } from '../conversation-state/controller/AIConversationController';
-import { editActionOf, replyActionsOf } from '../conversation-state/controller/offers';
+import {
+  editActionOf,
+  latestUserMessageIdOf,
+  replyActionsOf,
+} from '../conversation-state/controller/offers';
 import { useAIConversationState } from '../conversation-state/controller/useAIConversationState';
 import type { AIMessage, AIPendingMessage } from '../conversation-state/types';
 import type { AIUIHost } from '../generative-ui/AIUIHost';
@@ -181,6 +185,8 @@ const DefaultAssistantMessage = ({
 // shrinks (a sign-in going, reasoning folding, the thinking going) only a frame later, and in that
 // frame the question would be pulled down. Below a pinned turn there is room anyway, so it looks
 // the same, and the room stays the list's, which the keyboard takes before it lifts anything.
+// The person's own message is left free: something folding in it, such as a transcript, would
+// leave a gap above the reply.
 type TurnFloor = { heights: Map<string, number>; turnKey: string | undefined };
 
 type ConversationContextValue = {
@@ -223,6 +229,7 @@ type EntryViewProps = {
 const NO_MESSAGES: AIMessage[] = [];
 
 const REPLY_ACTIONS_IN = FadeIn.duration(200).easing(Easing.out(Easing.ease));
+const THINKING_IN = REPLY_ACTIONS_IN;
 
 const useReplyWriting = (messageId: string | undefined, isGenerating: boolean) => {
   const [writing, setWriting] = useState<string>();
@@ -294,14 +301,18 @@ const EntryView = ({
       />
       {showsUI ? (
         <AIUIGenerated
-          isStreaming={uiDocument.isStreaming}
+          isStreaming={uiDocument.isStreaming || wasWatched}
           messageId={message.id}
           onError={(error) => ui?.fail(message.id, error)}
         >
           {generated}
         </AIUIGenerated>
       ) : null}
-      {thinkingSince !== undefined ? <AIThinking since={thinkingSince} /> : null}
+      {thinkingSince !== undefined ? (
+        <Animated.View entering={THINKING_IN}>
+          <AIThinking since={thinkingSince} />
+        </Animated.View>
+      ) : null}
       {ReplyActions && !isGenerating && !isWriting && hasAnswer && !isWritingUI ? (
         <Animated.View entering={wasWatched ? REPLY_ACTIONS_IN : undefined}>
           <ReplyActions isLatestReply={entry.isLatestReply} message={message} text={message.text} />
@@ -327,7 +338,10 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
   // a worklet sent to the UI thread. The floor only rises, long before a row shrinks, so it can
   // follow a frame after the row grows.
   const turnFloor = context?.turnFloor;
-  const isHeld = !!turnFloor && row.turnKey === turnFloor.turnKey;
+  const isHeld =
+    !!turnFloor &&
+    row.turnKey === turnFloor.turnKey &&
+    !(row.kind === 'entry' && row.entry.isFromUser);
   const floor = isHeld ? (turnFloor?.heights.get(row.key) ?? 0) : 0;
   const [, setFloorRaised] = useState(0);
   const onLayout = isHeld
@@ -356,7 +370,11 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
             />
           ) : (
             <>
-              {row.isThinking ? <AIThinking /> : null}
+              {row.isThinking ? (
+                <Animated.View entering={THINKING_IN}>
+                  <AIThinking />
+                </Animated.View>
+              ) : null}
               {row.footer}
             </>
           )}
@@ -464,9 +482,10 @@ const ControlledConversation = ({
         replyActionsOf(conversation, { ratings, status }, message, isLatestReply),
     [conversation, ratings, status],
   );
+  const latestUserMessageId = latestUserMessageIdOf(messages);
   const editAction = useMemo<EditAction>(
-    () => (message) => editActionOf(conversation, { messages, status }, message),
-    [conversation, messages, status],
+    () => (message) => editActionOf(conversation, { latestUserMessageId, status }, message),
+    [conversation, latestUserMessageId, status],
   );
   const { ui } = props;
   // A reply that shows only its UI has started, which the controller can't tell without the

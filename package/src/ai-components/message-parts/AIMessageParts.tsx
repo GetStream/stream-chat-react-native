@@ -1,5 +1,6 @@
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
 import { AIToolApproval } from './AIToolApproval';
 import { AIToolAuthorization } from './AIToolAuthorization';
@@ -10,6 +11,7 @@ import { useAITranslation, useTheme } from '../contexts';
 import { useAIIcons } from '../icons';
 import { primitives } from '../internal/tokens';
 import { AIReasoning } from '../reasoning/AIReasoning';
+import { useAIThinkingTurn } from '../reasoning/thinkingClock';
 import type { AIToolApprover } from '../tool-calls/AIToolApprover';
 
 export type AIMessagePartProps = {
@@ -74,12 +76,26 @@ export type AIMessagePartsProps = Omit<AIMessagePartProps, 'part' | 'stepKey'> &
    * and starts each step afresh, rather than building them again.
    */
   messageId?: string;
+  /** Whether the reply is being written: a step that appears meanwhile fades in. */
+  isGenerating?: boolean;
+};
+
+const STEP_IN = FadeIn.duration(200).easing(Easing.out(Easing.ease));
+
+const StepView = ({ children, comesIn }: { children: ReactNode; comesIn: boolean }) => {
+  const [animated] = useState(comesIn);
+  return animated ? (
+    <Animated.View entering={STEP_IN}>{children}</Animated.View>
+  ) : (
+    <View>{children}</View>
+  );
 };
 
 /** The steps of a reply, in order. */
 export const AIMessageParts = ({
   approver,
   children,
+  isGenerating = false,
   messageId,
   parts,
   reasoningText,
@@ -87,6 +103,12 @@ export const AIMessageParts = ({
   const {
     theme: { messageParts },
   } = useTheme();
+  const turn = useAIThinkingTurn();
+  const takesOverThinking = (part: AIMessagePartData) =>
+    !!part.reasoning &&
+    !!turn &&
+    turn.firstStepId === part.id &&
+    turn.clock.start(turn.key) !== undefined;
   return (
     <View style={[styles.parts, messageParts?.container]} testID='ai-message-parts'>
       {parts.map((part, index) => {
@@ -94,7 +116,10 @@ export const AIMessageParts = ({
         // The default steps are kept by position and start afresh for another step themselves.
         // Steps rendered by `children` keep their state by step, which only they can reset.
         return (
-          <View key={children ? stepKey : index}>
+          <StepView
+            comesIn={isGenerating && !takesOverThinking(part)}
+            key={children ? stepKey : index}
+          >
             {children ? (
               children(part)
             ) : (
@@ -105,7 +130,7 @@ export const AIMessageParts = ({
                 stepKey={stepKey}
               />
             )}
-          </View>
+          </StepView>
         );
       })}
     </View>

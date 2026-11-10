@@ -1,0 +1,11 @@
+{
+  "extends": ["expo/tsconfig.base", "@stream-io/typescript-config/base.json"],
+  "compilerOptions": {
+    "paths": {
+      // Same as ExpoMessaging: pins the whole program to this workspace's copy of React Native.
+      "react-native": ["./node_modules/react-native/types_generated/index.d.ts"],
+      "react-native/*": ["./node_modules/react-native/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
+}

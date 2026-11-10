@@ -152,13 +152,19 @@ export const AIUIEntranceStage = ({
 };
 
 /**
- * Whether a part of a reply's generated UI comes in, as it was when the part mounted: a part
- * that shows at once, such as one of a reply from history, can show in a plain view.
+ * Whether a part of a reply's generated UI comes in, as it was when the part first showed: a
+ * part that shows at once, such as one of a reply from history, can show in a plain view. A part
+ * mounted before it has anything to show passes `shows` as false until it does.
  */
-export const useAIUIComesIn = () => {
+export const useAIUIComesIn = (shows = true) => {
   const stage = useContext(AIUIStageContext);
-  const [comesIn] = useState(() => !!stage && !stage.isCarried);
-  return comesIn;
+  const [comesIn, setComesIn] = useState<boolean | undefined>(() =>
+    shows ? !!stage && !stage.isCarried : undefined,
+  );
+  if (comesIn !== undefined || !shows) return comesIn ?? false;
+  const now = !!stage && !stage.isCarried;
+  setComesIn(now);
+  return now;
 };
 
 /**

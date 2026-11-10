@@ -2,7 +2,7 @@ import { StateStore } from '@stream-io/state-store';
 
 import { AIAgentError } from './AIAgentError';
 import { AIConversationExchange, hasEmptyContent } from './AIConversationExchange';
-import { editActionOf, replyActionsOf } from './offers';
+import { editActionOf, latestUserMessageIdOf, replyActionsOf } from './offers';
 import {
   type AIAgentActivity,
   AIAgentActivityStates,
@@ -338,7 +338,12 @@ export class AIConversationController<Message extends AIMessage = AIMessage> {
 
   /** Edits a message of the person's, when it is their latest and the agent isn't answering. */
   editAction(message: Message): (() => void) | undefined {
-    return editActionOf(this, this.state.getLatestValue(), message);
+    const { messages, status } = this.state.getLatestValue();
+    return editActionOf(
+      this,
+      { latestUserMessageId: latestUserMessageIdOf(messages), status },
+      message,
+    );
   }
 
   // What the transport says

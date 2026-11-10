@@ -427,6 +427,51 @@ describe('a reply written in A2UI', () => {
     await waitFor(() => expect(screen.getByTestId('trip-map')).toBeTruthy());
   });
 
+  it('holds back a card until something in it shows, while the agent writes it', async () => {
+    const { ui } = setup();
+    const view = (lines: string[], status = 'streaming') => (
+      <StreamTheme>
+        <AIUIView document={documentOf(lines, status)} host={ui} messageId='a1' />
+      </StreamTheme>
+    );
+    const written = [
+      { children: ['title', 'card'], component: 'Column', id: 'root' },
+      { component: 'Text', id: 'title', text: 'Fit check' },
+      { child: 'list', component: 'Card', id: 'card' },
+      { children: ['tag'], component: 'Column', id: 'list' },
+    ];
+    const { rerender } = render(view(surfaceOf(written)));
+    await waitFor(() => expect(screen.getByTestId('a2ui-title')).toBeTruthy());
+    expect(screen.queryByTestId('a2ui-card')).toBeNull();
+    expect(screen.queryByTestId('a2ui-list')).toBeNull();
+
+    rerender(
+      view([
+        ...surfaceOf(written),
+        line({
+          updateComponents: {
+            components: [{ component: 'Text', id: 'tag', text: 'Name tag' }],
+            surfaceId: 's',
+          },
+        }),
+      ]),
+    );
+    await waitFor(() => expect(screen.getByTestId('a2ui-card')).toBeTruthy());
+    expect(screen.getByText('Name tag')).toBeTruthy();
+  });
+
+  it('shows a card that holds nothing yet once the agent has written the reply', async () => {
+    const { ui } = setup();
+    await renderReply(
+      ui,
+      surfaceOf([
+        { child: 'list', component: 'Card', id: 'root' },
+        { children: ['tag'], component: 'Column', id: 'list' },
+      ]),
+    );
+    expect(screen.getByTestId('a2ui-root')).toBeTruthy();
+  });
+
   it('shows a placeholder while the first surface is being written', async () => {
     const { ui } = setup();
     await renderReply(ui, ['{"version":"1.0","createSur'], 'streaming');

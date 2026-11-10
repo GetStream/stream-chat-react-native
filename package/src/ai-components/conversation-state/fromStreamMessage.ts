@@ -17,8 +17,10 @@ export type FromStreamMessageOptions = {
   reasoningText?: (messageId: string, stepId: string) => string | undefined;
 };
 
-// Images and files only: the steps (`ai_*`) are read as parts, and other kinds are the app's.
+// Images and files only: the steps (`ai_*`) are read as parts, link previews Stream made from
+// the text are left out, and other kinds are the app's.
 const attachmentOf = (attachment: Attachment): AIMessageAttachmentData | undefined => {
+  if (attachment.og_scrape_url) return undefined;
   const name = attachment.title ?? attachment.fallback ?? undefined;
   if (attachment.type === 'image') {
     const url = attachment.image_url ?? attachment.asset_url ?? attachment.thumb_url;
