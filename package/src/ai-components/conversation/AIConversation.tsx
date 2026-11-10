@@ -229,6 +229,7 @@ type EntryViewProps = {
 const NO_MESSAGES: AIMessage[] = [];
 
 const REPLY_ACTIONS_IN = FadeIn.duration(200).easing(Easing.out(Easing.ease));
+const THINKING_IN = REPLY_ACTIONS_IN;
 
 const useReplyWriting = (messageId: string | undefined, isGenerating: boolean) => {
   const [writing, setWriting] = useState<string>();
@@ -307,7 +308,11 @@ const EntryView = ({
           {generated}
         </AIUIGenerated>
       ) : null}
-      {thinkingSince !== undefined ? <AIThinking since={thinkingSince} /> : null}
+      {thinkingSince !== undefined ? (
+        <Animated.View entering={THINKING_IN}>
+          <AIThinking since={thinkingSince} />
+        </Animated.View>
+      ) : null}
       {ReplyActions && !isGenerating && !isWriting && hasAnswer && !isWritingUI ? (
         <Animated.View entering={wasWatched ? REPLY_ACTIONS_IN : undefined}>
           <ReplyActions isLatestReply={entry.isLatestReply} message={message} text={message.text} />
@@ -365,7 +370,11 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
             />
           ) : (
             <>
-              {row.isThinking ? <AIThinking /> : null}
+              {row.isThinking ? (
+                <Animated.View entering={THINKING_IN}>
+                  <AIThinking />
+                </Animated.View>
+              ) : null}
               {row.footer}
             </>
           )}

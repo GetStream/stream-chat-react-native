@@ -73,6 +73,7 @@ export const AIAssistantMessage = ({
       {parts.length > 0 ? (
         <AIMessageParts
           approver={approver}
+          isGenerating={isGenerating}
           messageId={id}
           parts={parts}
           reasoningText={reasoningText}

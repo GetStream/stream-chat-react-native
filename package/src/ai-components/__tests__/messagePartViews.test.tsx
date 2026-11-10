@@ -18,6 +18,7 @@ import {
   StreamTheme,
 } from '../index';
 import { forgetCallStates } from '../message-parts/callStates';
+import { AIThinkingClock, AIThinkingTurnContext } from '../reasoning/thinkingClock';
 
 // Each test's questions start unanswered, though tests reuse calls.
 afterEach(forgetCallStates);
@@ -324,6 +325,47 @@ describe('AIMessageParts', () => {
     payload: {},
     reasoning: { durationMs: 3000, id, preview, status: 'completed' },
     version: 1,
+  });
+
+  // Whether the step a view is of comes in: an entrance on the way up to the list of steps.
+  const comesIn = (testID: string) => {
+    let node = screen.getByTestId(testID).parent;
+    while (node && node.props.testID !== 'ai-message-parts') {
+      if (node.props.entering) return true;
+      node = node.parent;
+    }
+    return false;
+  };
+  const call = (id: string): AIMessagePartData => ({
+    id,
+    kind: 'ai_tool_call',
+    payload: {},
+    toolCall: toolCall({ id }),
+    version: 1,
+  });
+
+  it('brings in the steps of a reply being written, and shows those of one written before', () => {
+    const { rerender } = renderWithTheme(
+      <AIMessageParts isGenerating messageId='m1' parts={[call('c1')]} />,
+    );
+    expect(comesIn('ai-tool-call')).toBe(true);
+
+    rerender(<AIMessageParts messageId='m1' parts={[call('c1')]} />);
+    expect(comesIn('ai-tool-call')).toBe(true);
+
+    renderWithTheme(<AIMessageParts messageId='m2' parts={[reasoning('r1', 'Done')]} />);
+    expect(comesIn('ai-reasoning')).toBe(false);
+  });
+
+  it('shows at once the step that carries on the agent’s thinking', () => {
+    const clock = new AIThinkingClock();
+    clock.update('t1', true, false, false);
+    renderWithTheme(
+      <AIThinkingTurnContext.Provider value={{ clock, firstStepId: 'r1', key: 't1' }}>
+        <AIMessageParts isGenerating messageId='m1' parts={[reasoning('r1', 'Hmm')]} />
+      </AIThinkingTurnContext.Provider>,
+    );
+    expect(comesIn('ai-reasoning')).toBe(false);
   });
 
   it('updates its views for another message’s steps, each starting afresh', () => {
