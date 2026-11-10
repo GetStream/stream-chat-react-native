@@ -115,6 +115,9 @@ export const MessageListPage = {
   },
 
   Alert: {
+    /**
+     * Matches twice from iOS 26 (a wrapper and the action view, with the same frame): use index 0.
+     */
     button(text: string) {
       return device.getPlatform() === 'android'
         ? by.text(text).and(by.type('android.widget.Button'))

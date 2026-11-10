@@ -13,6 +13,7 @@ import {
   indexFromBottom,
   isAnyDisplayed,
   isDisplayed,
+  retryWhileNotHittable,
   sleep,
   waitForExistence,
   waitToAppear,
@@ -33,9 +34,9 @@ const { Alert, Composer, ContextMenu, Header, MessageList } = MessageListPage;
  */
 const stepScroll = async (direction: 'up' | 'down') => {
   const ios = device.getPlatform() === 'ios';
-  await (
-    await waitToAppear(MessageList.scrollTarget, { index: 0 })
-  ).swipe(direction, 'slow', ios ? 0.3 : 0.5);
+  const list = await waitToAppear(MessageList.scrollTarget, { index: 0 });
+  // A list still sliding in (a thread opening) is not hittable yet.
+  await retryWhileNotHittable(() => list.swipe(direction, 'slow', ios ? 0.3 : 0.5));
   await sleep(ios ? 1000 : 300);
 };
 
@@ -157,10 +158,31 @@ export class UserRobot extends Robot {
     return this.perform(async () => {
       if (device.getPlatform() === 'android') {
         await device.pressBack();
-      } else {
-        await waitToAppearAndClick(ContextMenu.backdrop);
+        await waitToDisappear(ContextMenu.backdrop);
+        return;
       }
-      await waitToDisappear(ContextMenu.backdrop);
+      // The backdrop is transparent: Detox iOS 17 never counts it as visible, so this waits for it
+      // to exist, then taps a point of it away from the menu (top left, below the header). A tap
+      // that lands while the menu still animates in is dropped, so it taps again until the backdrop
+      // is gone: until then its closing layer swallows the next tap or passes for a reopened menu.
+      await waitForExistence(ContextMenu.backdrop);
+      await sleep(1000);
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        // A retry may find the backdrop already gone between the check and the tap.
+        await element(ContextMenu.backdrop)
+          .atIndex(0)
+          .tap({ x: 20, y: 150 })
+          .catch((error) => {
+            if (attempt === 1) throw error;
+          });
+        // waitForExistence returns whether the backdrop still exists.
+        if (
+          !(await waitForExistence(ContextMenu.backdrop, { shouldExist: false, timeout: 5000 }))
+        ) {
+          break;
+        }
+      }
+      await sleep(500);
     });
   }
 
@@ -344,7 +366,8 @@ export class UserRobot extends Robot {
             } else {
               await element(CreatePoll.fields).atIndex(0).tapReturnKey();
             }
-            await waitToAppearAndClick(CreatePoll.multipleVotesSwitch, { index: 0 });
+            // The sheet moves down as the keyboard hides: a tap during that is dropped on iOS.
+            await waitToSettleAndClick(CreatePoll.multipleVotesSwitch, { index: 0 });
           }
           // iOS reports the label on both the gesture-handler view and its inner button.
           await waitToAppearAndClick(CreatePoll.createButton, { index: 0 });
@@ -372,8 +395,8 @@ export class UserRobot extends Robot {
       async () => {
         // Confirmation, where the SDK asks for one.
         const confirm = MessageListPage.Alert.button('End');
-        if (await isDisplayed(confirm)) {
-          await waitToAppearAndClick(confirm);
+        if (await isDisplayed(confirm, 0)) {
+          await waitToAppearAndClick(confirm, { index: 0 });
         }
       },
     );
@@ -520,7 +543,7 @@ export class UserRobot extends Robot {
   }
 
   tapOnAlertButton(text: string): this {
-    return this.perform(() => waitToAppearAndClick(Alert.button(text)));
+    return this.perform(() => waitToAppearAndClick(Alert.button(text), { index: 0 }));
   }
 
   /**
@@ -543,7 +566,8 @@ export class UserRobot extends Robot {
       ? this.openContextMenu(messageCellIndex).tapOnContextMenuAction('threadReply')
       : this.perform(async () => {
           const index = await indexFromBottom(MessageList.Message.threadRepliesLabel, 0);
-          await waitToAppearAndClick(MessageList.Message.threadRepliesLabel, { index });
+          // The label re-renders as the reply count changes; a tap during that is dropped on iOS.
+          await waitToSettleAndClick(MessageList.Message.threadRepliesLabel, { index });
         });
     return opened.perform(() => waitToAppear(Composer.alsoSendToChannelCheckbox));
   }

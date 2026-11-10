@@ -8,7 +8,7 @@ import {
   goToForeground,
 } from '../support/Device';
 import { allureId, step } from '../support/step';
-import { itOnAndroid, setUpStreamTestCase } from '../support/StreamTestCase';
+import { itExceptOnOldIOS, itOnAndroid, setUpStreamTestCase } from '../support/StreamTestCase';
 
 describe('MessageListTests', () => {
   const { backendRobot, participantRobot, userRobot } = setUpStreamTestCase();
@@ -413,7 +413,8 @@ describe('MessageListTests', () => {
     );
   });
 
-  it('test_reloadsSkippedMessages_whenScrolledToTheBottom', async () => {
+  // https://linear.app/stream/issue/RN-521 (iOS 17 only)
+  itExceptOnOldIOS('test_reloadsSkippedMessages_whenScrolledToTheBottom', async () => {
     allureId(13165);
     await step('GIVEN user opens the channel', async () => {
       await backendRobot.generateChannels({ channelsCount: 1, messagesCount: 30 });

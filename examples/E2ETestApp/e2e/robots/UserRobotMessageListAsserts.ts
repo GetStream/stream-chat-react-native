@@ -461,7 +461,17 @@ UserRobot.prototype.assertThreadReplyLabel = function (replies, inThread = false
 
 UserRobot.prototype.assertMessages = function (text, expected) {
   return this.perform(async () => {
-    jestExpect(await waitForCount(Message.text(text), expected)).toBe(expected);
+    if (device.getPlatform() !== 'ios') {
+      jestExpect(await waitForCount(Message.text(text), expected)).toBe(expected);
+      return;
+    }
+    // Only the ones on screen: iOS 17 still reports the hidden channel under an open thread.
+    let actual = 0;
+    await waitUntil(async () => {
+      actual = (await allAttributes(Message.text(text))).filter((match) => match.visible).length;
+      return actual === expected;
+    });
+    jestExpect(actual).toBe(expected);
   });
 };
 
