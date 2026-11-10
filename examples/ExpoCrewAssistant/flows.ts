@@ -35,7 +35,7 @@ export const FLOWS: Flow[] = [
     title: 'Ask the handbook',
   },
   {
-    ask: 'Fryer 2 is showing error E-41. What do I do?',
+    ask: 'I think some equipment is broken and I need help!',
     emoji: '🛠️',
     id: 'equipment',
     subtitle: 'Quick fix, then a ticket if needed',

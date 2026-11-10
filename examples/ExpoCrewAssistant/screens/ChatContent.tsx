@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Platform,
   Pressable,
@@ -22,6 +23,7 @@ import {
   type AIConversationController,
   type AIConversationControllerState,
   AITypingIndicatorView,
+  type AIUIAction,
   aiUIActionJSON,
   AIUIHost,
   AIUserMessage,
@@ -39,6 +41,7 @@ import { AgentNotices } from './AgentNotices';
 import { VoiceMemoBar, VoiceMemoButton } from './VoiceMemo';
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
+import { crewBackend } from '../agent/agents';
 import type { AgentRequestCustom } from '../agent/agentTransport';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
@@ -202,37 +205,82 @@ const voiceNotesOf = (message: LocalMessage | undefined) =>
       attachment.type === 'voiceRecording' && !!attachment.asset_url,
   );
 
-/** The voice memos on a person's message, played with the chat SDK's own voice recording view. */
-const VoiceNotes = ({ chat, messageId }: { chat: AgentChat; messageId: string }) => {
-  const { messages } = useStateStore(chat.state, messagesSelector);
+/** The person's message as the channel has it now, with the voice memos it carries. */
+const useStoredMessage = (chat: AgentChat | undefined, messageId: string | undefined) => {
+  const { messages } = useStateStore(chat?.state, messagesSelector) ?? { messages: [] };
   const message = useMemo(() => messages.find(({ id }) => id === messageId), [messageId, messages]);
   const notes = useMemo(() => voiceNotesOf(message), [message]);
-  if (notes.length === 0) return null;
+  return { message, notes };
+};
+
+/** The voice memos on a person's message, played with the chat SDK's own voice recording view. */
+const VoiceNotes = ({
+  message,
+  notes,
+}: {
+  message: LocalMessage;
+  notes: ReturnType<typeof voiceNotesOf>;
+}) => (
+  <View style={styles.voiceNotes}>
+    {notes.map((note, index) => (
+      <AudioAttachment
+        item={{
+          ...note,
+          id: `${message.id}-${index}`,
+          type: note.duration ? 'voiceRecording' : 'audio',
+        }}
+        key={note.asset_url}
+        message={message}
+        showTitle={false}
+      />
+    ))}
+  </View>
+);
+
+/** What the router heard in a voice memo, folded away until asked for. */
+const Transcript = ({ text }: { text: string }) => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <View style={styles.voiceNotes}>
-      {notes.map((note, index) => (
-        <AudioAttachment
-          item={{ ...note, id: `${messageId}-${index}`, type: 'voiceRecording' }}
-          key={note.asset_url}
-          message={message}
-          showTitle={false}
-        />
-      ))}
+    <View style={styles.transcript}>
+      <Pressable
+        accessibilityRole='button'
+        accessibilityState={{ expanded: isOpen }}
+        hitSlop={8}
+        onPress={() => setIsOpen((open) => !open)}
+        testID='voice-memo-transcript-toggle'
+      >
+        <Text style={styles.transcriptToggle}>
+          {isOpen ? 'Hide transcript' : 'Show transcript'}
+        </Text>
+      </Pressable>
+      {isOpen ? (
+        <Animated.Text entering={FadeIn.duration(150)} style={styles.transcriptText}>
+          {text}
+        </Animated.Text>
+      ) : null}
     </View>
   );
 };
 
-/** The person's message as the AI components show it, after the voice memo it carries, if any. */
+/**
+ * The person's message as the AI components show it. One sent as a voice memo shows the memo, and
+ * the words the router heard in it only when asked for.
+ */
 const UserMessage = ({ attachments, message, onEdit, text }: AIConversationUserMessageProps) => {
   const { chat } = useAppContext();
-  return (
-    <View>
-      {chat && message ? <VoiceNotes chat={chat} messageId={message.id} /> : null}
-      {text || attachments.length > 0 ? (
-        <AIUserMessage attachments={attachments} onEdit={onEdit} text={text} />
-      ) : null}
-    </View>
-  );
+  const stored = useStoredMessage(chat, message?.id);
+  if (stored.message && stored.notes.length > 0) {
+    return (
+      <View>
+        <VoiceNotes message={stored.message} notes={stored.notes} />
+        {text ? <Transcript text={text} /> : null}
+        {attachments.length > 0 ? <AIUserMessage attachments={attachments} text='' /> : null}
+      </View>
+    );
+  }
+  return text || attachments.length > 0 ? (
+    <AIUserMessage attachments={attachments} onEdit={onEdit} text={text} />
+  ) : null;
 };
 
 /** The agent's reply as the AI components show it, then the sources it was answered from. */
@@ -264,6 +312,28 @@ const AssistantMessage = ({
   );
 };
 
+/** The event the agent's clock-out form sends when the person saves their reflection. */
+const REFLECTION_SAVED = 'reflection_done';
+
+/**
+ * Saves a reflection from the agent's clock-out form with the backend, and gives back the action
+ * to send the agent, which says it is saved.
+ */
+const saveReflection = async (action: AIUIAction): Promise<AIUIAction> => {
+  const context = (action.payload.context ?? {}) as Record<string, unknown>;
+  const challenges = Array.isArray(context.challenges) ? context.challenges : [];
+  await crewBackend('crew/reflections', {
+    body: {
+      energy: Math.round(Number(context.energy)),
+      themes: challenges
+        .filter((challenge): challenge is string => typeof challenge === 'string')
+        .map((challenge) => challenge.replace(/_/g, ' ')),
+      win: typeof context.win === 'string' ? context.win.trim() : '',
+    },
+  });
+  return { ...action, payload: { ...action.payload, context: { ...context, saved: true } } };
+};
+
 /** The open conversation, as its controller has it. */
 const Conversation = ({
   chat,
@@ -281,12 +351,24 @@ const Conversation = ({
     () =>
       new AIUIHost({
         renderers: [createA2UIRenderer()],
-        send: (action) => {
+        send: async (action) => {
           if (isAIConversationAnswering(conversation.state.getLatestValue().status)) {
             throw new Error('Crew is still answering');
           }
-          const custom: AgentRequestCustom = { uiAction: aiUIActionJSON(action) };
-          conversation.send({ custom, text: action.label });
+          let sent = action;
+          if (action.name === REFLECTION_SAVED) {
+            try {
+              sent = await saveReflection(action);
+            } catch (error) {
+              Alert.alert(
+                "Your reflection wasn't saved",
+                error instanceof Error ? error.message : String(error),
+              );
+              throw error;
+            }
+          }
+          const custom: AgentRequestCustom = { uiAction: aiUIActionJSON(sent) };
+          conversation.send({ custom, text: sent.label });
         },
       }),
   );
@@ -394,6 +476,9 @@ const styles = StyleSheet.create({
   },
   sourcesTitle: { color: '#5C6370', fontSize: 12, fontWeight: '700', marginBottom: 4 },
   trailing: { alignItems: 'center', flexDirection: 'row', gap: 8 },
+  transcript: { alignItems: 'flex-end', gap: 4, paddingHorizontal: 20, paddingTop: 6 },
+  transcriptText: { color: '#5C6370', fontSize: 14, lineHeight: 20 },
+  transcriptToggle: { color: '#C8102E', fontSize: 13, fontWeight: '600' },
   voiceNotes: { alignItems: 'flex-end', gap: 6, paddingHorizontal: 16, paddingTop: 8 },
   wrapper: { backgroundColor: '#FCFCFC', flex: 1 },
 });

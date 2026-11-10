@@ -109,6 +109,8 @@ export const CREW_TOOLS: AIClientTool[] = [
  */
 export const DISPLAY_TITLES: Record<string, string> = {
   book_check_in: 'Booking a check-in',
+  calcom__call_tool: 'Using your Cal.com',
+  calcom__list_tools: 'Opening your Cal.com',
   check_callout: 'Checking the call-out policy',
   create_support_ticket: 'Drafting a repair ticket',
   find_coverage: 'Finding who can cover',
