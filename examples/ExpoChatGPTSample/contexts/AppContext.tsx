@@ -10,17 +10,22 @@ import {
   type AIPendingMessage,
   type AIToolApprover,
   createAuthSessionAuthorizer,
+  parseMessageParts,
 } from 'stream-chat-expo/ai-components';
 
 import { AgentChat, type AgentChatState, isAgentReply, isEmptyReply } from '../agent/agentChat';
 import { agents, agentSessions, streamToken } from '../agent/agents';
 import { AgentConfig } from '../agent/config';
+import { createDeviceTools } from '../agent/deviceTools';
 import { toDataUri } from '../agent/photos';
 
 const IDLE: ConversationSnapshot = { kind: 'idle', skills: [] };
 
 // This install, for the tool calls addressed to it.
 const clientId = AIClientIdentity.installId();
+
+// The tools this phone runs for the agent, such as telling it the local time.
+const deviceTools = createDeviceTools({ clientId, userId: AgentConfig.user.id });
 
 // Where a sign-in comes back to: the app's own scheme, which the web auth session hands back.
 // The router takes only https or a native app's own scheme in reverse domain form (RFC 8252).
@@ -33,6 +38,30 @@ const declineLogin = (session: Session, toolCallId: string) =>
   (session as unknown as { held(): { send(frame: Record<string, unknown>): void } })
     .held()
     .send({ allowed: false, tool_call_id: toolCallId, type: 'tool_approval' });
+
+// Asks. The router addresses a client tool's call to the install a question came from, which
+// only its `respond` endpoint takes. `responses` (calypso's `responses.create`) takes photos and a
+// reasoning effort but no install, so a question with either reaches the device's tools without
+// one, and the phone runs them itself.
+const respond = async (
+  session: Session,
+  text: string,
+  options: { images: { url: string }[]; reasoningEffort?: string },
+) => {
+  if (options.images.length > 0 || options.reasoningEffort) {
+    deviceTools.addressed = false;
+    await session.responses.create(text, {
+      ...(options.images.length > 0 ? { images: options.images } : {}),
+      ...(options.reasoningEffort ? { reasoningEffort: options.reasoningEffort } : {}),
+    });
+    return;
+  }
+  deviceTools.addressed = true;
+  await agents.post('/v1/agents/sessions/{id}/respond', {
+    body: { client_id: clientId, request_id: crypto.randomUUID(), text },
+    path: { id: session.id },
+  });
+};
 
 // A question on its way: what shows until Stream's copy arrives, and how many of the person's
 // messages there were when it was asked, so its copy is the first one after them.
@@ -120,6 +149,15 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
 
   const followed = useStateStore(chat?.state, selector);
 
+  // Runs the calls of the latest reply that wait for this phone, each once.
+  const lastReply = followed?.lastReply;
+  useEffect(() => {
+    if (!lastReply) return;
+    deviceTools.runner.run(parseMessageParts(lastReply.attachments), (call, result) =>
+      deviceTools.send(call.id, result),
+    );
+  }, [lastReply]);
+
   // Opening one conversation after another: the newest wins, and one that was never asked
   // anything is deleted rather than left in the drawer.
   const open = useStableCallback(async (opening: () => Promise<Session>) => {
@@ -150,6 +188,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       agentSessions().create({
         modelOverwrites: { llm: AgentConfig.chatModel },
         return_url: SIGN_IN_RETURN_URL,
+        tools: deviceTools.sessionTools(),
       }),
     );
   });
@@ -158,7 +197,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     if (sessionId === current.current?.session.id) {
       return;
     }
-    void open(() => agentSessions().resume(sessionId));
+    void open(() => agentSessions().resume(sessionId, { tools: deviceTools.sessionTools() }));
   });
 
   const isResponding = agentState.kind === 'responding' || agentState.kind === 'working';
@@ -187,9 +226,9 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
         const images = await Promise.all(
           photos.map(async (uri) => ({ url: await toDataUri(uri) })),
         );
-        await opened.session.responses.create(text, {
-          ...(images.length > 0 ? { images } : {}),
-          ...(thinkHarder ? { reasoningEffort: 'high' } : {}),
+        await respond(opened.session, text, {
+          images,
+          reasoningEffort: thinkHarder ? 'high' : undefined,
         });
       } catch (error) {
         setFailure(messageOf(error));
