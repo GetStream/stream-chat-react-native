@@ -1,6 +1,6 @@
-import { Client } from '@stream-io/calypso';
+import { Client } from '@stream-io/stream-agents';
 // Lets `session.chat()` open the conversation's channel on the app's Stream Chat client.
-import '@stream-io/calypso/chat';
+import '@stream-io/stream-agents/chat';
 
 import { AgentConfig } from './config';
 
