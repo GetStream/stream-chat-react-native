@@ -386,6 +386,10 @@ jobs:
         with:
           name: e2e-selection
           path: examples/E2ETestApp
+      # The emulator runner downloads these without retrying; a corrupted download fails the job.
+      - uses: ./.github/actions/android-sdk-packages
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
       - name: Run e2e tests (Android emulator)
         uses: reactivecircus/android-emulator-runner@v2
         with:

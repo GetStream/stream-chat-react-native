@@ -1,0 +1,29 @@
+name: Android SDK packages
+description: >-
+  Installs the SDK packages reactivecircus/android-emulator-runner would download, with retries.
+  The action downloads the emulator and the system image on every run and doesn't retry: a
+  corrupted download ("Error reading Zip content from a SeekableByteChannel") fails the job before
+  the emulator boots. sdkmanager skips packages that are installed and current, so the action's own
+  install becomes a no-op.
+inputs:
+  api-level:
+    description: The system image API level, as passed to android-emulator-runner
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Install the emulator and the system image
+      shell: bash
+      env:
+        API_LEVEL: ${{ inputs.api-level }}
+      run: |
+        sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+        packages=(emulator platform-tools "platforms;android-$API_LEVEL" "system-images;android-$API_LEVEL;default;x86_64")
+        yes | "$sdkmanager" --licenses > /dev/null || true
+        for attempt in 1 2 3; do
+          "$sdkmanager" --install "${packages[@]}" --channel=0 > /dev/null && exit 0
+          echo "::warning::sdkmanager failed (attempt $attempt of 3); retrying in 30 s"
+          sleep 30
+        done
+        echo "::error::Could not install ${packages[*]}"
+        exit 1

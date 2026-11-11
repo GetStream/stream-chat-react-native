@@ -352,6 +352,10 @@ jobs:
         working-directory: examples/SampleApp
         run: bundle exec fastlane allure_launch cron:true
         continue-on-error: true
+      # The emulator runner downloads these without retrying; a corrupted download fails the job.
+      - uses: ./.github/actions/android-sdk-packages
+        with:
+          api-level: ${{ matrix.api-level }}
       - name: Run e2e tests (Android emulator)
         id: tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -362,7 +366,10 @@ jobs:
           emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
           working-directory: examples/SampleApp
-          script: bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" coverage:${{ matrix.coverage == true }} batch:${{ matrix.batch }} batch_count:${{ matrix.batch_count }}
+          # Logcat is written on the runner, so it survives the emulator dying mid-run (RN-513).
+          script: |
+            nohup "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 logcat -b all -v threadtime > "$RUNNER_TEMP/logcat.txt" 2>&1 < /dev/null &
+            bundle exec fastlane test_e2e platform:android device:att skip_build:true mock_server_branch:"$MOCK_SERVER_BRANCH" coverage:${{ matrix.coverage == true }} batch:${{ matrix.batch }} batch_count:${{ matrix.batch_count }}
 
       # Also when tests failed: those keep their coverage from the previous map. Not when they never
       # ran: a batch without its failed-tests file keeps the whole previous map.
@@ -407,6 +414,7 @@ jobs:
             examples/E2ETestApp/stream-chat-test-mock-server/logs
             examples/E2ETestApp/artifacts
             /tmp/android-runner
+            ${{ runner.temp }}/logcat.txt
 
   coverage_map:
     name: Build e2e coverage map
