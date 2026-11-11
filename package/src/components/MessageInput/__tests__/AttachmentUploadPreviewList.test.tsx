@@ -652,5 +652,29 @@ describe('AttachmentUploadPreviewList', () => {
         expect(screen.queryAllByTestId('image-attachment-upload-preview')).toHaveLength(1);
       });
     });
+
+    it('shows the duration a sent video carries in custom.duration', async () => {
+      const custom = { duration: 125000, mime_type: 'video/mp4' };
+
+      act(() => {
+        channel.messageComposer.initState({
+          composition: generateMessage({
+            attachments: [
+              generateVideoAttachmentBase({
+                asset_url: 'https://video-attachment.mp4',
+                custom,
+                thumb_url: 'https://video-attachment-thumb.png',
+              }),
+            ],
+          }),
+        });
+      });
+
+      renderComponent({ channel, client, props: {} });
+
+      await waitFor(() => {
+        expect(screen.getByText('2m')).toBeTruthy();
+      });
+    });
   });
 });
