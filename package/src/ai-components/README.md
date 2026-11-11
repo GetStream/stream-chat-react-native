@@ -301,6 +301,51 @@ The motion runs entirely on the UI thread with Reanimated and Skia, so the visua
 
 **Rendering.** The glow's shader runs through Skia on every Android version, so there is no fallback rendering, and it does not switch to a cheaper look in battery saver. A visualization keeps animating while it is mounted, even when scrolled off screen; it pauses only while the app is in the background.
 
+### Conversation state
+
+`AIConversationController` holds a conversation's messages and where the latest exchange with the agent is, and sends what the person asks through an `AIConversationTransport` you write for your agent. Give it to `AIConversation` and `ComposerView` as `conversation`.
+
+Create it in the effect that disposes it, not in `useState`: React's StrictMode runs an effect's cleanup and then the effect again, which would leave the views with a disposed controller.
+
+```tsx
+import { AIConversationController, ComposerView } from 'stream-chat-react-native/ai-components';
+import { AIConversation } from 'stream-chat-react-native/ai-components/conversation';
+
+const Conversation = ({ transport }) => {
+  const [conversation, setConversation] = useState<AIConversationController>();
+  useEffect(() => {
+    const created = new AIConversationController({ transport });
+    setConversation(created);
+    return () => {
+      created.dispose();
+      setConversation(undefined);
+    };
+  }, [transport]);
+
+  if (!conversation) return null;
+
+  return (
+    <>
+      <AIConversation conversation={conversation} />
+      <ComposerView conversation={conversation} />
+    </>
+  );
+};
+```
+
+**Transport.** `connect(feed)` tells the controller the conversation's messages as they change, `send(request)` sends what the person asks, and `stop()` stops the reply being written. A request's `kind` is `message`, `regenerate` or `edit`, and its `custom` carries what the app sent besides the text. What the person did in a reply's [generated UI](#generated-ui) travels there as `custom.uiAction`, the action's JSON from `aiUIActionJSON`, for the transport to hand to the agent:
+
+```ts
+// Sending the action
+conversation.send({ custom: { uiAction: aiUIActionJSON(action) }, text: action.label });
+
+// In the transport
+send: request =>
+  session.responses.create(request.text, { uiAction: request.custom?.uiAction }),
+```
+
+**Actions.** The views offer editing the person's latest message, and regenerating and rating replies. Turn off what your agent can't do with `actions`: an agent that keeps the conversation on its side and can't rewind it, such as one behind Stream's agents router, takes `actions: { edit: false, regenerate: false }`.
+
 ### Generated UI
 
 An agent can answer with UI instead of text: a form, a list of options, a card with buttons. The backend splits the model's UI block out of the reply into the message's `ai_ui` field, and the app draws it with a renderer for the format the agent writes. Today that is [A2UI](https://a2ui.org) v1.0, from its own entry point, so apps that don't use it don't bundle it:
