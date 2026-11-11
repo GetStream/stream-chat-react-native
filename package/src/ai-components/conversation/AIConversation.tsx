@@ -4,17 +4,11 @@ import React, {
   memo,
   type ReactNode,
   useContext,
-  useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
 import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import Animated, {
-  Easing,
-  FadeIn,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
 import type { LegendListRenderItemProps } from '@legendapp/list/react-native';
 
@@ -130,6 +124,9 @@ export type AIConversationProps = {
    * Shows the UI the agent writes for its replies (`AIMessage.uiDocument`) in place of their
    * text, with the renderers of the formats it writes, such as A2UI. A reply whose UI none of
    * them shows shows its text. Keep one host per conversation, for as long as it shows.
+   *
+   * The list reuses its rows for the UI too: an app's component keeping state of its own has to
+   * start afresh for a new `context.messageId`.
    */
   ui?: AIUIHost;
   /** The view of the person's messages. Defaults to `AIUserMessage`. */
@@ -199,6 +196,7 @@ type EntryViewProps = {
   ReplyActions: ComponentType<AIConversationReplyActionsProps> | null;
   UserMessage: ComponentType<AIConversationUserMessageProps>;
   approver?: AIToolApprover;
+  thinkingSince?: number;
   ui?: AIUIHost;
 };
 
@@ -222,6 +220,7 @@ const EntryView = ({
   AssistantMessage,
   entry,
   ReplyActions,
+  thinkingSince,
   ui,
   UserMessage,
 }: EntryViewProps) => {
@@ -272,14 +271,15 @@ const EntryView = ({
       {showsUI ? (
         <AIUIGenerated
           isStreaming={uiDocument.isStreaming}
-          key={`${message.id}-ui`}
+          messageId={message.id}
           onError={(error) => ui?.fail(message.id, error)}
         >
           {generated}
         </AIUIGenerated>
       ) : null}
+      {thinkingSince !== undefined ? <AIThinking since={thinkingSince} /> : null}
       {ReplyActions && !isGenerating && !isWriting && hasAnswer && !isWritingUI ? (
-        <Animated.View entering={wasWatched ? REPLY_ACTIONS_IN : undefined} key={message.id}>
+        <Animated.View entering={wasWatched ? REPLY_ACTIONS_IN : undefined}>
           <ReplyActions isLatestReply={entry.isLatestReply} message={message} text={message.text} />
         </Animated.View>
       ) : null}
@@ -297,51 +297,61 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
     () => (clock ? { clock, firstStepId: row.firstStepId, key: row.turnKey } : undefined),
     [clock, row.firstStepId, row.turnKey],
   );
-  // A row reused for another starts from that row's floor.
+  // Only the latest turn's rows keep a floor, read here so a row reused for another starts from
+  // that row's floor. A plain view and state rather than an animated style: every row of a list
+  // that scrolls fast mounts and is reused all the time, and an animated style costs each of them
+  // a worklet sent to the UI thread. The floor only rises, long before a row shrinks, so it can
+  // follow a frame after the row grows.
   const turnFloor = context?.turnFloor;
   const isHeld = !!turnFloor && row.turnKey === turnFloor.turnKey;
-  const floor = useSharedValue(0);
-  useLayoutEffect(() => {
-    floor.value = isHeld ? (turnFloor?.heights.get(row.key) ?? 0) : 0;
-  }, [floor, isHeld, row.key, turnFloor]);
+  const floor = isHeld ? (turnFloor?.heights.get(row.key) ?? 0) : 0;
+  const [, setFloorRaised] = useState(0);
   const onLayout = isHeld
     ? ({ nativeEvent }: LayoutChangeEvent) => {
         const height = nativeEvent.layout.height;
-        if (height <= floor.value) return;
-        floor.value = height;
+        if (height <= (turnFloor?.heights.get(row.key) ?? 0)) return;
         turnFloor?.heights.set(row.key, height);
+        setFloorRaised((count) => count + 1);
       }
     : undefined;
-  const floorStyle = useAnimatedStyle(() => ({ minHeight: floor.value }));
+  // The same element while only the floor changes, so raising it renders nothing inside.
+  const content = useMemo(
+    () =>
+      context ? (
+        <AIThinkingTurnContext.Provider value={turn}>
+          {row.kind === 'entry' ? (
+            <EntryView
+              approver={context.approver}
+              AssistantMessage={context.AssistantMessage}
+              entry={row.entry}
+              ReplyActions={context.ReplyActions}
+              thinkingSince={row.thinkingSince}
+              ui={context.ui}
+              UserMessage={context.UserMessage}
+            />
+          ) : (
+            <>
+              {row.isThinking ? <AIThinking /> : null}
+              {row.footer}
+            </>
+          )}
+        </AIThinkingTurnContext.Provider>
+      ) : null,
+    [context, row, turn],
+  );
   if (!context) return null;
   return (
-    <Animated.View
+    <View
       onLayout={onLayout}
       style={[
         styles.row,
         { paddingTop: row.kind === 'entry' ? ROW_GAPS[row.position] : primitives.spacingMd },
-        floorStyle,
+        floor > 0 ? { minHeight: floor } : null,
         conversation?.row,
       ]}
     >
-      <AIThinkingTurnContext.Provider value={turn}>
-        {row.kind === 'entry' ? (
-          <EntryView
-            approver={context.approver}
-            AssistantMessage={context.AssistantMessage}
-            entry={row.entry}
-            ReplyActions={context.ReplyActions}
-            ui={context.ui}
-            UserMessage={context.UserMessage}
-          />
-        ) : (
-          <>
-            {row.isThinking ? <AIThinking /> : null}
-            {row.footer}
-          </>
-        )}
-      </AIThinkingTurnContext.Provider>
-    </Animated.View>
+      {content}
+    </View>
   );
 });
 Row.displayName = 'AIConversationRow';
@@ -350,9 +360,21 @@ const renderRow = ({ item }: LegendListRenderItemProps<ConversationRow>) => <Row
 
 const keyOf = (row: ConversationRow) => row.key;
 
-// A row reused for another takes one of its kind, which renders the same views.
-const typeOf = (row: ConversationRow) =>
-  row.kind === 'tail' ? 'tail' : row.entry.isFromUser ? 'user' : 'assistant';
+// A row reused for another takes one of its kind, which renders the same views, and the list
+// estimates a row it hasn't measured from the others of its kind. A person's message with photos
+// or files is a kind of its own, several times taller than one with only text. A row never
+// changes kind, which would remount it: a reply gains steps and UI as it is written, so replies
+// are one kind.
+const typeOf = (row: ConversationRow) => {
+  if (row.kind === 'tail') return 'tail';
+  const { entry } = row;
+  if (!entry.isFromUser) return 'assistant';
+  const hasAttachments =
+    entry.sentAttachments.length > 0 ||
+    !!entry.pending?.attachments?.length ||
+    !!entry.message?.attachments?.length;
+  return hasAttachments ? 'user-attachments' : 'user';
+};
 
 // `AIReplyActions` with what the conversation's `replyActions` offers for the reply.
 const DefaultConversationReplyActions = ({

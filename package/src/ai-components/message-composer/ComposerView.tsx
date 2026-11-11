@@ -165,6 +165,13 @@ export const AIMessageInput = () => {
   const { transcript } = useDictationTranscript();
   const { setText } = useMessageComposerContext();
   const previousTranscript = useRef(transcript);
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios' && text === '') {
+      inputRef.current?.setNativeProps({ text: '' });
+    }
+  }, [text]);
 
   useEffect(() => {
     const transcriptChanged = transcript !== previousTranscript.current;
@@ -183,6 +190,7 @@ export const AIMessageInput = () => {
       onChangeText={setText}
       placeholder={'Ask anything'}
       placeholderTextColor={grey_neutral}
+      ref={inputRef}
       style={[styles.textInput, textInput]}
       multiline
       underlineColorAndroid={'transparent'}

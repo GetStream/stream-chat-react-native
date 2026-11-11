@@ -95,7 +95,7 @@ const stageOpacityOf = (text: string) => {
   let node = screen.getByText(text).parent;
   while (node) {
     const style = StyleSheet.flatten(node.props.style);
-    if (style && style.transformOrigin === 'top') return style.opacity;
+    if (style && style.transformOrigin === 'top') return style.opacity ?? 1;
     node = node.parent;
   }
   return undefined;
@@ -212,6 +212,39 @@ describe('AIConversation with generated UI', () => {
     );
     expect(screen.getByRole('button', { name: /copy/i })).toBeTruthy();
   });
+
+  it('keeps the UI views of rows it reuses for other replies', async () => {
+    const ui = makeHost();
+    const history = Array.from({ length: 40 }, (_, turn) => [
+      user(`u${turn}`, `Question ${turn}`),
+      reply(`a${turn}`, '', { content: `Card ${turn}`, format: 'a2ui' }),
+    ]).flat();
+    await renderConversation(
+      <AIConversation
+        messages={[...history, user('ul', 'Latest'), reply('al', 'Latest.')]}
+        ui={ui}
+      />,
+    );
+    const cards = screen.getAllByTestId('card');
+    expect(screen.queryByText('Card 0')).toBeNull();
+
+    // Scrolled to the start, the rows at the end show the oldest replies.
+    act(() => {
+      fireEvent.scroll(screen.getByTestId('ai-conversation-list'), {
+        nativeEvent: {
+          contentInset: { bottom: 0, left: 0, right: 0, top: 0 },
+          contentOffset: { x: 0, y: 0 },
+          contentSize: { height: 5000, width: 400 },
+          layoutMeasurement: { height: 800, width: 400 },
+        },
+      });
+    });
+    await layOut();
+    expect(screen.getByText('Card 0')).toBeTruthy();
+    expect(screen.queryByText('Card 39')).toBeNull();
+    const shown = screen.getAllByTestId('card');
+    expect(cards.filter((card) => !shown.includes(card))).toEqual([]);
+  }, 30000);
 
   // The Reanimated mock doesn't run an animation, so only where each one starts shows.
   it('shows a UI from history at once, and brings one being written in', async () => {
@@ -424,6 +457,30 @@ describe('AIUIView', () => {
       </StreamTheme>,
     );
     expect(screen.queryByTestId('card')).toBeNull();
+  });
+
+  it('shows another reply’s UI in the same views, as it would in its own', () => {
+    const ui = makeHost();
+    const view = (messageId: string, content: string, isStreaming: boolean) => (
+      <StreamTheme>
+        <AIUIView
+          document={{ content, format: 'a2ui', isStreaming }}
+          host={ui}
+          messageId={messageId}
+        />
+      </StreamTheme>
+    );
+    const { rerender } = render(view('a1', 'Being written', true));
+    const card = screen.getByTestId('card');
+    expect(stageOpacityOf('Being written')).toBe(0);
+
+    rerender(view('a2', 'From history', false));
+    expect(screen.getByTestId('card')).toBe(card);
+    expect(stageOpacityOf('From history')).toBe(1);
+
+    rerender(view('a3', 'Also being written', true));
+    expect(screen.getByTestId('card')).toBe(card);
+    expect(stageOpacityOf('Also being written')).toBe(0);
   });
 });
 

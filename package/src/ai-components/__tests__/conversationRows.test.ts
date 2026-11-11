@@ -6,6 +6,7 @@ import {
   useConversationRows,
   type UseConversationRowsOptions,
 } from '../conversation/useConversationRows';
+import type { AIMessagePartData } from '../message-parts/types';
 
 const user = (id: string, text: string): AIMessage => ({ id, role: 'user', text });
 const reply = (id: string, text: string, extra: Partial<AIMessage> = {}): AIMessage => ({
@@ -59,6 +60,120 @@ describe('useConversationRows', () => {
 
     rerender({ footer: 'Working', messages: [...messages, reply('a1', 'One.')] });
     expect(result.current.rows.map(shapeOf)).toEqual(['q1:turn:q1', 'a1:message:q1', 'tail:q1']);
+  });
+
+  describe('between the steps of a reply being written', () => {
+    const reasoning = (id: string, status = 'completed'): AIMessagePartData => ({
+      id,
+      kind: 'ai_reasoning',
+      payload: {},
+      reasoning: { id, status },
+      version: 1,
+    });
+    const call = (id: string, status: string): AIMessagePartData => ({
+      id,
+      kind: 'ai_tool_call',
+      payload: {},
+      toolCall: { executor: 'server', id, name: 'search', status },
+      version: 1,
+    });
+    const writing = (parts: AIMessagePartData[], extra: Partial<AIMessage> = {}) => [
+      user('q1', 'Weather?'),
+      reply('a1', '', { isGenerating: true, parts, ...extra }),
+    ];
+    const tailOf = (rows: ConversationRow[]) => rows.find((row) => row.kind === 'tail');
+    // When the reply's row says the agent started thinking again, if it is.
+    const thinkingOf = (rows: ConversationRow[]) => {
+      const row = rows.find((candidate) => candidate.key === 'a1');
+      return row?.kind === 'entry' ? row.thinkingSince : undefined;
+    };
+
+    beforeEach(() => jest.useFakeTimers({ now: 1000 }));
+    afterEach(() => jest.useRealTimers());
+
+    it('thinks under the reply once every step so far is over, counting from then', () => {
+      const { rerender, result } = render({
+        messages: writing([reasoning('r1'), call('c1', 'running')]),
+      });
+      // The search shows itself while it runs.
+      expect(thinkingOf(result.current.rows)).toBeUndefined();
+
+      jest.setSystemTime(5000);
+      rerender({ messages: writing([reasoning('r1'), call('c1', 'completed')]) });
+      expect(thinkingOf(result.current.rows)).toBe(5000);
+      // In the reply's row, which the thinking moves with as the steps fold, not a row of its own.
+      expect(tailOf(result.current.rows)).toBeUndefined();
+
+      // Still thinking, still counting from when it began.
+      jest.setSystemTime(7000);
+      rerender({ messages: writing([reasoning('r1'), call('c1', 'completed')]) });
+      expect(thinkingOf(result.current.rows)).toBe(5000);
+
+      // A step that ends starts the next run.
+      jest.setSystemTime(9000);
+      rerender({ messages: writing([reasoning('r1'), call('c1', 'completed'), reasoning('r2')]) });
+      expect(thinkingOf(result.current.rows)).toBe(9000);
+    });
+
+    it('stops thinking once the answer starts, or the reply is done', () => {
+      const parts = [reasoning('r1'), call('c1', 'completed')];
+      const { rerender, result } = render({ messages: writing(parts) });
+      expect(thinkingOf(result.current.rows)).toBe(1000);
+
+      rerender({ messages: writing(parts, { text: 'It is sunny.' }) });
+      expect(thinkingOf(result.current.rows)).toBeUndefined();
+
+      // The answer pausing doesn't count as thinking again.
+      rerender({ messages: writing(parts, { text: 'It is sunny.' }) });
+      expect(thinkingOf(result.current.rows)).toBeUndefined();
+
+      rerender({ messages: writing(parts, { isGenerating: false, text: 'It is sunny.' }) });
+      expect(thinkingOf(result.current.rows)).toBeUndefined();
+    });
+
+    it('thinks after a step that follows what the agent wrote first, until it writes more', () => {
+      const intro = { text: "I'll look it up." };
+      const { rerender, result } = render({
+        messages: writing([call('c1', 'running')], intro),
+      });
+      expect(thinkingOf(result.current.rows)).toBeUndefined();
+
+      // With the break that follows what came before the step.
+      rerender({ messages: writing([call('c1', 'completed')], { text: `${intro.text}\n\n` }) });
+      expect(thinkingOf(result.current.rows)).toBe(1000);
+
+      rerender({
+        messages: writing([call('c1', 'completed')], { text: "I'll look it up. It is" }),
+      });
+      expect(thinkingOf(result.current.rows)).toBeUndefined();
+    });
+
+    it('does not think for a step that ends together with more of the answer', () => {
+      const { rerender, result } = render({
+        messages: writing([call('c1', 'running')], { text: 'Looking.' }),
+      });
+      rerender({
+        messages: writing([call('c1', 'completed')], { text: 'Looking. Found it:' }),
+      });
+      expect(thinkingOf(result.current.rows)).toBeUndefined();
+    });
+
+    it('leaves a step that is still going to show itself', () => {
+      for (const parts of [
+        [reasoning('r1', 'streaming')],
+        [reasoning('r1'), call('c1', 'awaiting_approval')],
+        [],
+      ]) {
+        const { result } = render({ messages: writing(parts) });
+        expect(thinkingOf(result.current.rows)).toBeUndefined();
+      }
+    });
+
+    it('times thinking before the reply shows anything by the turn', () => {
+      const { result } = render({ isThinking: true, messages: writing([reasoning('r1')]) });
+      expect(tailOf(result.current.rows)).toMatchObject({ isThinking: true });
+      expect(thinkingOf(result.current.rows)).toBeUndefined();
+    });
   });
 
   it('anchors a message on its way, and keeps its row for its copy', () => {

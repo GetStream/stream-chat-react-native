@@ -17,6 +17,16 @@ export const CodeBlockCopyButton = ({ onPress }: { onPress?: PressableProps['onP
   </Pressable>
 );
 
+const CHART_LANGUAGES = new Set([
+  'chart',
+  'chartjs',
+  'echarts',
+  'highcharts',
+  'json',
+  'vega-lite',
+  'vegalite',
+]);
+
 const areEqual = (prev: MarkdownComponentProps, next: MarkdownComponentProps) =>
   prev.node.content === next.node.content;
 
@@ -69,7 +79,7 @@ export const CodeBlock = React.memo(({ styles, node }: MarkdownComponentProps) =
     }
   }
 
-  if (node.lang === 'json') {
+  if (node.lang && CHART_LANGUAGES.has(node.lang.toLowerCase())) {
     try {
       const parsed = parseJsonChart(text);
       if (parsed) {

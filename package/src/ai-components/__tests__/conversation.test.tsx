@@ -264,6 +264,45 @@ describe('AIConversation', () => {
     expect(screen.getByTestId('ai-reply-actions')).toBeTruthy();
   });
 
+  it('keeps the actions of rows it reuses for other replies', async () => {
+    const history = Array.from({ length: 40 }, (_, turn) => [
+      user(`u${turn}`, `Question ${turn}`),
+      reply(`a${turn}`, `Answer ${turn}.`),
+    ]).flat();
+    const watched = (text: string, extra: Partial<AIMessage> = {}) => [
+      ...history,
+      user('uw', 'Watched'),
+      reply('aw', text, extra),
+    ];
+    const { rerender } = await renderConversation(
+      <AIConversation messages={watched('Writ', { isGenerating: true })} />,
+    );
+    // A reply watched as it was written, whose actions came in, then a turn after it.
+    await rerender(<AIConversation messages={watched('Written.')} />);
+    await settle(2000);
+    await rerender(
+      <AIConversation
+        messages={[...watched('Written.'), user('ul', 'Latest'), reply('al', 'Latest.')]}
+      />,
+    );
+    await settle(2000);
+    const actions = screen.getAllByTestId('ai-reply-actions');
+    expect(screen.getByText('Written.')).toBeTruthy();
+    expect(screen.queryByText('Answer 0.')).toBeNull();
+
+    // Scrolled to the start, the rows at the end show the oldest replies.
+    act(() => {
+      fireEvent.scroll(screen.getByTestId('ai-conversation-list'), {
+        nativeEvent: { ...atStart.nativeEvent, contentSize: { height: 5000, width: 400 } },
+      });
+    });
+    await layOut();
+    expect(screen.getByText('Answer 0.')).toBeTruthy();
+    expect(screen.queryByText('Written.')).toBeNull();
+    const shown = screen.getAllByTestId('ai-reply-actions');
+    expect(actions.filter((view) => !shown.includes(view))).toEqual([]);
+  }, 30000);
+
   it('shows a new rating when the messages stay the same', async () => {
     const messages = [user('u1', 'One'), reply('a1', 'Done.')];
     const rated = (rating: 'positive' | null) => (

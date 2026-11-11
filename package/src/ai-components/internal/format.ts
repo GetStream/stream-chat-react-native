@@ -14,17 +14,30 @@ const honoursNarrowUnits = (() => {
   }
 })();
 
-const unit = (locale: string, value: number, name: 'minute' | 'second') => {
-  if (!honoursNarrowUnits) return `${value}${name === 'minute' ? 'm' : 's'}`;
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'unit',
-      unit: name,
-      unitDisplay: 'narrow',
-    }).format(value);
-  } catch {
-    return `${value}${name === 'minute' ? 'm' : 's'}`;
+// One formatter per locale and unit: making one costs far more than formatting, and every step of
+// every reply formats its duration each time it renders.
+const formatters = new Map<string, Intl.NumberFormat | null>();
+const formatterFor = (locale: string, name: 'minute' | 'second') => {
+  const key = `${locale}:${name}`;
+  let formatter = formatters.get(key);
+  if (formatter === undefined) {
+    try {
+      formatter = new Intl.NumberFormat(locale, {
+        style: 'unit',
+        unit: name,
+        unitDisplay: 'narrow',
+      });
+    } catch {
+      formatter = null;
+    }
+    formatters.set(key, formatter);
   }
+  return formatter;
+};
+
+const unit = (locale: string, value: number, name: 'minute' | 'second') => {
+  const formatter = honoursNarrowUnits ? formatterFor(locale, name) : null;
+  return formatter ? formatter.format(value) : `${value}${name === 'minute' ? 'm' : 's'}`;
 };
 
 /** A whole number of seconds as minutes and seconds, in narrow units: "7s", "1m 5s". */

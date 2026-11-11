@@ -5,6 +5,7 @@ import {
   type AIConversationEntry,
   type AIConversationTurn,
   AIPendingMessageTracker,
+  hasFinishedSteps,
   turnsOf,
 } from './entries';
 import type { AIMessage, AIPendingMessage } from './types';
@@ -27,6 +28,12 @@ export type EntryRow = {
   turnKey: string;
   /** The turn's first reasoning step, which takes over the seconds the turn was seen thinking. */
   firstStepId?: string;
+  /**
+   * When the agent started thinking again between the steps of this reply, which is being
+   * written, and which its seconds count from. It thinks under the reply, in the reply's row, so
+   * it moves with the reply's steps as they fold.
+   */
+  thinkingSince?: number;
 };
 
 /**
@@ -47,6 +54,15 @@ export type ConversationRow = EntryRow | TailRow;
 
 const TAIL_KEY = 'ai-conversation-tail';
 
+// What the latest message was at the last render, to tell whether its answer grew since, and when
+// the agent started thinking between its steps, if it is.
+type BetweenSteps = {
+  messageId: string | undefined;
+  textLength: number;
+  since?: number;
+  stepsKey?: string;
+};
+
 const sameAttachments = (a: AIMessageAttachmentData[], b: AIMessageAttachmentData[]) =>
   a === b || (a.length === 0 && b.length === 0);
 
@@ -57,6 +73,7 @@ const isSameRow = (row: EntryRow, next: Omit<EntryRow, 'key'>) =>
   row.entry.isLatestReply === next.entry.isLatestReply &&
   sameAttachments(row.entry.sentAttachments, next.entry.sentAttachments) &&
   row.firstStepId === next.firstStepId &&
+  row.thinkingSince === next.thinkingSince &&
   row.position === next.position &&
   row.turnKey === next.turnKey;
 
@@ -111,6 +128,37 @@ export const useConversationRows = ({
   );
   // after `entries`, which matched the copies
   const thinking = isThinking || tracker.isAwaitingReply(messages, pendingMessage, canShowUI);
+
+  // The agent thinking again between the latest reply's steps: from the update in which a step
+  // ended without the answer growing, until the answer grows. A step that ends together with more
+  // of the answer means the answer is under way.
+  const lastMessage = messages[messages.length - 1];
+  const stepsKey = hasFinishedSteps(lastMessage, canShowUI)
+    ? `${lastMessage.id}:${lastMessage.parts?.length}`
+    : undefined;
+  // A break the agent's backend adds after what came before a step isn't more of the answer.
+  const textLength = lastMessage?.text.trimEnd().length ?? 0;
+  const [gap, setGap] = useState<BetweenSteps>();
+  if (
+    gap?.messageId !== lastMessage?.id ||
+    gap?.stepsKey !== stepsKey ||
+    gap?.textLength !== textLength
+  ) {
+    const grew = gap?.messageId === lastMessage?.id && textLength > (gap?.textLength ?? 0);
+    setGap({
+      messageId: lastMessage?.id,
+      since:
+        grew || stepsKey === undefined
+          ? undefined
+          : stepsKey === gap?.stepsKey
+            ? gap.since
+            : Date.now(),
+      stepsKey,
+      textLength,
+    });
+  }
+  const thinkingSince = !thinking && stepsKey !== undefined ? gap?.since : undefined;
+  const thinkingReplyId = thinkingSince !== undefined ? lastMessage?.id : undefined;
   const turns = useMemo(() => turnsOf(entries), [entries]);
   const latest = turns[turns.length - 1];
   const latestHasReplies = (latest?.entries.length ?? 0) > 1;
@@ -135,6 +183,10 @@ export const useConversationRows = ({
           firstStepId,
           kind: 'entry' as const,
           position: (index > 0 ? 'message' : 'turn') as RowPosition,
+          thinkingSince:
+            thinkingReplyId !== undefined && entry.message?.id === thinkingReplyId
+              ? thinkingSince
+              : undefined,
           turnKey: turn.id,
         };
         const previous = rowCache.current.get(entry.id);
@@ -146,7 +198,7 @@ export const useConversationRows = ({
     });
     rowCache.current = cache;
     return next;
-  }, [turns]);
+  }, [thinkingReplyId, thinkingSince, turns]);
 
   // A turn's id is its first entry's, so the latest turn's first row has its key.
   const lastTurnKey = latest?.id;
