@@ -13,7 +13,7 @@ export type AISuggestionsProps = {
 
 /**
  * A row of starter chips for an empty conversation, scrolling sideways. Picking one hands its text
- * to `onSelect`. The counterpart of `SuggestionsView`.
+ * to `onSelect`.
  */
 export const AISuggestions = ({ onSelect, suggestions }: AISuggestionsProps) => {
   const {

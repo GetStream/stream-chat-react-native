@@ -129,7 +129,7 @@ describe('AIConversation', () => {
 
   it('groups the messages into turns, each starting with a question', async () => {
     const messages = [
-      reply('a0', 'Hi, I am Juno.'),
+      reply('a0', 'Hi, I am your assistant.'),
       user('u1', 'What time is it?'),
       reply('a1', 'It is noon.'),
       user('u2', 'And the weather?'),

@@ -8,8 +8,7 @@ import type { AIClientToolDefinition } from '../ai-components/tool-calls/AIClien
 
 /**
  * What an agent is told to write replies' UI in A2UI with: the basic catalog, or the part of it
- * `keep` names, with the app's components, and what the app adds. The same as the
- * `prompt.json` StreamChatA2UI's instructions are written from.
+ * `keep` names, with the app's components, and what the app adds.
  */
 export type A2UIInstructionsConfig = {
   /** The id of the catalog with the app's components, as the renderer names it. */
@@ -79,7 +78,7 @@ Write a reply's UI in one fenced block whose info string is \`${fence}\`, after 
 1. First a \`createSurface\` with a \`surfaceId\` new to this reply, the \`catalogId\` \`${catalogId}\`, and the \`dataModel\` the UI's inputs start from.
 2. Then \`updateComponents\` messages for that surface with a few components each, \`root\` first, so the UI shows as you write it.
 
-A reply's UI is shown as you wrote it: never write \`callRendererFunction\` or \`agentFunctionResponse\`, and never change an earlier reply's UI, but write a new one. What the person does in it comes back as their next message. Give every event action a \`userMessage\`, the words of that message, such as "Update the plan", and a \`context\` with what you need to know, bound to the data model.`;
+A reply's UI is shown as you wrote it: never write \`callRendererFunction\` or \`agentFunctionResponse\`, and never change an earlier reply's UI, but write a new one. What the person does in it comes back as their next message, which says what the button they tapped says. Give every event action a \`userMessage\` saying what it asks of you, such as "Update the plan", which comes back with it, and a \`context\` with what you need to know, bound to the data model.`;
 
 // A JSON value with its object keys sorted, so the same catalog always reads the same.
 export const sorted = (value: unknown): unknown =>

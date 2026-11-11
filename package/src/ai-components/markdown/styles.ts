@@ -6,7 +6,7 @@ import type { Theme } from '../theme';
 // The answer's text, from the design tokens: 17 on iOS and 16 on Android.
 const BODY_SIZE = primitives.typographyFontSizeMd;
 
-// A heading, scaled from the body as StreamChatAI's markdown scales it, in semibold.
+// A heading, scaled from the body, in semibold.
 const heading = (scale: number) => ({
   fontSize: Math.round(BODY_SIZE * scale),
   fontWeight: '600' as const,

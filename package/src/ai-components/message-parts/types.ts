@@ -3,9 +3,7 @@
  *
  * The agent writes each step as a custom attachment on its reply (`ai_reasoning`,
  * `ai_tool_call`), and the order of the attachments is the order of the steps. The final
- * answer stays in the message text and is shown after them. The React Native counterpart of
- * `AIMessagePart` in StreamChatAI (iOS), stream-chat-android-ai-compose and
- * `stream-chat-react/ai-components`.
+ * answer stays in the message text and is shown after them.
  *
  * The kinds, statuses and decisions are open sets: compare against the values you know and
  * give the rest a fallback. A step newer than this SDK understands keeps its payload but has

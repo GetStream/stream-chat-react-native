@@ -2,8 +2,8 @@ import React from 'react';
 import { I18nManager } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-// The agent replies' icons, on a 20 × 20 grid with a 1.5 stroke, as in stream-chat-react's
-// AI components. Decorative: the text beside each one, or its button's label, says what it means.
+// The agent replies' icons, on a 20 × 20 grid with a 1.5 stroke. Decorative: the text beside each
+// one, or its button's label, says what it means.
 
 export type AgentIconProps = { color: string; size?: number };
 
@@ -80,7 +80,7 @@ export const DeviceIcon = strokeIcon(
   'M8.125 15H11.875M6.25 18.125H13.75C14.44 18.125 15 17.565 15 16.875V3.125C15 2.435 14.44 1.875 13.75 1.875H6.25C5.56 1.875 5 2.435 5 3.125V16.875C5 17.565 5.56 18.125 6.25 18.125Z',
 );
 
-// A message's actions, from stream-chat-react's icon set.
+// A message's actions.
 
 export const CopyIcon = strokeIcon(
   'M13.125 13.125H16.875V3.125H6.875V6.875M3.125 6.875H13.125V16.875H3.125V6.875Z',
@@ -115,8 +115,7 @@ export const ThumbsDownIcon = strokeIcon(thumb, { rotation: 180 });
 
 export const ThumbsDownFilledIcon = strokeIcon(thumb, { filled: true, rotation: 180 });
 
-// A file's type, on its attachment's tile. PDF and waveform are drawn to match StreamChatAI's
-// `doc.richtext` and `waveform`, which stream-chat-react's set lacks.
+// A file's type, on its attachment's tile.
 
 export const PdfIcon = strokeIcon(
   'M11.875 2.5H4.375C4.21 2.5 4.05 2.57 3.93 2.68C3.82 2.8 3.75 2.96 3.75 3.125V16.875C3.75 17.04 3.82 17.2 3.93 17.32C4.05 17.43 4.21 17.5 4.375 17.5H15.625C15.79 17.5 15.95 17.43 16.07 17.32C16.18 17.2 16.25 17.04 16.25 16.875V6.875M11.875 2.5L16.25 6.875M11.875 2.5V6.875H16.25M6.875 10.625H13.125M6.875 13.75H13.125',

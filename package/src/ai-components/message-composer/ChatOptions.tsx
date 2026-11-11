@@ -6,8 +6,7 @@ import { Close } from '../internal/icons/Close';
 import { primitives } from '../internal/tokens';
 
 /**
- * A way to ask, which the person picks for their next message, such as "Think harder". The
- * counterpart of `ChatOption` in StreamChatAI.
+ * A way to ask, which the person picks for their next message, such as "Think harder".
  */
 export type AIChatOption = {
   id: string;
@@ -31,8 +30,7 @@ export type ChatOptionsListProps = {
 
 /**
  * The items of the chat options menu, one per option, each with its icon, title and description.
- * `ComposerView` shows them in its sheet, under the camera and photos. The counterpart of
- * `ChatOptionsList`.
+ * `ComposerView` shows them in its sheet, under the camera and photos.
  */
 export const ChatOptionsList = ({ onSelect, options, selectedId }: ChatOptionsListProps) => {
   const {
@@ -80,7 +78,7 @@ export type SelectedChatOptionChipProps = {
   disabled?: boolean;
 };
 
-/** The picked option, with a button that removes it. The counterpart of `SelectedChatOptionChip`. */
+/** The picked option, with a button that removes it. */
 export const SelectedChatOptionChip = ({
   disabled,
   onRemove,

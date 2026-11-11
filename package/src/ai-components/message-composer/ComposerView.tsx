@@ -67,8 +67,7 @@ export type ComposerViewProps = {
    */
   keyboardOffset?: number;
   /**
-   * Shown after the message box, on the same line, such as a button into voice mode. The
-   * counterpart of StreamChatAI's trailing composer view.
+   * Shown after the message box, on the same line, such as a button into voice mode.
    */
   trailing?: ReactNode;
   isGenerating?: boolean;

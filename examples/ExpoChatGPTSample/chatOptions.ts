@@ -1,6 +1,6 @@
 import type { AIChatOption } from 'stream-chat-expo/ai-components';
 
-/** Asks with more time to reason, as Juno does. */
+/** Asks with more time to reason. */
 export const THINK_HARDER: AIChatOption = {
   description: 'More time to reason before answering',
   id: 'think_harder',

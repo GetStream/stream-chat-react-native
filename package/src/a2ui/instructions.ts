@@ -89,8 +89,8 @@ export const a2uiCatalogFor = ({
 /**
  * The instructions that teach an agent's model to write A2UI the app's renderer shows, in
  * Markdown: how a reply carries its UI, the protocol, the catalog's guidelines and the catalog
- * itself with the app's components, then what `config` adds. The same as StreamChatA2UI's
- * `A2UIInstructions`. Throws an `A2UIInstructionsError` when an example would not render.
+ * itself with the app's components, then what `config` adds. Throws an `A2UIInstructionsError`
+ * when an example would not render.
  */
 export const a2uiInstructionsText = (config: A2UIInstructionsConfig = {}) => {
   const catalog = a2uiCatalogFor(config);
@@ -145,8 +145,8 @@ const duplicates = (components: Record<string, unknown>[], surfaceId: string) =>
 /**
  * What is wrong with the A2UI messages of `text` for a renderer with `catalog`, or nothing
  * when they render as written: messages it can't read, components it doesn't have or that don't
- * fit their schemas, and references that lead nowhere. As StreamChatA2UI's `A2UIProgram`, with
- * each component checked against its schema by the A2UI core as a renderer checks it.
+ * fit their schemas, and references that lead nowhere, with each component checked against its
+ * schema by the A2UI core as a renderer checks it.
  */
 export const a2uiProblemsWith = (text: string, catalog: Catalog<Entry>) => {
   const problems: string[] = [];
@@ -320,9 +320,8 @@ export const a2uiProblemsIn = (
 
 /**
  * The instructions that teach an agent's model to write A2UI with the basic catalog and the
- * app's components, in Markdown, from the A2UI core's own catalog: the counterpart of
- * StreamChatA2UI's `A2UIInstructions`, from the same configuration as its `prompt.json`. Give
- * them to the agent's backend, as the part of its instructions about UI. It runs in a script or
+ * app's components, in Markdown, from the A2UI core's own catalog. Give them to the agent's
+ * backend, as the part of its instructions about UI. It runs in a script or
  * a build too, and rejects with an `A2UIInstructionsError` when an example would not render.
  */
 export const a2uiInstructions = (config: A2UIInstructionsConfig = {}) =>
@@ -332,7 +331,6 @@ export const a2uiInstructions = (config: A2UIInstructionsConfig = {}) =>
  * What is wrong with the A2UI messages of `text`, such as an agent's example, for the catalog
  * `config` makes, or nothing when they render as written: messages the renderer can't read,
  * components it doesn't have or that don't fit their schemas, and references that lead nowhere.
- * The counterpart of StreamChatA2UI's `A2UIProgram.problems`.
  */
 export const a2uiProblems = (
   text: string,

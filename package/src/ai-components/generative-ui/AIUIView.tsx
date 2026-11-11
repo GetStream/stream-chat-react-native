@@ -66,7 +66,7 @@ export type AIUIViewProps = {
  * none of the host's renderers shows the document, and the reply's text should show instead:
  * `host.content(document, messageId) !== null` tells which, and `host.subscribe` when that may
  * have changed. Give the host the conversation's messages with `host.receive(messages)` as they
- * change. The counterpart of `AIUIView` in StreamChatAI.
+ * change.
  */
 export const AIUIView = ({ document, host, messageId }: AIUIViewProps) => {
   useAIUIHostRefresh(host);

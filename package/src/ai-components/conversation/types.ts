@@ -6,8 +6,8 @@ import type { AIMessagePartData } from '../message-parts/types';
 export type AIMessageRole = 'user' | 'assistant' | (string & {});
 
 /**
- * A message of the conversation as the AI components show it. The counterpart of the
- * `AIMessage` protocol in StreamChatAI. `fromStreamMessage` makes one from a Stream message.
+ * A message of the conversation as the AI components show it. `fromStreamMessage` makes one
+ * from a Stream message.
  */
 export type AIMessage = {
   id: string;

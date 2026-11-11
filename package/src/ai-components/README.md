@@ -247,7 +247,7 @@ The `SpeechToTextButton` is already integrated within the `ComposerView`, howeve
 
 ### `VoiceGlow` and `VoiceWave`
 
-Two visualizations of a voice agent, alike on iOS, Android, the web and React Native:
+Two visualizations of a voice agent:
 
 - `VoiceGlow`: a soft, airy globe whose color masses orbit inside it and swell with speech. It is drawn by a Skia shader, every pixel on the GPU.
 - `VoiceWave`: a single string carrying a wave packet that erupts with speech, its colors flowing along it.
@@ -289,9 +289,9 @@ The motion runs entirely on the UI thread with Reanimated and Skia, so the visua
 
 **Theming.** The theme's `voiceVisualization.colors` are the default palette (the accent color unless you set them). The visualizations draw for a light or a dark background following `voiceVisualization.backdropColor` when you set it, and the system color scheme otherwise.
 
-**Accessibility.** Each is an image named "Voice agent" with its state as the value ("Ready", "Connecting", "Listening", "Thinking", "Speaking"), as on iOS and Android. Pass `stateLabels` to translate the state values, `accessibilityLabel` to change the label, or `accessibilityValue` to replace the value outright. Under the system's Reduce Motion (animations off on Android), they barely move and ignore taps.
+**Accessibility.** Each is an image named "Voice agent" with its state as the value ("Ready", "Connecting", "Listening", "Thinking", "Speaking"). Pass `stateLabels` to translate the state values, `accessibilityLabel` to change the label, or `accessibilityValue` to replace the value outright. Under the system's Reduce Motion (animations off on Android), they barely move and ignore taps.
 
-**Differences from the native SDKs.** The glow has no `rendering` option: the shader runs on every Android version through Skia, so there is no Canvas fallback, and it does not switch to a cheaper look in battery saver as on Android. A visualization keeps animating while it is mounted, even when scrolled off screen; it pauses only while the app is in the background.
+**Rendering.** The glow's shader runs through Skia on every Android version, so there is no fallback rendering, and it does not switch to a cheaper look in battery saver. A visualization keeps animating while it is mounted, even when scrolled off screen; it pauses only while the app is in the background.
 
 ### Generated UI
 
@@ -332,7 +332,7 @@ The label of the message an action sends is the text of the control the person t
 | `catalogId`    | The id of the catalog with your own components.                                                                      |
 | `onError`      | Called with what was wrong in a reply's A2UI. The rest of the reply still shows. Logged by default.                  |
 
-**Your own components.** Define a component with `defineAIUIComponent(definition, View)` and pass it to the host's `components`. The definition is portable JSON (name, description, parameters, events), so the same `UIComponents.json` can describe it to the agent and to the Swift and Android apps. A component calls `context.emit(name, label, payload)` to send an action.
+**Your own components.** Define a component with `defineAIUIComponent(definition, View)` and pass it to the host's `components`. The definition is portable JSON (name, description, parameters, events), so the same `UIComponents.json` can describe it to the agent and to your apps on other platforms. A component calls `context.emit(name, label, payload)` to send an action.
 
 **Tools.** The host's `tools` are functions of yours that a reply's UI can call, such as reading something on the device. They are the same `AIClientTool`s an `AIClientToolRunner` takes, so a tool is defined once. A tool runs by itself as a reply shows only when its definition says it is read-only (`annotations: { readOnlyHint: true }`); any other runs only from something the person did, such as a tap. Output that isn't JSON is refused, and what the person typed into a password field never reaches a tool.
 

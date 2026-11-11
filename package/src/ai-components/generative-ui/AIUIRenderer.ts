@@ -9,8 +9,7 @@ import type { AIClientToolDefinition } from '../tool-calls/AIClientToolRunner';
 /**
  * Shows the documents of one conversation in a renderer's format. A host makes one per
  * renderer, the first time the renderer receives or shows something, and keeps it as long as
- * the host lives, so what a reply's UI holds, such as a form's values, survives scrolling. The
- * counterpart of `AIUIEngine` in StreamChatAI.
+ * the host lives, so what a reply's UI holds, such as a form's values, survives scrolling.
  */
 export type AIUIEngine = {
   /**
@@ -35,7 +34,7 @@ export type AIUIEngine = {
 
 /**
  * Reads one format of generated UI, such as A2UI. A plug-in of `AIUIHost`: the AI components
- * know no format themselves. The counterpart of `AIUIRenderer` in StreamChatAI.
+ * know no format themselves.
  */
 export type AIUIRenderer = {
   /** Makes what shows the documents of one conversation. */

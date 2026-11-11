@@ -3,7 +3,7 @@ import { isRecord } from './AIUIHelpers';
 /** A JSON Schema, as a component's parameters are described to the agent. */
 export type AIUIJSONSchema = Record<string, unknown>;
 
-/** Something the agent fills in for a component. The counterpart of `AIUIParameter`. */
+/** Something the agent fills in for a component. */
 export type AIUIParameter = {
   /** Whether the agent must fill it in. */
   isRequired: boolean;
@@ -28,8 +28,7 @@ export type AIUIComponentEvent = {
 /**
  * An app's component as the agent knows it: its name, what it shows, what the agent fills in
  * and what it reports. It is portable JSON, the same on every platform, so one description
- * (such as a `UIComponents.json` shared with the iOS and Android apps) serves them all. The
- * counterpart of `AIUIComponentDefinition` in StreamChatAI.
+ * (such as a `UIComponents.json` shared with the iOS and Android apps) serves them all.
  */
 export type AIUIComponentDefinition = {
   /** What it shows and when to use it, for the agent. */

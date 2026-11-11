@@ -138,6 +138,116 @@ describe('a2uiMessagesIn', () => {
     const tricky = '{"text":"a } and a \\" and a {"}';
     expect(a2uiMessagesIn(tricky)).toEqual([tricky]);
   });
+
+  const parsed = (message: string): unknown => {
+    try {
+      return JSON.parse(message);
+    } catch {
+      return undefined;
+    }
+  };
+
+  const surfaceIdOf = (message: string) =>
+    (parsed(message) as { createSurface: { surfaceId: string } }).createSurface.surfaceId;
+
+  it('reads a pretty-printed message across its lines', () => {
+    const text = [
+      '{',
+      '  "version": "1.0",',
+      '  "updateComponents": {',
+      '    "surfaceId": "s",',
+      '    "components": [',
+      '      {"id": "root", "component": "Column", "children": ["a"]},',
+      '      {',
+      '        "id": "a", "component": "Text", "text": "{ not a brace }"',
+      '      }',
+      '    ]',
+      '  }',
+      '}',
+      '{"version": "1.0", "deleteSurface": {"surfaceId": "s"}}',
+    ].join('\n');
+    const messages = a2uiMessagesIn(text);
+    expect(messages).toHaveLength(2);
+    expect(messages.map(parsed)).toEqual([expect.any(Object), expect.any(Object)]);
+  });
+
+  it('ends a message with a stray quote at its line, and the messages after it still count', () => {
+    const lines = [
+      '{"version": "1.0", "createSurface": {"surfaceId": "a"}}',
+      '{"version": "1.0", "updateComponents": {"surfaceId": "a", "components": [{"id": "t", "text">Day 1"}]}}',
+      '{"version": "1.0", "createSurface": {"surfaceId": "b"}}',
+      '{"version": "1.0", "createSurface": {"surfaceId": "c", "note": "a } and a \\" in a string"}}',
+    ];
+    const messages = a2uiMessagesIn(lines.join('\n'));
+    expect(messages).toEqual(lines);
+    expect(parsed(messages[1])).toBeUndefined();
+    expect([0, 2, 3].map((index) => surfaceIdOf(messages[index]))).toEqual(['a', 'b', 'c']);
+  });
+
+  it('ends a message missing a brace where the next one starts', () => {
+    const lines = [
+      '{"version": "1.0", "createSurface": {"surfaceId": "a"}',
+      '{"version": "1.0", "createSurface": {"surfaceId": "b"}}',
+      '{"version": "1.0", "createSurface": {"surfaceId": "c"}}',
+    ];
+    const messages = a2uiMessagesIn(lines.join('\n'));
+    expect(messages).toEqual(lines);
+    expect(parsed(messages[0])).toBeUndefined();
+    expect(messages.slice(1).map(surfaceIdOf)).toEqual(['b', 'c']);
+  });
+
+  it('skips the rest of a broken pretty-printed message instead of reading it as messages', () => {
+    const broken = [
+      '{"version": "1.0", "updateComponents": {"surfaceId": "a", "components": [',
+      '  {"id": "t", "text">Day 1"},',
+      '  {"id": "u", "component": "Text"},',
+      '  {"id": "w", "component": "Text"}',
+      ']}}',
+    ].join('\n');
+    const newline = [
+      '{"version": "1.0", "updateComponents": {"surfaceId": "a", "components": [',
+      '  {"id": "t", "component": "Text", "text": "Day 1',
+      'Use {name} here"}',
+      ']}}',
+    ].join('\n');
+    const next = '{"version": "1.0", "createSurface": {"surfaceId": "b"}}';
+    for (const text of [broken, newline]) {
+      const messages = a2uiMessagesIn(`${text}\n${next}`);
+      expect(messages).toHaveLength(2);
+      expect(parsed(messages[0])).toBeUndefined();
+      expect(surfaceIdOf(messages[1])).toBe('b');
+    }
+  });
+
+  it('keeps a missing comma between indented objects inside its message', () => {
+    const text = [
+      '{"version": "1.0", "updateComponents": {"surfaceId": "a", "components": [',
+      '  {"id": "t", "component": "Text"}',
+      '  {"id": "u", "component": "Text"}',
+      ']}}',
+      '{"version": "1.0", "createSurface": {"surfaceId": "b"}}',
+    ].join('\n');
+    const messages = a2uiMessagesIn(text);
+    expect(messages).toHaveLength(2);
+    expect(parsed(messages[0])).toBeUndefined();
+    expect(surfaceIdOf(messages[1])).toBe('b');
+  });
+
+  it('leaves out the line still being written after a broken message', () => {
+    const broken = '{"version": "1.0", "updateComponents": {"surfaceId": "a", "text">x"}}';
+    const next = '{"version": "1.0", "createSurface": {"surfaceId": "b"}}';
+    for (let length = 0; length < next.length; length++) {
+      expect(a2uiMessagesIn(`${broken}\n${next.slice(0, length)}`)).toEqual([broken]);
+    }
+    expect(a2uiMessagesIn(`${broken}\n${next}`)).toEqual([broken, next]);
+  });
+
+  it('lets a string still being written hold braces and quotes', () => {
+    const partial =
+      '{"version": "1.0", "createSurface": {"surfaceId": "s", "note": "a { and a \\" so far';
+    expect(a2uiMessagesIn(partial)).toEqual([]);
+    expect(a2uiMessagesIn(`${partial}"}}`)).toHaveLength(1);
+  });
 });
 
 describe('the A2UI versions and catalog it reads', () => {
@@ -163,7 +273,7 @@ describe('the A2UI versions and catalog it reads', () => {
     ).toEqual({ catalogId: 'other', surfaceId: 's' });
   });
 
-  it('describes the app’s components to the agent as StreamChatA2UI does', () => {
+  it('describes the app’s components to the agent', () => {
     expect(a2uiTypeName('place_card')).toBe('PlaceCard');
     const document = a2uiAppCatalogDocument(A2UI_DEFAULT_CATALOG_ID, [placeCard]);
     expect(document.components.PlaceCard).toMatchObject({
@@ -374,6 +484,32 @@ describe('a reply written in A2UI', () => {
     );
   });
 
+  it('shows the messages after one the agent broke, and reports the broken one', async () => {
+    const { errors, ui } = setup();
+    const text = (surfaceId: string, words: string) => [
+      line({ createSurface: { surfaceId } }),
+      line({
+        updateComponents: {
+          components: [{ component: 'Text', id: 'root', text: words }],
+          surfaceId,
+        },
+      }),
+    ];
+    await renderReply(ui, [
+      ...text('a', 'Day 1'),
+      line({ createSurface: { surfaceId: 'b' } }).slice(0, -1),
+      ...text('c', 'Day 2'),
+    ]);
+    await waitFor(() => expect(screen.getByText('Day 2')).toBeTruthy());
+    expect(screen.getByText('Day 1')).toBeTruthy();
+    expect(errors).toEqual([
+      expect.objectContaining({
+        code: 'VALIDATION_FAILED',
+        message: 'A message isn’t a JSON object',
+      }),
+    ]);
+  });
+
   it('opens links the way the host allows, from the person’s tap only', async () => {
     const { open, ui } = setup();
     await renderReply(
@@ -500,6 +636,98 @@ describe('what the person types into an obscured field', () => {
     await fillIn();
     await waitFor(() => expect(sent).toHaveLength(1));
     expect(JSON.stringify(sent[0])).not.toContain('hunter22');
+  });
+
+  it('stays the person’s in an obscured field of a list’s row', async () => {
+    const { sent, ui } = setup();
+    await renderReply(ui, [
+      line({
+        createSurface: {
+          dataModel: { accounts: [{ name: 'Main', pin: '' }] },
+          sendDataModel: true,
+          surfaceId: 's',
+        },
+      }),
+      line({
+        updateComponents: {
+          components: [
+            { children: ['accounts', 'go'], component: 'Column', id: 'root' },
+            {
+              children: { componentId: 'pin', path: '/accounts' },
+              component: 'List',
+              id: 'accounts',
+            },
+            {
+              component: 'TextField',
+              id: 'pin',
+              label: 'PIN',
+              value: { '@path': 'pin' },
+              variant: 'obscured',
+            },
+            ...button('go', 'Save', { event: { name: 'save' } }),
+          ],
+          surfaceId: 's',
+        },
+      }),
+    ]);
+    fireEvent.changeText(await screen.findByLabelText('PIN'), '4821');
+    fireEvent.press(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]?.payload.dataModel).toEqual({ accounts: [{ name: 'Main' }] });
+    expect(JSON.stringify(sent[0])).not.toContain('4821');
+  });
+
+  it('leaves the context key a row’s button binds to the row’s obscured field', async () => {
+    const { sent, ui } = setup();
+    await renderReply(ui, [
+      line({
+        createSurface: {
+          dataModel: {
+            accounts: [
+              { name: 'Main', pin: '' },
+              { name: 'Savings', pin: '' },
+            ],
+          },
+          surfaceId: 's',
+        },
+      }),
+      line({
+        updateComponents: {
+          components: [
+            {
+              children: { componentId: 'row', path: '/accounts' },
+              component: 'List',
+              id: 'root',
+            },
+            { children: ['pin', 'go'], component: 'Row', id: 'row' },
+            {
+              component: 'TextField',
+              id: 'pin',
+              label: 'PIN',
+              value: { '@path': 'pin' },
+              variant: 'obscured',
+            },
+            ...button('go', 'Save', {
+              event: {
+                context: {
+                  account: { '@path': 'name' },
+                  pin: { '@path': 'pin' },
+                  said: { '@call': 'formatString', args: { value: 'My PIN is ${pin}' } },
+                },
+                name: 'save',
+              },
+            }),
+          ],
+          surfaceId: 's',
+        },
+      }),
+    ]);
+    const [, savings] = await screen.findAllByLabelText('PIN');
+    fireEvent.changeText(savings, '4821');
+    fireEvent.press(screen.getAllByRole('button', { name: 'Save' })[1]);
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]?.payload.context).toEqual({ account: 'Savings', said: 'My PIN is ' });
+    expect(JSON.stringify(sent[0])).not.toContain('4821');
   });
 });
 

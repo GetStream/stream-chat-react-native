@@ -403,7 +403,7 @@ export const defaultTheme: Theme = {
     unsupported: { container: {}, text: {} },
   },
   conversation: {
-    // StreamChatAI's defaults, from the shared design tokens.
+    // From the shared design tokens.
     loadingIndicator: '#414552',
     scrollButtonBackground: '#FFFFFF',
     scrollButtonBorder: '#D5DBE1',
@@ -416,7 +416,7 @@ export const defaultTheme: Theme = {
     row: {},
   },
   message: {
-    // StreamChatAI's and the Android AI SDK's defaults, from the shared design tokens.
+    // From the shared design tokens.
     userMessageBackground: '#EBEEF1',
     userMessageText: '#1A1B25',
     messageAction: '#414552',
@@ -442,7 +442,7 @@ export const defaultTheme: Theme = {
     replyActions: { container: {}, button: {} },
   },
   chatOptions: {
-    // StreamChatAI's defaults, from the shared design tokens.
+    // From the shared design tokens.
     chipBackground: '#FFFFFF',
     chipText: '#005FFF',
     descriptionText: '#414552',
@@ -458,7 +458,7 @@ export const defaultTheme: Theme = {
     chipRemoveButton: {},
   },
   suggestions: {
-    // StreamChatAI's defaults, from the shared design tokens.
+    // From the shared design tokens.
     background: '#EBEEF1',
     text: '#1A1B25',
     container: {},

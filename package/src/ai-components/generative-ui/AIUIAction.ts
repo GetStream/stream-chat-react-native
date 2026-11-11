@@ -4,7 +4,7 @@ import { utf8ByteLength } from './AIUIHelpers';
 /**
  * What the person did in a reply's UI, such as tapping a place or submitting a form. It goes to
  * the agent as their next message: `label` is its text and `aiUIActionJSON(action)` what it
- * carries. The counterpart of `AIUIAction` in StreamChatAI.
+ * carries.
  */
 export type AIUIAction = {
   /** The format of the UI it came from. */

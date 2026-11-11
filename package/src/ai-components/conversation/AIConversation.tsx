@@ -183,8 +183,8 @@ type ConversationContextValue = {
 
 const ConversationContext = createContext<ConversationContextValue | undefined>(undefined);
 
-// StreamChatAI's layout, from the design tokens: turns 8 apart, each with 16 above it, its
-// messages 16 apart, and 16 around the whole.
+// From the design tokens: turns 8 apart, each with 16 above it, its messages 16 apart, and 16
+// around the whole.
 const ROW_GAPS: Record<RowPosition, number> = {
   message: primitives.spacingMd,
   turn: primitives.spacingXs + primitives.spacingMd,
@@ -388,7 +388,7 @@ const DefaultConversationReplyActions = ({
 
 /**
  * The conversation with an AI agent, laid out by turn: each of the person's questions starts a
- * turn, with the agent's reply under it. The counterpart of `AIConversationView`.
+ * turn, with the agent's reply under it.
  *
  * - A new question pins to the top of what is visible, and the reply writes out below it,
  *   without moving what is on screen. The latest turn is at least as tall as the conversation.

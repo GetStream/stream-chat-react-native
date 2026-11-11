@@ -3,7 +3,7 @@ import Foundation
 import UIKit
 
 /// This install's identifier and the sign-ins of tool calls, for the `AIAgent` TurboModule
-/// (`AIAgent.mm`). Ported from StreamChatAI's `AIClientIdentity` and `AIWebAuthentication`.
+/// (`AIAgent.mm`).
 @objc(AIAgentModule)
 public class AIAgentModule: NSObject {
     private static let installIdKey = "io.getstream.ai.client-id"
@@ -15,7 +15,7 @@ public class AIAgentModule: NSObject {
 
     /// This install's identifier, created on first use. It is kept in a file left out of backups,
     /// as on Android, so a phone restored from another's backup never answers tool calls meant
-    /// for that one. An id kept the way StreamChatAI keeps it, in UserDefaults, carries over, so a
+    /// for that one. An id already kept in UserDefaults under the same key carries over, so a
     /// native app moving to React Native keeps its id.
     @objc public static func installId() -> String {
         let file = installIdFile()
