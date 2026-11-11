@@ -1298,14 +1298,14 @@ describe('AIConversationController older messages', () => {
     expect(transport.loads).toBe(2);
   });
 
-  it('can load again when the transport fails', async () => {
+  it('rejects when the transport fails, and can load again', async () => {
     const transport = new ConversationTransport();
     transport.loadError = new TransportError();
     const controller = makeController(transport);
     transport.feed?.updateHasOlderMessages(true);
 
-    await controller.loadOlderMessages();
-    await controller.loadOlderMessages();
+    await expect(controller.loadOlderMessages()).rejects.toBe(transport.loadError);
+    await expect(controller.loadOlderMessages()).rejects.toBe(transport.loadError);
 
     expect(transport.loads).toBe(2);
     // Not a request of the person's.
