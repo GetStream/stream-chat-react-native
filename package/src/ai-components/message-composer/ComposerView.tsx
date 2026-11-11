@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import type { StateStore } from '@stream-io/state-store';
 
@@ -9,6 +9,7 @@ import { ActionButton } from './ActionButton';
 import { BottomSheetContent } from './ActionSheet';
 
 import { AttachmentButton } from './AttachmentButton';
+import { type AIChatOption, SelectedChatOptionChip } from './ChatOptions';
 
 import { MediaPreviewList } from './MediaPreviewList';
 
@@ -20,7 +21,7 @@ import type {
   AbstractMediaPickerService,
   MediaPickerState,
 } from '../services/media-picker-service/AbstractMediaPickerService';
-import { COMPOSER_DICTATION_SOURCE, useComposerText } from '../store';
+import { COMPOSER_DICTATION_SOURCE, useComposerChatOption, useComposerText } from '../store';
 import type { ComposerState } from '../store';
 import { useDictationState } from '../store/dictation/useDictationState';
 import { useDictationTranscript } from '../store/dictation/useDictationTranscript';
@@ -43,9 +44,17 @@ export type ComposerViewProps = {
   onSendMessage: (opts: {
     text: string;
     attachments?: MediaPickerState['assets'];
+    /** The chat option picked for the message. */
+    chatOption?: AIChatOption;
     custom?: Record<string, unknown>;
   }) => Promise<void>;
   bottomSheetOptions?: BottomSheetOption[];
+  /**
+   * Ways to ask, such as "Think harder", listed in the sheet under the camera and photos. The one
+   * picked shows as a chip in the composer, is sent with each message as `chatOption`, and stays
+   * picked until the person removes it. It is kept in `state`, as `chatOption`.
+   */
+  chatOptions?: AIChatOption[];
   isGenerating?: boolean;
   stopGenerating?: () => Promise<void>;
   bottomSheetInsets?: BottomSheetInsets;
@@ -56,6 +65,7 @@ export type ComposerViewProps = {
 export const ComposerViewUI = ({
   bottomSheetOptions = [],
   bottomSheetInsets,
+  chatOptions,
   isGenerating,
   stopGenerating,
 }: ComposerViewProps) => {
@@ -76,6 +86,7 @@ export const ComposerViewUI = ({
           layout={LinearTransition.duration(150)}
         >
           <MediaPreviewList />
+          <ChatOptionChip />
           <View style={[styles.inputPill, inputPill]}>
             <AIMessageInput />
             <ActionButton isGenerating={isGenerating} stopGenerating={stopGenerating} />
@@ -86,9 +97,26 @@ export const ComposerViewUI = ({
         <BottomSheetContent
           bottomSheetOptions={bottomSheetOptions}
           bottomSheetInsets={bottomSheetInsets}
+          chatOptions={chatOptions}
         />
       </BottomSheet>
     </View>
+  );
+};
+
+/** The chat option picked for the next message, if any, with a button that removes it. */
+const ChatOptionChip = () => {
+  const { chatOption } = useComposerChatOption();
+  const { setChatOption } = useMessageComposerContext();
+  if (!chatOption) return null;
+  return (
+    <Animated.View
+      entering={FadeIn.duration(150)}
+      exiting={FadeOut.duration(150)}
+      style={chipStyles.chip}
+    >
+      <SelectedChatOptionChip onRemove={() => setChatOption(null)} option={chatOption} />
+    </Animated.View>
   );
 };
 
@@ -140,6 +168,10 @@ export const ComposerView = (props: ComposerViewProps) => (
     <ComposerViewUI {...props} />
   </ComposerProvider>
 );
+
+const chipStyles = StyleSheet.create({
+  chip: { alignSelf: 'stretch', paddingBottom: primitives.spacingXs },
+});
 
 const useStyles = () => {
   const { theme } = useTheme();

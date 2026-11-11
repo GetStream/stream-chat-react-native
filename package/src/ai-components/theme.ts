@@ -186,6 +186,37 @@ export type Theme = {
       button?: ViewStyle;
     };
   };
+  /**
+   * The composer's chat options: the menu in its sheet, and the chip of the one picked. Optional,
+   * so a hand-built `Theme` without it keeps type-checking.
+   */
+  chatOptions?: {
+    /** The picked option's chip. */
+    chipBackground?: string;
+    chipText?: string;
+    /** An option's description in the menu. */
+    descriptionText?: string;
+    /** An option's title in the menu. */
+    titleText?: string;
+    list?: ViewStyle;
+    item?: ViewStyle;
+    itemIcon?: ViewStyle;
+    itemTitle?: TextStyle;
+    itemDescription?: TextStyle;
+    chip?: ViewStyle;
+    chipIcon?: ViewStyle;
+    chipTitle?: TextStyle;
+    chipRemoveButton?: ViewStyle;
+  };
+  /** `AISuggestions`: the starters of an empty conversation. Optional, as above. */
+  suggestions?: {
+    background?: string;
+    text?: string;
+    container?: ViewStyle;
+    content?: ViewStyle;
+    item?: ViewStyle;
+    itemText?: TextStyle;
+  };
 };
 
 export const defaultTheme: Theme = {
@@ -325,5 +356,30 @@ export const defaultTheme: Theme = {
     assistantMessage: { container: {}, attachments: {} },
     attachment: { image: {}, file: {}, fileIcon: {}, fileName: {}, fileDetails: {} },
     replyActions: { container: {}, button: {} },
+  },
+  chatOptions: {
+    // StreamChatAI's defaults, from the shared design tokens.
+    chipBackground: '#FFFFFF',
+    chipText: '#005FFF',
+    descriptionText: '#414552',
+    titleText: '#1A1B25',
+    list: {},
+    item: {},
+    itemIcon: {},
+    itemTitle: {},
+    itemDescription: {},
+    chip: {},
+    chipIcon: {},
+    chipTitle: {},
+    chipRemoveButton: {},
+  },
+  suggestions: {
+    // StreamChatAI's defaults, from the shared design tokens.
+    background: '#EBEEF1',
+    text: '#1A1B25',
+    container: {},
+    content: {},
+    item: {},
+    itemText: {},
   },
 };

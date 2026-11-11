@@ -4,6 +4,7 @@ import { Image, Text } from 'react-native';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import {
+  AISuggestions,
   ComposerView,
   type ComposerViewProps,
   sheetStore,
@@ -109,5 +110,107 @@ describe('ai-components ComposerView', () => {
     expect(
       screen.UNSAFE_queryAllByType(Text).some((t) => t.props.children === 'With an image'),
     ).toBe(false);
+  });
+
+  it('sends the picked chat option, which stays picked until removed', async () => {
+    const think = {
+      description: 'More time to reason before answering',
+      id: 'think_harder',
+      shortTitle: 'Think',
+      title: 'Think harder',
+    };
+    const { onSendMessage } = renderComposer({ chatOptions: [think] });
+
+    fireEvent.press(screen.getByText('+'));
+    expect(screen.getByText('More time to reason before answering')).toBeTruthy();
+    expect(screen.getByRole('radio', { checked: false })).toBeTruthy();
+    await act(async () => {
+      fireEvent.press(screen.getByText('Think harder'));
+      await flushPromises();
+    });
+    expect(sheetStore.getLatestValue().open).toBe(false);
+    expect(screen.getByTestId('ai-selected-chat-option')).toBeTruthy();
+    expect(screen.getByText('Think')).toBeTruthy();
+
+    fireEvent.changeText(screen.getByPlaceholderText('Ask anything'), 'Why is the sky blue?');
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('send-up'));
+      await flushPromises();
+    });
+    expect(onSendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ chatOption: think, text: 'Why is the sky blue?' }),
+    );
+    expect(screen.getByText('Think')).toBeTruthy();
+
+    fireEvent.press(screen.getByLabelText('Remove option: Think'));
+    expect(screen.queryByTestId('ai-selected-chat-option')).toBeNull();
+
+    fireEvent.changeText(screen.getByPlaceholderText('Ask anything'), 'And now?');
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('send-up'));
+      await flushPromises();
+    });
+    expect(onSendMessage).toHaveBeenLastCalledWith(
+      expect.objectContaining({ chatOption: undefined, text: 'And now?' }),
+    );
+  });
+
+  it('removes the picked chat option when it is picked again', async () => {
+    renderComposer({ chatOptions: [{ id: 'search', title: 'Web search' }] });
+
+    act(() => {
+      sheetStoreApi.openSheet();
+    });
+    await act(async () => {
+      fireEvent.press(screen.getByText('Web search'));
+      await flushPromises();
+    });
+    // Without a short title, the chip shows the title.
+    expect(screen.getByLabelText('Remove option: Web search')).toBeTruthy();
+
+    act(() => {
+      sheetStoreApi.openSheet();
+    });
+    expect(screen.getByRole('radio', { checked: true })).toBeTruthy();
+    await act(async () => {
+      fireEvent.press(screen.getByRole('radio'));
+      await flushPromises();
+    });
+    expect(screen.queryByTestId('ai-selected-chat-option')).toBeNull();
+  });
+
+  it('shows a picked file that is not an image as a file, with a way to remove it', () => {
+    const mediaPickerService = new FakeMediaPickerService();
+    mediaPickerService.appendAssets([
+      { name: 'clip.mp4', size: 2048, type: 'video/mp4', uri: 'file:///clip.mp4' },
+    ]);
+    renderComposer({ mediaPickerService });
+
+    expect(screen.UNSAFE_queryAllByType(Image)).toHaveLength(0);
+    expect(screen.getByText('clip.mp4')).toBeTruthy();
+    expect(screen.getByText('MP4 · 2.00 kB')).toBeTruthy();
+
+    fireEvent.press(screen.getByLabelText('Remove attachment'));
+    expect(mediaPickerService.state.getLatestValue().assets).toEqual([]);
+  });
+});
+
+describe('AISuggestions', () => {
+  it('hands the picked suggestion over, and shows nothing without any', () => {
+    const onSelect = jest.fn();
+    const { rerender } = render(
+      <StreamTheme>
+        <AISuggestions onSelect={onSelect} suggestions={['Plan a weekend in Lisbon', 'Cook']} />
+      </StreamTheme>,
+    );
+    fireEvent.press(screen.getByRole('button', { name: 'Plan a weekend in Lisbon' }));
+    expect(onSelect).toHaveBeenCalledWith('Plan a weekend in Lisbon');
+
+    rerender(
+      <StreamTheme>
+        <AISuggestions onSelect={onSelect} suggestions={[]} />
+      </StreamTheme>,
+    );
+    expect(screen.queryByTestId('ai-suggestions')).toBeNull();
   });
 });
