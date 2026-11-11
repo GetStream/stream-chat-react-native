@@ -362,6 +362,9 @@ end
 desc 'Selects the e2e tests a pull request can affect into e2e_selection.json.'
 lane :select_e2e_tests do |options|
   all_tests = e2e_test_ids(e2e_tests_path)
+  # TEMPORARY (RN-513 stress run, drop before merging): a dispatched run runs only GiphyTests, so
+  # every batch starts with a giphy test, the case that used to lose the emulator.
+  all_tests = all_tests.select { |id| id.start_with?('GiphyTests.e2e/') } if ENV['GITHUB_EVENT_NAME'] == 'workflow_dispatch'
   local = options[:coverage_map] || options[:changed_files] || options[:diff_base]
   if !local && ENV['GITHUB_EVENT_NAME'] != 'pull_request'
     # A dispatched run's tip can be a merge commit, which would pass for a pull request's.
