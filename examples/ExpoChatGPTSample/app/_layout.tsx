@@ -21,7 +21,7 @@ import { AppProvider } from '../contexts/AppContext';
 
 import { MenuDrawer } from '../screens/MenuDrawer';
 
-const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
+const isMessageAIGenerated = (message: LocalMessage) => !!message.custom?.ai_generated;
 
 export default function Layout() {
   const chatClient = useCreateChatClient({

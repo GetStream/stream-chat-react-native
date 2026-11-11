@@ -17,7 +17,10 @@ declare module 'stream-chat' {
   // Module augmentation: the empty interfaces are how the default data types are applied.
   /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-  interface CustomAttachmentData extends DefaultAttachmentData {}
+  interface CustomAttachmentData extends DefaultAttachmentData {
+    /** A voice memo's length in seconds, which the router writes on it. */
+    duration?: number;
+  }
 
   interface CustomChannelData extends DefaultChannelData {}
 
@@ -37,6 +40,10 @@ declare module 'stream-chat' {
     ai_ui?: AIUIDocumentJSON;
     /** What the person did in a reply's UI, on their message that says so. */
     ai_ui_action?: AIUIActionJSON;
+    /** The handbook sources a reply drew on, which the backend writes on it. */
+    support_message?: {
+      sources?: { citation?: string; id: string; title: string; url: string }[];
+    };
   }
 
   interface CustomPollOptionData extends DefaultPollOptionData {}

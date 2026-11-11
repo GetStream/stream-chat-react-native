@@ -24,7 +24,7 @@ import { MenuDrawer } from '../screens/MenuDrawer';
 
 LogBox.ignoreAllLogs();
 
-const isMessageAIGenerated = (message: LocalMessage) => !!message.ai_generated;
+const isMessageAIGenerated = (message: LocalMessage) => !!message.custom?.ai_generated;
 
 export default function Layout() {
   const chatClient = useCreateChatClient({

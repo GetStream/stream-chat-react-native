@@ -46,7 +46,6 @@ import {
   ComposerView,
   isAIConversationAnswering,
   useAIConversationState,
-  useAITranslation,
 } from 'stream-chat-expo/ai-components';
 import {
   AIConversation,
@@ -80,7 +79,6 @@ const ComposerArea = ({
   failure: string | undefined;
 }) => {
   const { error } = useAIConversationState(conversation, errorSelector);
-  const { t } = useAITranslation();
 
   const safeAreaInsets = useSafeAreaInsets();
   const insets = useMemo(
@@ -104,7 +102,7 @@ const ComposerArea = ({
           {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
           {error ? (
             <Pressable accessibilityRole='button' onPress={() => conversation.retry()}>
-              <Text style={styles.failureText}>{t(error.message)}</Text>
+              <Text style={styles.failureText}>{error.message}</Text>
               <Text style={styles.retryText}>Try again</Text>
             </Pressable>
           ) : null}
@@ -182,11 +180,8 @@ type Source = { id: string; title: string; url: string; citation?: string };
 
 const NO_SOURCES: Source[] = [];
 
-const sourcesOf = (message: LocalMessage | undefined): Source[] => {
-  const support = (message as { support_message?: { sources?: Source[] } } | undefined)
-    ?.support_message;
-  return support?.sources ?? NO_SOURCES;
-};
+const sourcesOf = (message: LocalMessage | undefined): Source[] =>
+  message?.custom?.support_message?.sources ?? NO_SOURCES;
 
 /** The chat the open conversation is kept in, for the views of its messages. */
 const ConversationChatContext = createContext<AgentChat | undefined>(undefined);
@@ -289,7 +284,7 @@ const VoiceNotes = ({
         item={{
           ...note,
           id: `${message.id}-${index}`,
-          type: note.duration ? 'voiceRecording' : 'audio',
+          type: note.custom?.duration ? 'voiceRecording' : 'audio',
         }}
         key={note.asset_url}
         message={message}

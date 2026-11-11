@@ -7,13 +7,12 @@ import { withCustomFields } from '../internal/customFields';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
 import { parseMessageParts } from '../message-parts/parseMessageParts';
 
-/** A Stream message, as the channel's state or an event has it. */
-export type AIStreamMessage = Pick<LocalMessage | MessageResponse, 'attachments' | 'id' | 'text'> &
-  Record<string, unknown>;
+/** What the adapter reads of a message: a `LocalMessage` or a `MessageResponse` will do. */
+export type AIStreamMessage = Pick<LocalMessage | MessageResponse, 'attachments' | 'id' | 'text'>;
 
-export type FromStreamMessageOptions = {
+export type FromStreamMessageOptions<M extends AIStreamMessage = AIStreamMessage> = {
   /** Whether the agent wrote it. Defaults to the message's `custom.ai_generated` field. */
-  isAssistant?: (message: AIStreamMessage) => boolean;
+  isAssistant?: (message: M) => boolean;
   /** The whole of a reasoning step's thinking, when the app has it, such as from live updates. */
   reasoningText?: (messageId: string, stepId: string) => string | undefined;
 };
@@ -51,12 +50,12 @@ const attachmentOf = (attachment: Attachment): AIMessageAttachmentData | undefin
  * agent wrote for it is its `custom.ai_ui` field. A person's message has no UI, whatever its
  * fields say.
  */
-export const fromStreamMessage = (
-  message: AIStreamMessage,
-  { isAssistant, reasoningText }: FromStreamMessageOptions = {},
+export const fromStreamMessage = <M extends AIStreamMessage>(
+  message: M,
+  { isAssistant, reasoningText }: FromStreamMessageOptions<M> = {},
 ): AIMessage => {
   const attachments = message.attachments ?? [];
-  const fields = withCustomFields(message);
+  const fields = withCustomFields(message as unknown as Record<string, unknown>);
   const assistant = isAssistant ? isAssistant(message) : fields.ai_generated === true;
   const uiDocument = assistant ? parseAIUIDocument(fields[AI_UI_CUSTOM_DATA_KEY]) : undefined;
   return {
@@ -81,9 +80,11 @@ export const fromStreamMessage = (
  * on every update leaves the others as they were, and `AIConversation` renders only the changed
  * ones again. Make one per conversation, such as with `useState(() => createFromStreamMessage())`.
  */
-export const createFromStreamMessage = (options?: FromStreamMessageOptions) => {
-  const cache = new WeakMap<AIStreamMessage, AIMessage>();
-  return (message: AIStreamMessage) => {
+export const createFromStreamMessage = <M extends AIStreamMessage = AIStreamMessage>(
+  options?: FromStreamMessageOptions<M>,
+) => {
+  const cache = new WeakMap<M, AIMessage>();
+  return (message: M) => {
     let adapted = cache.get(message);
     if (!adapted) {
       adapted = fromStreamMessage(message, options);

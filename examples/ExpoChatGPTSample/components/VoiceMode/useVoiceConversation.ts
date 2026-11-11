@@ -69,7 +69,7 @@ export const useVoiceConversation = (active: boolean) => {
     for (let i = messages.length - 1; i >= 0; i--) {
       const message = messages[i];
       if (seenIds.has(message.id)) break;
-      if (message.ai_generated && message.text) return message.text;
+      if (message.custom?.ai_generated && message.text) return message.text;
     }
     return null;
   });

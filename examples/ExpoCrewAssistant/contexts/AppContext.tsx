@@ -269,7 +269,10 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       const channel = chat.conversationChannel;
       if (!channel) throw new Error('The conversation has no channel yet');
       const name = uri.split('/').pop() ?? 'voice-memo.aac';
-      const { file } = await channel.sendFile(uri, name, audioTypeOf(uri));
+      const { file } = await channel.uploadChannelFile({
+        file: { name, type: audioTypeOf(uri), uri },
+      });
+      if (!file) throw new Error('The voice memo did not upload');
       chat.wasAsked = true;
       chat.lastRequest = { voiceMemoUrl: file };
       await askWithVoiceMemo(session, file);

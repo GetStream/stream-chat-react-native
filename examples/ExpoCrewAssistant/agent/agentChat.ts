@@ -1,7 +1,8 @@
 import { AppState } from 'react-native';
 
 import { LiveReasoning, type Session } from '@stream-io/calypso';
-import { type Channel, type Event, type LocalMessage, StateStore } from 'stream-chat';
+import { StateStore } from '@stream-io/state-store';
+import type { Channel, Event, LocalMessage } from 'stream-chat';
 
 /** What was last asked of the agent here, so it can be asked again when it couldn't answer. */
 export type AgentRequest =
@@ -96,26 +97,28 @@ export class AgentChat {
     // Every event rather than the list kept for us: each live update carries its own window of the
     // reply's thinking, and folding them into one would lose all but the last.
     const subscription = channel.on((event: Event) => {
-      if (event.type === 'message.updated' && event.message) {
-        this.reasoning.read(event.message as { id: string; reasoning?: unknown });
-      }
-      if (
-        event.type === 'message.new' ||
-        event.type === 'message.updated' ||
-        event.type === 'message.deleted'
-      ) {
-        // A new array, in which only the messages that changed are new objects.
-        const messages = [...channel.state.messages];
-        this.state.partialNext({
-          messages,
-          ...(messages.some(showsAgentReply) ? { awaitingAgent: false } : {}),
-        });
-      }
+      if (event.type === 'message.updated' && event.message) this.reasoning.read(event.message);
     });
     this.stops.push(() => subscription.unsubscribe());
 
-    const reconnected = channel.getClient().on('connection.changed', (event: Event) => {
-      if (event.online) void this.watchLatest().catch(() => {});
+    // The messages as the channel's paginator keeps them, oldest first: a new array on each change,
+    // in which only the messages that changed are new objects.
+    const unsubscribe = channel.messagePaginator.state.subscribeWithSelector(
+      ({ hasMoreTail, items }) => ({ hasMoreTail, items }),
+      ({ hasMoreTail, items }) => {
+        if (!items) return;
+        this.state.partialNext({
+          hasOlderMessages: hasMoreTail,
+          messages: items,
+          ...(items.length > 0 ? { isLoaded: true } : {}),
+          ...(items.some(showsAgentReply) ? { awaitingAgent: false } : {}),
+        });
+      },
+    );
+    this.stops.push(unsubscribe);
+
+    const reconnected = channel.getClient().on('connection.recovered', () => {
+      void this.watchLatest().catch(() => {});
     });
     this.stops.push(() => reconnected.unsubscribe());
 
@@ -124,10 +127,6 @@ export class AgentChat {
     });
     this.stops.push(() => foregrounded.remove());
 
-    // A channel this client read before shows what it had at once, while the latest page loads.
-    if (channel.state.messages.length > 0) {
-      this.state.partialNext({ isLoaded: true, messages: [...channel.state.messages] });
-    }
     await this.watchLatest();
   }
 
@@ -160,13 +159,11 @@ export class AgentChat {
 
   /** Loads the messages before the oldest one loaded. Throws when it can't, to be asked again. */
   loadOlderMessages = async () => {
-    const oldest = this.state.getLatestValue().messages[0]?.id;
-    if (!oldest || !this.channel) return;
-    const page = await this.channel.query({ messages: { id_lt: oldest, limit: PAGE_SIZE } });
-    this.state.partialNext({
-      hasOlderMessages: page.messages.length >= PAGE_SIZE,
-      messages: [...this.channel.state.messages],
-    });
+    const paginator = this.channel?.messagePaginator;
+    if (!paginator?.hasMoreTail) return;
+    await paginator.toTail();
+    // The paginator keeps a failure rather than throwing it.
+    if (paginator.lastQueryError) throw paginator.lastQueryError;
   };
 
   /** Stops following the channel, and lets the session go. */
@@ -199,22 +196,25 @@ export class AgentChat {
     return session;
   }
 
-  /** Watches the channel again and takes its latest page, in place of what was loaded. */
+  /** Watches the channel again and takes its latest page, as the chat SDK's channel does. */
   private async watchLatest() {
     const channel = this.channel;
     if (!channel) return;
-    const watched = await channel.watch({ messages: { limit: PAGE_SIZE } });
+    const paginator = channel.messagePaginator;
+    paginator.pageSize = PAGE_SIZE;
+    await channel.watch();
+    if (!paginator.state.getLatestValue().items?.length) await paginator.reload();
     if (this.closed) return;
     this.state.partialNext({
-      hasOlderMessages: (watched.messages?.length ?? 0) >= PAGE_SIZE,
+      hasOlderMessages: paginator.hasMoreTail,
       isLoaded: true,
-      messages: [...channel.state.messages],
+      messages: paginator.state.getLatestValue().items ?? [],
     });
   }
 }
 
 /** A reply the agent wrote. */
-export const isAgentReply = (message: LocalMessage) => message.ai_generated === true;
+export const isAgentReply = (message: LocalMessage) => message.custom?.ai_generated === true;
 
 /**
  * A reply of the agent's that has something to show: the router writes it empty first and fills
@@ -222,4 +222,4 @@ export const isAgentReply = (message: LocalMessage) => message.ai_generated === 
  */
 const showsAgentReply = (message: LocalMessage) =>
   isAgentReply(message) &&
-  (message.generating !== true || !!message.text || (message.attachments?.length ?? 0) > 0);
+  (message.custom?.generating !== true || !!message.text || (message.attachments?.length ?? 0) > 0);
