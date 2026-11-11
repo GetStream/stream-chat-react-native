@@ -1,5 +1,5 @@
 import type { AIConversationRequest, AIMessage } from '..';
-import { AIConversationExchange } from '../conversation/controller/AIConversationExchange';
+import { AIConversationExchange } from '../conversation-state/controller/AIConversationExchange';
 
 const user = (id: string, text = 'Plan a weekend in Lisbon'): AIMessage => ({
   id,

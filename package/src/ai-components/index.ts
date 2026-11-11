@@ -6,7 +6,7 @@ export * from './StreamingMessageView';
 export * from './AITypingIndicatorView';
 export * from './voice-visualization';
 
-export * from './conversation';
+export * from './conversation-state';
 export * from './generative-ui';
 export * from './icons';
 export * from './message';

@@ -1,6 +1,7 @@
 import { useRef } from 'react';
-import { KeyboardController, useKeyboardHandler } from 'react-native-keyboard-controller';
 import { runOnJS, type SharedValue, useSharedValue } from 'react-native-reanimated';
+
+import { keyboardHeight, useKeyboardHandler } from '../../internal/keyboard';
 
 export type KeyboardFrame = { height: number; progress: number };
 
@@ -19,7 +20,7 @@ export const keyboardOverlapOf = (keyboard: KeyboardFrame, offset: number) => {
  * once it has finished moving.
  */
 export const useKeyboardFrame = (onSettled?: () => void): SharedValue<KeyboardFrame> => {
-  const initial = KeyboardController.state()?.height ?? 0;
+  const initial = keyboardHeight();
   const keyboard = useSharedValue<KeyboardFrame>({
     height: initial,
     progress: initial > 0 ? 1 : 0,

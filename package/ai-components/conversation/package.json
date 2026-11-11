@@ -1,0 +1,6 @@
+{
+  "main": "../../lib/commonjs/ai-components/conversation/index.js",
+  "module": "../../lib/module/ai-components/conversation/index.js",
+  "react-native": "../../src/ai-components/conversation/index.ts",
+  "types": "../../lib/typescript/ai-components/conversation/index.d.ts"
+}

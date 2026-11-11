@@ -12,18 +12,18 @@ import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
 import type { LegendListRenderItemProps } from '@legendapp/list/react-native';
 
-import type {
-  AIConversationController,
-  AIConversationControllerState,
-} from './controller/AIConversationController';
-import { editActionOf, replyActionsOf } from './controller/offers';
-import { useAIConversationState } from './controller/useAIConversationState';
 import type { AIConversationEntry } from './entries';
 import { AIChatList } from './list/AIChatList';
-import type { AIMessage, AIPendingMessage } from './types';
 import { type ConversationRow, type RowPosition, useConversationRows } from './useConversationRows';
 
 import { useTheme } from '../contexts';
+import type {
+  AIConversationController,
+  AIConversationControllerState,
+} from '../conversation-state/controller/AIConversationController';
+import { editActionOf, replyActionsOf } from '../conversation-state/controller/offers';
+import { useAIConversationState } from '../conversation-state/controller/useAIConversationState';
+import type { AIMessage, AIPendingMessage } from '../conversation-state/types';
 import type { AIUIHost } from '../generative-ui/AIUIHost';
 import { AIUIGenerated, useAIUIHostRefresh } from '../generative-ui/AIUIView';
 import { primitives } from '../internal/tokens';
@@ -103,8 +103,7 @@ export type AIConversationProps = {
    * How far above the bottom of the screen the composer sits, such as above a tab bar. The
    * keyboard comes up over the conversation, which makes room for it below the latest turn (the
    * room the pinned question leaves takes it first), and covers it only as far as it rises past
-   * this. Defaults to the bottom safe area. Needs a `KeyboardProvider` from
-   * react-native-keyboard-controller above it.
+   * this. Defaults to the bottom safe area.
    */
   keyboardOffset?: number;
   /**
@@ -423,6 +422,10 @@ const DefaultConversationReplyActions = ({
  * - A button scrolls back to the latest message when the end is out of view.
  * - A message the person sent shows at once (`pendingMessage`) and the agent thinks under it
  *   (`AIThinking`) until its reply shows something.
+ *
+ * Import it from `stream-chat-react-native/ai-components/conversation` (or
+ * `stream-chat-expo/ai-components/conversation`). It needs react-native-keyboard-controller, with
+ * its `KeyboardProvider` above it.
  */
 export const AIConversation = (props: AIConversationProps) =>
   props.conversation ? (

@@ -4,15 +4,17 @@ import { Text } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import type { Attachment } from 'stream-chat';
 
-import { AIPendingMessageTracker, turnsOf } from '../conversation/entries';
 import {
   AIConversation,
   type AIConversationAssistantMessageProps,
+  type AIConversationUserMessageProps,
+} from '../conversation';
+import { AIPendingMessageTracker, turnsOf } from '../conversation/entries';
+import {
   AIConversationController,
   type AIConversationControllerOptions,
   type AIConversationFeed,
   type AIConversationTransport,
-  type AIConversationUserMessageProps,
   type AIMessage,
   type AIToolApprover,
   createFromStreamMessage,

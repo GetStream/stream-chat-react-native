@@ -8,7 +8,8 @@ import {
   hasFinishedSteps,
   turnsOf,
 } from './entries';
-import type { AIMessage, AIPendingMessage } from './types';
+
+import type { AIMessage, AIPendingMessage } from '../conversation-state/types';
 
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
 import { AIThinkingClock } from '../reasoning/thinkingClock';

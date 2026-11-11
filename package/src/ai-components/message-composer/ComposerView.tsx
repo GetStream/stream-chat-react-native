@@ -1,7 +1,6 @@
 import React, { type ReactNode, useEffect, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
-import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import type { StateStore } from '@stream-io/state-store';
@@ -21,11 +20,12 @@ import { ComposerProvider, useMessageComposerContext, useTheme } from '../contex
 import type {
   AIConversationController,
   AIConversationControllerState,
-} from '../conversation/controller/AIConversationController';
-import { isAIConversationAnswering } from '../conversation/controller/types';
-import { useAIConversationState } from '../conversation/controller/useAIConversationState';
+} from '../conversation-state/controller/AIConversationController';
+import { isAIConversationAnswering } from '../conversation-state/controller/types';
+import { useAIConversationState } from '../conversation-state/controller/useAIConversationState';
 import { useBottomSafeArea } from '../internal/hooks/useBottomSafeArea';
 import { useStableCallback } from '../internal/hooks/useStableCallback';
+import { KeyboardStickyView } from '../internal/keyboard';
 import { primitives } from '../internal/tokens';
 import type {
   AbstractMediaPickerService,
@@ -83,8 +83,8 @@ export type ComposerViewProps = {
   /**
    * How far above the bottom of the screen the composer sits, such as above a tab bar: it rides
    * the keyboard up by as much as the keyboard rises past that. Defaults to the bottom safe area,
-   * the same as `AIConversation`'s. Needs a `KeyboardProvider` from react-native-keyboard-controller
-   * above it.
+   * the same as `AIConversation`'s. Needs react-native-keyboard-controller, with its
+   * `KeyboardProvider` above it; without it, the composer doesn't move with the keyboard.
    */
   keyboardOffset?: number;
   /**

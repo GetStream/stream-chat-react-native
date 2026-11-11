@@ -1,11 +1,11 @@
 import { renderHook } from '@testing-library/react-native';
 
-import type { AIMessage, AIPendingMessage } from '../conversation/types';
 import {
   type ConversationRow,
   useConversationRows,
   type UseConversationRowsOptions,
 } from '../conversation/useConversationRows';
+import type { AIMessage, AIPendingMessage } from '../conversation-state/types';
 import type { AIMessagePartData } from '../message-parts/types';
 
 const user = (id: string, text: string): AIMessage => ({ id, role: 'user', text });

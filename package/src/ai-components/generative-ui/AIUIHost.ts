@@ -8,7 +8,7 @@ import { type AIUIDocument, isSameAIUIDocument } from './AIUIDocument';
 import { aiUILinkScheme } from './AIUIHelpers';
 import { type AIUIEngine, type AIUIRenderer, aiUIRendererReads } from './AIUIRenderer';
 
-import type { AIMessage } from '../conversation/types';
+import type { AIMessage } from '../conversation-state/types';
 import type { AIToolCallPart } from '../message-parts/types';
 import type { AIClientTool, AIClientToolDefinition } from '../tool-calls/AIClientToolRunner';
 
