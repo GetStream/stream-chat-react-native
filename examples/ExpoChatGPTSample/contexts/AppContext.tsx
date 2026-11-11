@@ -11,6 +11,7 @@ import type { Channel, Event, StreamChat } from 'stream-chat';
 import { useStableCallback } from 'stream-chat-expo';
 import {
   AIClientIdentity,
+  type AIMessageRating,
   type AIToolApprover,
   createAuthSessionAuthorizer,
 } from 'stream-chat-expo/ai-components';
@@ -54,6 +55,10 @@ export type AppContextValue = {
   ask: (text: string, images?: ImageSource[]) => Promise<void>;
   /** Carries on a conversation from the drawer, by its session id. */
   openConversation: (sessionId: string) => void;
+  /** Rates a reply, or takes the rating back with null. */
+  rate: (messageId: string, rating: AIMessageRating | null) => void;
+  /** How the person rated replies, by message. Kept for this run only: the router takes no ratings yet. */
+  ratings: Readonly<Record<string, AIMessageRating>>;
   /** The whole of a reply's reasoning step so far, from its live updates. */
   reasoningText: (messageId: string, stepId: string) => string | undefined;
   /** Bumped as reasoning arrives, so the steps showing it render again. */
@@ -72,6 +77,8 @@ export const AppContext = React.createContext<AppContextValue>({
   conversationsVersion: 0,
   failure: undefined,
   openConversation: () => {},
+  rate: () => {},
+  ratings: {},
   reasoningText: () => undefined,
   reasoningVersion: 0,
   sessionId: undefined,
@@ -87,6 +94,7 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   const [agentState, setAgentState] = useState<ConversationSnapshot>(IDLE);
   const [reasoningVersion, setReasoningVersion] = useState(0);
   const [conversationsVersion, setConversationsVersion] = useState(0);
+  const [ratings, setRatings] = useState<Readonly<Record<string, AIMessageRating>>>({});
   const current = useRef<Conversation | undefined>(undefined);
 
   // Opening one conversation after another: the newest wins, and one that was never asked
@@ -146,6 +154,18 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       // The reply finished first, which is what stopping it was for.
     }
   });
+
+  const rate = useStableCallback((messageId: string, rating: AIMessageRating | null) =>
+    setRatings((previous) => {
+      const next = { ...previous };
+      if (rating) {
+        next[messageId] = rating;
+      } else {
+        delete next[messageId];
+      }
+      return next;
+    }),
+  );
 
   const reasoningText = useStableCallback((messageId: string, stepId: string) =>
     current.current?.reasoning.get(messageId, stepId),
@@ -230,6 +250,8 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       conversationsVersion,
       failure,
       openConversation,
+      rate,
+      ratings,
       reasoningText,
       reasoningVersion,
       sessionId: conversation?.session.id,
@@ -244,6 +266,8 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       conversationsVersion,
       failure,
       openConversation,
+      rate,
+      ratings,
       reasoningText,
       reasoningVersion,
       startConversation,

@@ -27,6 +27,8 @@ declare module 'stream-chat' {
 
   interface CustomMessageData extends DefaultMessageData {
     ai_generated?: boolean;
+    /** Set by the router while the agent is still writing a reply. */
+    generating?: boolean;
   }
 
   interface CustomPollOptionData extends DefaultPollOptionData {}

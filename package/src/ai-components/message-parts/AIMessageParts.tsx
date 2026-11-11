@@ -7,7 +7,7 @@ import { AIToolCall } from './AIToolCall';
 import type { AIMessagePartData } from './types';
 
 import { useAITranslation, useTheme } from '../contexts';
-import { InfoIcon } from '../internal/icons/AgentIcons';
+import { useAIIcons } from '../icons';
 import { AIReasoning } from '../reasoning/AIReasoning';
 import type { AIToolApprover } from '../tool-calls/AIToolApprover';
 
@@ -32,6 +32,7 @@ export const AIMessagePart = ({ approver, part, reasoningText }: AIMessagePartPr
   const {
     theme: { colors, messageParts },
   } = useTheme();
+  const { Info } = useAIIcons();
 
   if (part.reasoning) {
     return <AIReasoning part={part.reasoning} reasoningText={reasoningText} />;
@@ -47,7 +48,7 @@ export const AIMessagePart = ({ approver, part, reasoningText }: AIMessagePartPr
   }
   return (
     <View style={[styles.unsupported, messageParts?.unsupported?.container]}>
-      <InfoIcon color={colors.grey} />
+      <Info color={colors.grey} />
       <Text
         style={[styles.unsupportedText, { color: colors.grey }, messageParts?.unsupported?.text]}
       >

@@ -6,6 +6,8 @@ export * from './StreamingMessageView';
 export * from './AITypingIndicatorView';
 export * from './voice-visualization';
 
+export * from './icons';
+export * from './message';
 export * from './message-parts';
 export * from './reasoning';
 export * from './tool-calls';
