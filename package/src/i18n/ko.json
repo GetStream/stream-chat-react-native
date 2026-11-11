@@ -506,5 +506,14 @@
   "Remove attachment": "첨부 파일 삭제",
   "Remove option: {{ option }}": "옵션 삭제: {{ option }}",
   "Play": "재생",
-  "Pause": "일시정지"
+  "Pause": "일시정지",
+  "Ask anything": "무엇이든 물어보세요",
+  "Connecting": "연결 중",
+  "Listening": "듣는 중",
+  "Ready": "준비됨",
+  "Speaking": "말하는 중",
+  "Thinking": "생각 중",
+  "The agent couldn't answer. Try again.": "에이전트가 답변하지 못했습니다. 다시 시도하세요.",
+  "Voice agent": "음성 에이전트",
+  "What it sends": "보내는 내용"
 }

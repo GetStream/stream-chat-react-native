@@ -506,5 +506,14 @@
   "Remove attachment": "अटैचमेंट हटाएं",
   "Remove option: {{ option }}": "विकल्प हटाएं: {{ option }}",
   "Play": "चलाएँ",
-  "Pause": "रोकें"
+  "Pause": "रोकें",
+  "Ask anything": "कुछ भी पूछें",
+  "Connecting": "कनेक्ट हो रहा है",
+  "Listening": "सुन रहा है",
+  "Ready": "तैयार",
+  "Speaking": "बोल रहा है",
+  "Thinking": "सोच रहा है",
+  "The agent couldn't answer. Try again.": "एजेंट जवाब नहीं दे सका। फिर से कोशिश करें।",
+  "Voice agent": "वॉइस एजेंट",
+  "What it sends": "यह क्या भेजेगा"
 }

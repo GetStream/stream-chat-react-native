@@ -1260,7 +1260,7 @@ describe('AIConversationController errors', () => {
 
   it('describes an agent error in the agent’s words, else its own', () => {
     expect(new AIAgentError('Rate limited').message).toBe('Rate limited');
-    expect(new AIAgentError().message).toBe('The agent couldn’t answer. Try again.');
+    expect(new AIAgentError().message).toBe("The agent couldn't answer. Try again.");
     expect(new AIAgentError('').agentMessage).toBeUndefined();
   });
 });

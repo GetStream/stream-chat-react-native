@@ -506,5 +506,14 @@
   "Remove attachment": "Bijlage verwijderen",
   "Remove option: {{ option }}": "Optie verwijderen: {{ option }}",
   "Play": "Afspelen",
-  "Pause": "Pauzeren"
+  "Pause": "Pauzeren",
+  "Ask anything": "Vraag maar raak",
+  "Connecting": "Verbinden",
+  "Listening": "Luistert",
+  "Ready": "Klaar",
+  "Speaking": "Spreekt",
+  "Thinking": "Denkt na",
+  "The agent couldn't answer. Try again.": "De agent kon niet antwoorden. Probeer het opnieuw.",
+  "Voice agent": "Spraakagent",
+  "What it sends": "Wat er wordt verstuurd"
 }

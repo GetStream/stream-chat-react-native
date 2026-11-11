@@ -16,7 +16,12 @@ import { MediaPreviewList } from './MediaPreviewList';
 
 import { BottomSheet } from '../components/BottomSheet';
 
-import { ComposerProvider, useMessageComposerContext, useTheme } from '../contexts';
+import {
+  ComposerProvider,
+  useAITranslation,
+  useMessageComposerContext,
+  useTheme,
+} from '../contexts';
 import type {
   AIConversationController,
   AIConversationControllerState,
@@ -206,6 +211,7 @@ export const AIMessageInput = () => {
     },
   } = useTheme();
   const styles = useStyles();
+  const { t } = useAITranslation();
 
   const { error, isRecording, source } = useDictationState();
   const { text } = useComposerText();
@@ -244,7 +250,7 @@ export const AIMessageInput = () => {
     <TextInput
       value={text}
       onChangeText={setText}
-      placeholder={'Ask anything'}
+      placeholder={t('Ask anything')}
       placeholderTextColor={grey_neutral}
       ref={inputRef}
       style={[styles.textInput, textInput]}

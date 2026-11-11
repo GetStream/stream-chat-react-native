@@ -506,5 +506,14 @@
   "Remove attachment": "הסר קובץ מצורף",
   "Remove option: {{ option }}": "הסר אפשרות: {{ option }}",
   "Play": "הפעלה",
-  "Pause": "השהיה"
+  "Pause": "השהיה",
+  "Ask anything": "שאלו כל דבר",
+  "Connecting": "מתחבר",
+  "Listening": "מקשיב",
+  "Ready": "מוכן",
+  "Speaking": "מדבר",
+  "Thinking": "חושב",
+  "The agent couldn't answer. Try again.": "הסוכן לא הצליח לענות. נסו שוב.",
+  "Voice agent": "סוכן קולי",
+  "What it sends": "מה יישלח"
 }

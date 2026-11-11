@@ -238,7 +238,7 @@ It takes a single property named `options` that has the following keys:
 
 | Name               | Type      | Required | Description                                                                                                                                                                        |
 | ------------------ | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `language`         | `string`  | no       | The language we want to transcribe from. It will default to `en-US`.                                                                                                               |
+| `language`         | `string`  | no       | The language we want to transcribe from. Defaults to the device's language.                                                                                                        |
 | `interimResults`   | `boolean` | no       | A boolean signifying whether we want to receive the intermediate results from the transcription or just the final result when the transcription is deemed done. Defaults to `true` |
 | `silenceTimeoutMs` | `number`  | no       | A number signifying the number of milliseconds of silence until transcription is deemed finished. Defaults to `2500`.                                                              |
 

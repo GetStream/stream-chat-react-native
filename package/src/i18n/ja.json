@@ -506,5 +506,14 @@
   "Remove attachment": "添付ファイルを削除",
   "Remove option: {{ option }}": "オプションを削除: {{ option }}",
   "Play": "再生",
-  "Pause": "一時停止"
+  "Pause": "一時停止",
+  "Ask anything": "何でも聞いてください",
+  "Connecting": "接続中",
+  "Listening": "聞き取り中",
+  "Ready": "準備完了",
+  "Speaking": "話しています",
+  "Thinking": "考え中",
+  "The agent couldn't answer. Try again.": "エージェントが応答できませんでした。もう一度お試しください。",
+  "Voice agent": "音声エージェント",
+  "What it sends": "送信される内容"
 }
