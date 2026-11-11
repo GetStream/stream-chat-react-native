@@ -103,6 +103,9 @@ export type Theme = {
       declineButton?: ViewStyle;
       declineButtonText?: TextStyle;
       failure?: TextStyle;
+      arguments?: ViewStyle;
+      argumentsLabel?: TextStyle;
+      argumentsCode?: TextStyle;
     };
     authorizationCard?: {
       container?: ViewStyle;
@@ -388,6 +391,9 @@ export const defaultTheme: Theme = {
       declineButton: {},
       declineButtonText: {},
       failure: {},
+      arguments: {},
+      argumentsLabel: {},
+      argumentsCode: {},
     },
     authorizationCard: {
       container: {},
