@@ -208,6 +208,10 @@ const copies = [
     path.join(AI_SRC, 'native-specs/NativeAIDictation.ts'),
     ...WRAPPERS.map((w) => path.join(w, 'src/native/NativeAIDictation.ts')),
   ],
+  [
+    path.join(AI_SRC, 'native-specs/NativeAIAgent.ts'),
+    ...WRAPPERS.map((w) => path.join(w, 'src/native/NativeAIAgent.ts')),
+  ],
   WRAPPERS.map((w) => path.join(w, 'src/native/PerfTextNativeComponent.ts')),
 ];
 for (const [source, ...targets] of copies) {

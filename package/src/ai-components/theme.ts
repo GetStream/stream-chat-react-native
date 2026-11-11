@@ -101,6 +101,17 @@ export type Theme = {
       declineButtonText?: TextStyle;
       failure?: TextStyle;
     };
+    authorizationCard?: {
+      container?: ViewStyle;
+      title?: TextStyle;
+      message?: TextStyle;
+      outcome?: TextStyle;
+      connectButton?: ViewStyle;
+      connectButtonText?: TextStyle;
+      declineButton?: ViewStyle;
+      declineButtonText?: TextStyle;
+      failure?: TextStyle;
+    };
     unsupported?: {
       container?: ViewStyle;
       text?: TextStyle;
@@ -199,6 +210,17 @@ export const defaultTheme: Theme = {
       message: {},
       allowButton: {},
       allowButtonText: {},
+      declineButton: {},
+      declineButtonText: {},
+      failure: {},
+    },
+    authorizationCard: {
+      container: {},
+      title: {},
+      message: {},
+      outcome: {},
+      connectButton: {},
+      connectButtonText: {},
       declineButton: {},
       declineButtonText: {},
       failure: {},

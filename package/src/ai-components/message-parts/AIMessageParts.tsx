@@ -2,6 +2,7 @@ import React, { type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AIToolApproval } from './AIToolApproval';
+import { AIToolAuthorization } from './AIToolAuthorization';
 import { AIToolCall } from './AIToolCall';
 import type { AIMessagePartData } from './types';
 
@@ -23,7 +24,7 @@ export type AIMessagePartProps = {
 
 /**
  * One step of a reply: a round of reasoning (`AIReasoning`), a tool call (`AIToolCall`, with its
- * question when it waits for this person here), or a neutral line for a step this SDK can't
+ * question or sign-in when it waits for this person here), or a neutral line for a step this SDK can't
  * show. The counterpart of `AIMessagePartView`.
  */
 export const AIMessagePart = ({ approver, part, reasoningText }: AIMessagePartProps) => {
@@ -40,6 +41,7 @@ export const AIMessagePart = ({ approver, part, reasoningText }: AIMessagePartPr
       <View style={styles.tool}>
         <AIToolCall part={part.toolCall} />
         <AIToolApproval approver={approver} part={part.toolCall} />
+        <AIToolAuthorization approver={approver} part={part.toolCall} />
       </View>
     );
   }

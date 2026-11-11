@@ -105,6 +105,7 @@
     },
     "ios": {
       "modulesProvider": {
+        "AIAgent": "AIAgent",
         "StreamChatReactNative": "StreamChatReactNative",
         "StreamMultipartUploader": "StreamMultipartUploader",
         "StreamVideoThumbnail": "StreamVideoThumbnail"
