@@ -6,6 +6,8 @@ export * from './StreamingMessageView';
 export * from './AITypingIndicatorView';
 export * from './voice-visualization';
 
+export * from './message-parts';
+
 export * from './components';
 
 export * from './contexts';
