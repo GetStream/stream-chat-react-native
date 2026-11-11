@@ -24,7 +24,12 @@ import basicCatalogJSON from '../basicCatalog.json';
 import { a2uiAppCatalogDocument, a2uiTypeName } from '../catalogDocument';
 import { formatMoment, parseMoment } from '../components/DateTimeInput';
 import { A2UI_ICON_PATHS } from '../components/iconPaths';
-import { A2UI_DEFAULT_CATALOG_ID, type A2UIRendererOptions, createA2UIRenderer } from '../index';
+import {
+  A2UI_DEFAULT_CATALOG_ID,
+  A2UI_WEB_CATALOG_ID,
+  type A2UIRendererOptions,
+  createA2UIRenderer,
+} from '../index';
 import { withoutPaths, withoutSecrets } from '../secrets';
 
 const definitionOf = (name: string) => {
@@ -322,6 +327,20 @@ describe('the A2UI versions and catalog it reads', () => {
 });
 
 describe('a reply written in A2UI', () => {
+  it('draws a surface that names the web SDK’s catalog id', async () => {
+    const { errors, ui } = setup();
+    await renderReply(ui, [
+      line({ createSurface: { catalogId: A2UI_WEB_CATALOG_ID, surfaceId: 's' } }),
+      line({
+        updateComponents: {
+          components: [{ component: 'Text', id: 'root', text: 'From the web agent' }],
+          surfaceId: 's',
+        },
+      }),
+    ]);
+    await waitFor(() => expect(screen.getByText(/From the web agent/)).toBeTruthy());
+    expect(errors).toEqual([]);
+  });
   it('shows the Ohrid plan with the basic catalog and the app’s components', async () => {
     const { errors, ui } = setup();
     await renderReply(ui, ohridLines);

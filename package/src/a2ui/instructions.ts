@@ -20,7 +20,11 @@ import {
   writing,
 } from './A2UIInstructions';
 import { A2UI_VERSION, a2uiMessagesIn, normalizeA2UIMessage } from './A2UIStream';
-import { A2UI_DEFAULT_CATALOG_ID, a2uiAppCatalogDocument } from './catalogDocument';
+import {
+  A2UI_DEFAULT_CATALOG_ID,
+  a2uiAppCatalogDocument,
+  a2uiAppCatalogIds,
+} from './catalogDocument';
 import { basicCatalogDefinitions } from './catalogs';
 
 import type { AIUIComponent } from '../ai-components/generative-ui/AIUIComponent';
@@ -183,7 +187,10 @@ export const a2uiProblemsWith = (text: string, catalog: Catalog<Entry>) => {
       created = true;
       const components = componentsOf(body.components);
       problems.push(...duplicates(components, surfaceId));
-      if (typeof body.catalogId === 'string' && body.catalogId !== catalog.id) {
+      if (
+        typeof body.catalogId === 'string' &&
+        !a2uiAppCatalogIds(catalog.id).includes(body.catalogId)
+      ) {
         problems.push(
           `surface ${surfaceId} names the catalog ${body.catalogId}, not ${catalog.id}`,
         );

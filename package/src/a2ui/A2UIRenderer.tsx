@@ -19,7 +19,7 @@ import {
   supportsA2UIVersion,
 } from './A2UIStream';
 import { A2UISurfaceView } from './A2UISurface';
-import { A2UI_DEFAULT_CATALOG_ID, a2uiTypeName } from './catalogDocument';
+import { A2UI_DEFAULT_CATALOG_ID, A2UI_WEB_CATALOG_ID, a2uiTypeName } from './catalogDocument';
 import { a2uiCatalogsOf } from './catalogs';
 import { A2UI_BASIC_COMPONENTS } from './components/basicComponents';
 import type { A2UIComponents, A2UIIcons } from './components/types';
@@ -44,7 +44,7 @@ import {
 import type { AIUIEngine, AIUIRenderer } from '../ai-components/generative-ui/AIUIRenderer';
 import { primitives } from '../ai-components/internal/tokens';
 
-export { A2UI_DEFAULT_CATALOG_ID };
+export { A2UI_DEFAULT_CATALOG_ID, A2UI_WEB_CATALOG_ID };
 
 /** What went wrong in a reply's A2UI, as the A2UI specification reports it to an agent. */
 export type A2UIError = {
