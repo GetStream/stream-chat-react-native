@@ -1,11 +1,9 @@
-import { useCallback, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useHeaderHeight } from 'expo-router/react-navigation';
-
-import { KeyboardCompatibleView, useStateStore } from 'stream-chat-expo';
+import { useStateStore } from 'stream-chat-expo';
 
 import {
   AIConversation,
@@ -25,7 +23,15 @@ import { useSendAIMessage } from '../hooks/useSendAIMessage';
 
 type Composer = ReturnType<typeof createNewComposerStore>;
 
-const CustomComposerView = ({ composer }: { composer: Composer }) => {
+const CustomComposerView = ({
+  composer,
+  header,
+  trailing,
+}: {
+  composer: Composer;
+  header: ReactNode;
+  trailing: ReactNode;
+}) => {
   const { isBusy, stop } = useAppContext();
 
   // The router stops through its own session, not with an AI indicator event.
@@ -47,11 +53,13 @@ const CustomComposerView = ({ composer }: { composer: Composer }) => {
   return (
     <ComposerView
       chatOptions={chatOptions}
+      header={header}
       state={composer}
       bottomSheetInsets={insets}
       onSendMessage={serializeToMessage}
       isGenerating={isBusy}
       stopGenerating={stopGenerating}
+      trailing={trailing}
     />
   );
 };
@@ -75,14 +83,23 @@ const Starters = ({ chat, composer }: { chat: AgentChat; composer: Composer }) =
   return <AISuggestions onSelect={onSelect} suggestions={STARTERS} />;
 };
 
-/** The starters and the composer, sharing the composer's draft and picked option. */
-const ComposerArea = ({ chat }: { chat: AgentChat }) => {
+/**
+ * The composer, with what rides the keyboard above it, a failure and the starters (which share the
+ * composer's draft and picked option), and the way into voice mode beside it.
+ */
+const ComposerArea = ({ chat, failure }: { chat: AgentChat; failure: string | undefined }) => {
   const [composer] = useState(createNewComposerStore);
   return (
-    <>
-      <Starters chat={chat} composer={composer} />
-      <CustomComposerView composer={composer} />
-    </>
+    <CustomComposerView
+      composer={composer}
+      header={
+        <>
+          {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
+          <Starters chat={chat} composer={composer} />
+        </>
+      }
+      trailing={<VoiceMode />}
+    />
   );
 };
 
@@ -141,8 +158,6 @@ const Conversation = ({ chat }: { chat: AgentChat }) => {
 export const ChatContent = () => {
   const { chat, failure } = useAppContext();
   const { bottom } = useSafeAreaInsets();
-  // The conversation sits below the drawer header, so the keyboard offset has to account for it.
-  const headerHeight = useHeaderHeight();
 
   if (!chat) {
     return (
@@ -159,19 +174,15 @@ export const ChatContent = () => {
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(200)}
     >
-      <KeyboardCompatibleView keyboardVerticalOffset={headerHeight} style={styles.flex}>
-        <Conversation chat={chat} />
-        {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
-        <VoiceMode />
-        <ComposerArea chat={chat} />
-      </KeyboardCompatibleView>
+      {/* The keyboard is the SDK's: the conversation makes room for it, the composer rides it. */}
+      <Conversation chat={chat} />
+      <ComposerArea chat={chat} failure={failure} />
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   wrapper: { flex: 1, backgroundColor: '#fcfcfc' },
-  flex: { flex: 1 },
   emptyContainer: {
     flex: 1,
     width: '100%',

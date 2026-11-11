@@ -3878,8 +3878,8 @@ __metadata:
   linkType: hard
 
 "@legendapp/list@npm:^3.7.1":
-  version: 3.7.1
-  resolution: "@legendapp/list@npm:3.7.1"
+  version: 3.7.2
+  resolution: "@legendapp/list@npm:3.7.2"
   dependencies:
     use-sync-external-store: "npm:^1.5.0"
   peerDependencies:
@@ -3889,7 +3889,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 10c0/a445838e5b99a637fe88b0badc408dc2b9763e57e9e107c0122135359555521c126c44e50767754ec297ec2788874d9b9fec76ce3c90fad5444586e40addd303
+  checksum: 10c0/a449c27cdcdac4fbe7741410638307bbc4506a532c3a732d52e50860a2884f7f66d6b0e6108e0c6963faab0121bd7264381c180cdd0f7bdb269b8476f7101b80
   languageName: node
   linkType: hard
 
@@ -10995,6 +10995,7 @@ __metadata:
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-gesture-handler: "npm:~3.4.0"
+    react-native-keyboard-controller: "npm:1.22.7"
     react-native-reanimated: "npm:4.7.1"
     react-native-safe-area-context: "npm:~5.10.1"
     react-native-screens: "npm:~4.29.0"
@@ -17772,6 +17773,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-keyboard-controller@npm:^1.22.7":
+  version: 1.23.0
+  resolution: "react-native-keyboard-controller@npm:1.23.0"
+  dependencies:
+    react-native-is-edge-to-edge: "npm:^1.2.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-reanimated: ">=3.0.0"
+  checksum: 10c0/8a38af2a51470297094810e2908a407bbf515ea049c312de7c755eecd7b2391f12f178120492989162c85b75b564d320c41065c4bed58fd783c817c4cd3d230b
+  languageName: node
+  linkType: hard
+
 "react-native-launch-arguments@npm:^4.1.1":
   version: 4.1.1
   resolution: "react-native-launch-arguments@npm:4.1.1"
@@ -19471,6 +19485,7 @@ __metadata:
     expo-sharing: "*"
     expo-video: "*"
     react-native: ">=0.79.0"
+    react-native-keyboard-controller: ">=1.21.7"
     victory-native: ">=41.0.0"
   peerDependenciesMeta:
     "@shopify/react-native-skia":
@@ -19496,6 +19511,8 @@ __metadata:
     expo-sharing:
       optional: true
     expo-video:
+      optional: true
+    react-native-keyboard-controller:
       optional: true
     victory-native:
       optional: true
@@ -19554,6 +19571,7 @@ __metadata:
     react-native: "npm:0.88.0"
     react-native-builder-bob: "npm:0.40.11"
     react-native-gesture-handler: "npm:^3.4.0"
+    react-native-keyboard-controller: "npm:^1.22.7"
     react-native-markdown-package: "npm:1.8.2"
     react-native-reanimated: "npm:^4.7.1"
     react-native-safe-area-context: "npm:^5.10.1"
@@ -19579,6 +19597,7 @@ __metadata:
     emoji-mart: ">=5.4.0"
     react-native: ">=0.79.0"
     react-native-gesture-handler: ">=2.18.0"
+    react-native-keyboard-controller: ">=1.21.7"
     react-native-reanimated: ">=3.16.0"
     react-native-safe-area-context: ">=5.4.1"
     react-native-svg: ">=15.8.0"
@@ -19594,6 +19613,8 @@ __metadata:
     "@shopify/react-native-skia":
       optional: true
     emoji-mart:
+      optional: true
+    react-native-keyboard-controller:
       optional: true
     victory-native:
       optional: true
@@ -19620,6 +19641,7 @@ __metadata:
     react-native-blob-util: ">=0.22.0"
     react-native-haptic-feedback: ">=2.3.0"
     react-native-image-picker: ">=7.1.2"
+    react-native-keyboard-controller: ">=1.21.7"
     react-native-nitro-sound: ">=0.2.9"
     react-native-share: ">=11.0.0"
     react-native-video: ">=6.18.0"
@@ -19640,6 +19662,8 @@ __metadata:
     react-native-haptic-feedback:
       optional: true
     react-native-image-picker:
+      optional: true
+    react-native-keyboard-controller:
       optional: true
     react-native-nitro-sound:
       optional: true

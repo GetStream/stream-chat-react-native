@@ -99,6 +99,7 @@
     "emoji-mart": ">=5.4.0",
     "react-native": ">=0.79.0",
     "react-native-gesture-handler": ">=2.18.0",
+    "react-native-keyboard-controller": ">=1.21.7",
     "react-native-reanimated": ">=3.16.0",
     "react-native-safe-area-context": ">=5.4.1",
     "react-native-svg": ">=15.8.0",
@@ -119,6 +120,9 @@
       "optional": true
     },
     "emoji-mart": {
+      "optional": true
+    },
+    "react-native-keyboard-controller": {
       "optional": true
     },
     "victory-native": {
@@ -160,6 +164,7 @@
     "react-native": "0.88.0",
     "react-native-builder-bob": "0.40.11",
     "react-native-gesture-handler": "^3.4.0",
+    "react-native-keyboard-controller": "^1.22.7",
     "react-native-reanimated": "^4.7.1",
     "react-native-safe-area-context": "^5.10.1",
     "react-native-svg": "15.15.5",

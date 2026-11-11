@@ -68,6 +68,26 @@ describe('ai-components streaming', () => {
       expect(result.current.streamedMessageText).toBe('Bye n');
     });
 
+    it('says whether text is still being typed out', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) =>
+          useStreamingMessage({ letterInterval: 10, renderingLetterCount: 2, text }),
+        { initialProps: { text: 'Hello' } },
+      );
+      expect(result.current.isWriting).toBe(false);
+
+      rerender({ text: 'Hello world' });
+      expect(result.current.isWriting).toBe(true);
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+      expect(result.current.isWriting).toBe(false);
+
+      // Another text shows at once, so nothing is being typed.
+      rerender({ text: 'Bye' });
+      expect(result.current.isWriting).toBe(false);
+    });
+
     it('optimistically closes a code fence while it is being streamed', () => {
       const { result, rerender } = renderHook(
         ({ text }: { text: string }) =>
@@ -84,6 +104,28 @@ describe('ai-components streaming', () => {
   });
 
   describe('StreamingMessageView', () => {
+    it('reports when it starts and stops typing', () => {
+      const onWritingChange = jest.fn();
+      const { rerender } = render(
+        <StreamTheme>
+          <StreamingMessageView letterInterval={10} onWritingChange={onWritingChange} text='Hi' />
+        </StreamTheme>,
+      );
+      rerender(
+        <StreamTheme>
+          <StreamingMessageView
+            letterInterval={10}
+            onWritingChange={onWritingChange}
+            text='Hi there, friend'
+          />
+        </StreamTheme>,
+      );
+      act(() => {
+        jest.advanceTimersByTime(200);
+      });
+      expect(onWritingChange.mock.calls.map(([writing]) => writing)).toEqual([false, true, false]);
+    });
+
     it('renders markdown and handles links with the provided callback', () => {
       const onLink = jest.fn();
       render(

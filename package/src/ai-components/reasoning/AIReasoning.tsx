@@ -9,6 +9,12 @@ import {
   Text,
   View,
 } from 'react-native';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 import { FINISHED_REASONING_SHOWN_MS, useAIThinkingTurn } from './thinkingClock';
 
@@ -154,6 +160,10 @@ export type AIReasoningProps = {
   text?: string;
 };
 
+// StreamChatAI's fold, SwiftUI's `spring(response: 0.45, dampingFraction: 0.95)`: a stiffness of
+// (2π / 0.45)² and a damping of 2 × 0.95 × √stiffness. With Reduce Motion it folds at once.
+const FOLD_SPRING = { damping: 26.5, mass: 1, stiffness: 195 };
+
 const opensByDefault = (
   isThinking: boolean,
   showsLiveReasoning: boolean,
@@ -281,6 +291,26 @@ export const AIReasoning = ({
   // Live reasoning is open before any of it arrives, but there is nothing to show until then.
   const expanded = open && text !== '';
 
+  // The panel shrinks in place as it folds, so what is below it glides up rather than jumps, and
+  // goes once folded. Live reasoning joins at no height and unfolds; a finished trace that opens
+  // with the step shows at once.
+  const [mounted, setMounted] = useState(expanded);
+  if (expanded && !mounted) setMounted(true);
+  const progress = useSharedValue(expanded && !isThinking ? 1 : 0);
+  const panelHeight = useSharedValue(0);
+  useEffect(() => {
+    progress.value = withSpring(expanded ? 1 : 0, FOLD_SPRING, (finished) => {
+      if (finished && !expanded) runOnJS(setMounted)(false);
+    });
+  }, [expanded, progress]);
+  const foldStyle = useAnimatedStyle(() => ({
+    height: panelHeight.value * progress.value,
+    opacity: progress.value,
+  }));
+  const chevronStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${progress.value * (I18nManager.isRTL ? -90 : 90)}deg` }],
+  }));
+
   // The reasoning reads in the secondary colour, a little smaller than an answer.
   const panelStyle = useMemo<DeepPartial<Theme>>(
     () => ({
@@ -328,19 +358,28 @@ export const AIReasoning = ({
             {summary}
           </Text>
         ) : null}
-        <View
-          style={{
-            transform: [{ rotate: expanded ? (I18nManager.isRTL ? '-90deg' : '90deg') : '0deg' }],
-          }}
-        >
+        <Animated.View style={chevronStyle}>
           <Chevron color={colors.grey} size={12} />
-        </View>
+        </Animated.View>
       </Pressable>
-      {expanded ? (
-        <StreamTheme style={panelStyle} theme={theme}>
-          <ReasoningPanel isLive={isThinking} maxHeight={maxExpandedHeight} text={text} />
-          {footnote && !isThinking && (choice === true || initiallyExpanded) ? footnote : null}
-        </StreamTheme>
+      {mounted && text !== '' ? (
+        <Animated.View
+          accessibilityElementsHidden={!expanded}
+          importantForAccessibility={expanded ? 'auto' : 'no-hide-descendants'}
+          style={[styles.fold, foldStyle]}
+        >
+          <View
+            onLayout={({ nativeEvent }) => {
+              panelHeight.value = nativeEvent.layout.height;
+            }}
+            style={styles.panel}
+          >
+            <StreamTheme style={panelStyle} theme={theme}>
+              <ReasoningPanel isLive={isThinking} maxHeight={maxExpandedHeight} text={text} />
+              {footnote && !isThinking && (choice === true || initiallyExpanded) ? footnote : null}
+            </StreamTheme>
+          </View>
+        </Animated.View>
       ) : null}
     </View>
   );
@@ -368,7 +407,8 @@ export const AIThinking = ({ since }: AIThinkingProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: { borderStartWidth: 2, gap: 4, paddingStart: 12 },
+  container: { borderStartWidth: 2, paddingStart: 12 },
+  fold: { overflow: 'hidden' },
   header: {
     alignItems: 'center',
     alignSelf: 'flex-start',
@@ -377,6 +417,7 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   lead: { alignItems: 'center', flexDirection: 'row', gap: 6 },
+  panel: { left: 0, paddingTop: 4, position: 'absolute', right: 0, top: 0 },
   summary: { flexShrink: 1, fontSize: primitives.typographyFontSizeSm },
   title: {
     fontSize: primitives.typographyFontSizeSm,

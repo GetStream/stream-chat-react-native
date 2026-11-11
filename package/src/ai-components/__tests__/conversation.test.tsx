@@ -105,7 +105,22 @@ describe('AIConversation', () => {
       <AIConversation emptyContent={<Text>Ask me anything</Text>} messages={[]} />,
     );
     expect(screen.getByText('Ask me anything')).toBeTruthy();
-    expect(screen.queryByTestId('ai-conversation-list')).toBeNull();
+    // The list stays mounted under it, so it follows a keyboard opened before the first question.
+    expect(screen.getByTestId('ai-conversation-list')).toBeTruthy();
+  });
+
+  it('hides the empty content once there are messages', async () => {
+    const { rerender } = await renderConversation(
+      <AIConversation emptyContent={<Text>Ask me anything</Text>} messages={[]} />,
+    );
+    await rerender(
+      <AIConversation
+        emptyContent={<Text>Ask me anything</Text>}
+        messages={[user('u1', 'Is 7 prime?')]}
+      />,
+    );
+    expect(screen.queryByText('Ask me anything')).toBeNull();
+    expect(screen.getByText('Is 7 prime?')).toBeTruthy();
   });
 
   it('groups the messages into turns, each starting with a question', async () => {
@@ -229,6 +244,20 @@ describe('AIConversation', () => {
       <AIConversation messages={[user('u1', 'One'), reply('a1', 'Done.')]} ReplyActions={null} />,
     );
     expect(screen.queryByTestId('ai-reply-actions')).toBeNull();
+  });
+
+  it('shows the actions under a reply once its answer is typed out', async () => {
+    const answer = 'word '.repeat(200).trim();
+    const { rerender } = await renderConversation(
+      <AIConversation
+        messages={[user('u1', 'One'), reply('a1', 'word', { isGenerating: true })]}
+      />,
+    );
+    await rerender(<AIConversation messages={[user('u1', 'One'), reply('a1', answer)]} />);
+    // Finished, and still typing out what arrived last.
+    expect(screen.queryByTestId('ai-reply-actions')).toBeNull();
+    await settle(2000);
+    expect(screen.getByTestId('ai-reply-actions')).toBeTruthy();
   });
 
   it('shows a new rating when the messages stay the same', async () => {

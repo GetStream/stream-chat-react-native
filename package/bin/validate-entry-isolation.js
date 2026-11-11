@@ -31,6 +31,7 @@ const AI_ONLY_PACKAGES = [
   '@khanacademy/simple-markdown',
   '@legendapp/list',
   '@shopify/react-native-skia',
+  'react-native-keyboard-controller',
   'react-syntax-highlighter',
   'victory-native',
   'zod',

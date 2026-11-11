@@ -7,7 +7,8 @@ module.exports = {
   moduleNameMapper: {
     // LegendList's exports map has only a `react-native` condition for its native build, which
     // Jest's node conditions skip for the web build (react-dom).
-    '^@legendapp/list/(react-native|reanimated)$': '<rootDir>/node_modules/@legendapp/list/$1.js',
+    '^@legendapp/list/(keyboard|react-native|reanimated)$':
+      '<rootDir>/node_modules/@legendapp/list/$1.js',
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
     // See __mocks__/SvgTouchableMixin.js - react-native-svg reads `Touchable.Mixin` off the
     // react-native root, and RN 0.87's late, non-enumerable re-export of it is lost through

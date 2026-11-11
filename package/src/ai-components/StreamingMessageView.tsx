@@ -17,16 +17,21 @@ export const useStreamingMessage = ({
   letterInterval = 0,
   renderingLetterCount = 2,
   text,
-}: UseStreamingMessageProps): { streamedMessageText: string } => {
+}: UseStreamingMessageProps): { isWriting: boolean; streamedMessageText: string } => {
   const [streamedMessageText, setStreamedMessageText] = useState<string>(text);
   const textCursor = useRef<number>(text.length);
+  // How much of the text is typed out, to say whether it still is.
+  const [typedLength, setTypedLength] = useState(text.length);
 
   // Only text added to the end is typed out. Another text, such as another message's when a list
   // reuses this view, shows at once, from this render rather than after the old text's.
   const [lastText, setLastText] = useState(text);
   if (text !== lastText) {
     setLastText(text);
-    if (!text.startsWith(lastText)) setStreamedMessageText(text);
+    if (!text.startsWith(lastText)) {
+      setStreamedMessageText(text);
+      setTypedLength(text.length);
+    }
   }
   const typedToward = useRef(text);
 
@@ -44,6 +49,7 @@ export const useStreamingMessage = ({
       const codeBlockCounts = (newText.match(/```/g) || []).length;
       const shouldOptimisticallyCloseCodeBlock = codeBlockCounts > 0 && codeBlockCounts % 2 > 0;
       setStreamedMessageText(shouldOptimisticallyCloseCodeBlock ? newText + '```' : newText);
+      setTypedLength(textCursor.current);
     }, letterInterval);
 
     return () => {
@@ -51,7 +57,7 @@ export const useStreamingMessage = ({
     };
   }, [letterInterval, renderingLetterCount, text]);
 
-  return { streamedMessageText };
+  return { isWriting: typedLength < text.length, streamedMessageText };
 };
 
 export const StreamingMessageView = ({
@@ -60,6 +66,7 @@ export const StreamingMessageView = ({
   rules,
   onLink: onLinkParam,
   letterInterval,
+  onWritingChange,
   renderingLetterCount,
 }: {
   text: string;
@@ -67,15 +74,21 @@ export const StreamingMessageView = ({
   rules?: MarkdownRules;
   onLink?: (url: string) => void;
   letterInterval?: number;
+  /** Called when the text starts or stops being typed out, such as to show what follows it once it is. */
+  onWritingChange?: (isWriting: boolean) => void;
   renderingLetterCount?: number;
 }) => {
   const markdownText = useMemo(() => generateMarkdownText(text), [text]);
 
-  const { streamedMessageText } = useStreamingMessage({
+  const { isWriting, streamedMessageText } = useStreamingMessage({
     text: markdownText ?? '',
     letterInterval,
     renderingLetterCount,
   });
+  const reportWriting = useStableCallback((writing: boolean) => onWritingChange?.(writing));
+  useEffect(() => {
+    reportWriting(isWriting);
+  }, [isWriting, reportWriting]);
 
   const onLink = useStableCallback((url: string): void | Promise<void> =>
     onLinkParam
