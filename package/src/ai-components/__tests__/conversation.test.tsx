@@ -1,6 +1,8 @@
 import React, { type ReactElement, useEffect } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+import type { ReactTestInstance } from 'react-test-renderer';
+
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import type { Attachment } from 'stream-chat';
 
@@ -91,6 +93,16 @@ const scrollToStart = () => {
   act(() => {
     fireEvent.scroll(screen.getByTestId('ai-conversation-list'), atStart);
   });
+};
+
+// The list's row a view is in, which the list reuses for other replies.
+const rowOf = (view: ReactTestInstance) => {
+  let node: ReactTestInstance | null = view;
+  while (node && (node.type as { displayName?: string }).displayName !== 'AIConversationRow') {
+    node = node.parent;
+  }
+  if (!node) throw new Error('Not in a row');
+  return node;
 };
 
 const renderConversation = async (ui: ReactElement) => {
@@ -340,7 +352,10 @@ describe('AIConversation', () => {
       />,
     );
     await settle(2000);
-    const actions = screen.getAllByTestId('ai-reply-actions');
+    const rows = screen.getAllByTestId('ai-reply-actions').map((actions) => {
+      const row = rowOf(actions);
+      return { actions, key: row.props.row.key as string, row };
+    });
     expect(screen.getByText('Written.')).toBeTruthy();
     expect(screen.queryByText('Answer 0.')).toBeNull();
 
@@ -354,7 +369,10 @@ describe('AIConversation', () => {
     expect(screen.getByText('Answer 0.')).toBeTruthy();
     expect(screen.queryByText('Written.')).toBeNull();
     const shown = screen.getAllByTestId('ai-reply-actions');
-    expect(actions.filter((view) => !shown.includes(view))).toEqual([]);
+    const kept = rows.filter(({ row }) => shown.some((actions) => rowOf(actions) === row));
+    const reused = kept.filter(({ key, row }) => row.props.row.key !== key);
+    expect(reused.length).toBeGreaterThan(0);
+    expect(reused.filter(({ actions }) => !shown.includes(actions)).length).toBe(0);
   }, 30000);
 
   it('shows a new rating when the messages stay the same', async () => {
