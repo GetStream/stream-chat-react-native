@@ -352,6 +352,10 @@ jobs:
         working-directory: examples/SampleApp
         run: bundle exec fastlane allure_launch cron:true
         continue-on-error: true
+      # The emulator runner downloads these without retrying; a corrupted download fails the job.
+      - uses: ./.github/actions/android-sdk-packages
+        with:
+          api-level: ${{ matrix.api-level }}
       - name: Run e2e tests (Android emulator)
         id: tests
         uses: reactivecircus/android-emulator-runner@v2
