@@ -21,6 +21,51 @@ describe('ai-components streaming', () => {
   });
 
   describe('useStreamingMessage', () => {
+    it('keeps up with what arrives when no pace is given', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) => useStreamingMessage({ text }),
+        { initialProps: { text: '' } },
+      );
+      const chunk = 'x'.repeat(250);
+      rerender({ text: chunk });
+      act(() => {
+        jest.advanceTimersByTime(16);
+      });
+      // 250 letters in 0.4 seconds: 10 a frame.
+      expect(result.current.streamedMessageText).toHaveLength(10);
+      expect(result.current.isWriting).toBe(true);
+
+      act(() => {
+        jest.advanceTimersByTime(420);
+      });
+      expect(result.current.streamedMessageText).toBe(chunk);
+      expect(result.current.isWriting).toBe(false);
+    });
+
+    it('types at least a letter a frame when little arrives', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) => useStreamingMessage({ text }),
+        { initialProps: { text: 'Hi' } },
+      );
+      rerender({ text: 'Hi there' });
+      act(() => {
+        jest.advanceTimersByTime(16);
+      });
+      expect(result.current.streamedMessageText).toBe('Hi ');
+    });
+
+    it('shows the whole text at once when the animation is skipped', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) =>
+          useStreamingMessage({ letterInterval: 50, renderingLetterCount: 1, text }),
+        { initialProps: { text: '' } },
+      );
+      rerender({ text: 'A long answer' });
+      act(() => result.current.skipAnimation());
+      expect(result.current.streamedMessageText).toBe('A long answer');
+      expect(result.current.isWriting).toBe(false);
+    });
+
     it('renders the initial text immediately and animates text appended later', () => {
       const { result, rerender } = renderHook(
         ({ text }: { text: string }) =>

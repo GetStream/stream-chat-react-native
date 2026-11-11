@@ -718,7 +718,7 @@ describe('AIConversation with a controller', () => {
     for (const text of ['Here is', 'Here is your', 'Here is your plan.']) {
       await update([...history, reply('a2', text, { isGenerating: true })]);
     }
-    expect(screen.getByText('Here is your plan.')).toBeTruthy();
+    expect(await screen.findByText('Here is your plan.')).toBeTruthy();
     expect(renders).toBe(before);
     controller.dispose();
   });
