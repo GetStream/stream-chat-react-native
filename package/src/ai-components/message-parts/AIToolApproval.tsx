@@ -1,11 +1,13 @@
-import React, { type ReactNode, useEffect } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { type ReactNode, useEffect, useState } from 'react';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { callStateOf, setCallState, useCallState } from './callStates';
 import { isAwaitingApproval } from './parseMessageParts';
+import { formatToolArguments } from './toolArguments';
 import type { AIToolApprovalData, AIToolCallPart } from './types';
 
 import { useAITranslation, useTheme } from '../contexts';
+import { useAIIcons } from '../icons';
 import { primitives } from '../internal/tokens';
 import { type AIToolApprover, useAIToolApprover } from '../tool-calls/AIToolApprover';
 
@@ -31,10 +33,77 @@ export const approvalLines = (approval: AIToolApprovalData) => {
   return lines;
 };
 
+// Arguments longer than this start folded, so the question and its buttons stay in view.
+const LONG_ARGUMENTS_CHARACTERS = 280;
+const LONG_ARGUMENTS_LINES = 6;
+
+export type AIToolArgumentsProps = {
+  /** The call's arguments, such as `part.arguments`. */
+  args: unknown;
+};
+
+/**
+ * What a tool call sends, so the person sees it before they allow the call: its arguments as
+ * indented JSON, under "What it sends", folded when they are long. Nothing for a call that
+ * sends nothing.
+ */
+export const AIToolArguments = ({ args }: AIToolArgumentsProps) => {
+  const { t } = useAITranslation();
+  const {
+    theme: { colors, messageParts },
+  } = useTheme();
+  const { Chevron } = useAIIcons();
+  const card = messageParts?.approvalCard;
+  const text = formatToolArguments(args);
+  const isLong =
+    !!text &&
+    (text.length > LONG_ARGUMENTS_CHARACTERS || text.split('\n').length > LONG_ARGUMENTS_LINES);
+  const [isOpen, setIsOpen] = useState(false);
+  if (!text) return null;
+
+  const label = t('What it sends');
+  const code = (
+    <Text selectable style={[styles.argumentsCode, { color: colors.black }, card?.argumentsCode]}>
+      {text}
+    </Text>
+  );
+  return (
+    <View
+      style={[styles.arguments, { backgroundColor: colors.grey_whisper }, card?.arguments]}
+      testID='ai-tool-arguments'
+    >
+      {isLong ? (
+        <Pressable
+          accessibilityLabel={label}
+          accessibilityRole='button'
+          accessibilityState={{ expanded: isOpen }}
+          hitSlop={8}
+          onPress={() => setIsOpen((open) => !open)}
+          style={styles.argumentsHeader}
+        >
+          <Text style={[styles.argumentsLabel, { color: colors.grey }, card?.argumentsLabel]}>
+            {label}
+          </Text>
+          <View style={isOpen ? styles.chevronOpen : undefined}>
+            <Chevron color={colors.grey} size={12} />
+          </View>
+        </Pressable>
+      ) : (
+        <Text style={[styles.argumentsLabel, { color: colors.grey }, card?.argumentsLabel]}>
+          {label}
+        </Text>
+      )}
+      {!isLong || isOpen ? code : null}
+    </View>
+  );
+};
+
 export type AIToolApprovalCardProps = {
   approval: AIToolApprovalData;
   /** Called with the person's answer. */
   onDecide: (allowed: boolean) => void;
+  /** What the call sends, shown under the question, such as an `AIToolArguments`. */
+  argumentsPreview?: ReactNode;
   state?: AIToolApprovalState;
 };
 
@@ -45,6 +114,7 @@ export type AIToolApprovalCardProps = {
  */
 export const AIToolApprovalCard = ({
   approval,
+  argumentsPreview,
   onDecide,
   state = idle,
 }: AIToolApprovalCardProps) => {
@@ -72,6 +142,7 @@ export const AIToolApprovalCard = ({
           </Text>
         ))}
       </View>
+      {argumentsPreview ?? null}
       <View style={styles.actions}>
         <Pressable
           accessibilityRole='button'
@@ -122,11 +193,15 @@ export type AIToolApprovalProps = {
   part: AIToolCallPart;
   /** Who answers on this device. Defaults to the one of the nearest `AIToolApproverProvider`. */
   approver?: AIToolApprover;
-  /** Renders the question, instead of `AIToolApprovalCard`. */
+  /**
+   * Renders the question, instead of `AIToolApprovalCard`, with what the call sends as the
+   * approver previews it, or `null` when there is nothing to show.
+   */
   children?: (
     approval: AIToolApprovalData,
     state: AIToolApprovalState,
     decide: (allowed: boolean) => void,
+    argumentsPreview: ReactNode,
   ) => ReactNode;
 };
 
@@ -158,18 +233,42 @@ export const AIToolApproval = ({ approver: approverProp, children, part }: AIToo
       .catch(() => setCallState(key, { failed: true, isSending: false }, idle));
   };
 
+  const argumentsPreview = toolArgumentsPreview(part, approver);
+
   return (
     <>
       {children ? (
-        children(part.approval, state, decide)
+        children(part.approval, state, decide, argumentsPreview)
       ) : (
-        <AIToolApprovalCard approval={part.approval} onDecide={decide} state={state} />
+        <AIToolApprovalCard
+          approval={part.approval}
+          argumentsPreview={argumentsPreview}
+          onDecide={decide}
+          state={state}
+        />
       )}
     </>
   );
 };
 
+// What the call sends, as the approver previews it, else its arguments.
+const toolArgumentsPreview = (call: AIToolCallPart, approver: AIToolApprover): ReactNode => {
+  const own = approver.argumentsPreview?.(call);
+  if (own !== undefined) return own;
+  return formatToolArguments(call.arguments) === undefined ? null : (
+    <AIToolArguments args={call.arguments} />
+  );
+};
+
 const styles = StyleSheet.create({
+  arguments: { borderRadius: 12, gap: 6, paddingHorizontal: 10, paddingVertical: 8 },
+  argumentsCode: {
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    fontSize: primitives.typographyFontSizeXs,
+  },
+  argumentsHeader: { alignItems: 'center', flexDirection: 'row', gap: 6 },
+  argumentsLabel: { fontSize: primitives.typographyFontSizeXs, fontWeight: '600' },
+  chevronOpen: { transform: [{ rotate: '90deg' }] },
   actions: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   button: {
     alignItems: 'center',

@@ -165,7 +165,8 @@ export const useConversationRows = ({
   }
   const thinkingSince = !thinking && stepsKey !== undefined ? gap?.since : undefined;
   const thinkingReplyId = thinkingSince !== undefined ? lastMessage?.id : undefined;
-  const turns = useMemo(() => turnsOf(entries), [entries]);
+  const turnStarts = useRef(new Set<string>());
+  const turns = useMemo(() => turnsOf(entries, turnStarts.current), [entries]);
   const latest = turns[turns.length - 1];
   const latestHasReplies = (latest?.entries.length ?? 0) > 1;
   const latestFirstStepId = firstStepOf(latest);

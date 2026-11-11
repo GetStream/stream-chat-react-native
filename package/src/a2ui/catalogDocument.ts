@@ -13,6 +13,16 @@ import type { AIClientToolDefinition } from '../ai-components/tool-calls/AIClien
 /** The id of the catalog with the app's components, unless the renderer is given another. */
 export const A2UI_DEFAULT_CATALOG_ID = 'getstream.io:app-catalog';
 
+/**
+ * The id the web SDK names the same catalog with. A renderer on the default id draws surfaces
+ * that name it too, so an agent set up for a web app shows its UI here as well.
+ */
+export const A2UI_WEB_CATALOG_ID = 'stream-app-catalog';
+
+/** The ids a surface may name for a renderer whose catalog is `catalogId`. */
+export const a2uiAppCatalogIds = (catalogId: string) =>
+  catalogId === A2UI_DEFAULT_CATALOG_ID ? [catalogId, A2UI_WEB_CATALOG_ID] : [catalogId];
+
 const definitionOf = (component: AIUIComponent | AIUIComponentDefinition) =>
   'definition' in component ? component.definition : component;
 

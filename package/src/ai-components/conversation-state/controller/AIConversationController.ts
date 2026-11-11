@@ -313,14 +313,15 @@ export class AIConversationController<Message extends AIMessage = AIMessage> {
     this.refresh();
   }
 
-  /** Loads the messages before the first one, while there are any. */
+  /**
+   * Loads the messages before the first one, while there are any. Rejects when they couldn't load,
+   * so the conversation waits before it asks again.
+   */
   loadOlderMessages = async () => {
     if (!this.hasOlderMessages || this.isLoadingOlderMessages) return;
     this.isLoadingOlderMessages = true;
     try {
       await this.transport.loadOlderMessages?.();
-    } catch {
-      // The person scrolls to the start again to try again.
     } finally {
       this.isLoadingOlderMessages = false;
     }

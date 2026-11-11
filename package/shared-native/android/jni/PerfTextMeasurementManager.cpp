@@ -42,6 +42,7 @@ Size PerfTextMeasurementManager::measure(
   serializedProps["text"] = props.text;
   serializedProps["fontSize"] = props.fontSize;
   serializedProps["lineHeight"] = props.lineHeight;
+  serializedProps["fontFamily"] = props.fontFamily;
 
   auto propsRNM = ReadableNativeMap::newObjectCxxArgs(serializedProps);
   local_ref<ReadableMap::javaobject> propsRM =

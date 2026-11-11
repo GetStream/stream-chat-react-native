@@ -68,6 +68,25 @@ describe('AIClientToolRunner', () => {
     });
   });
 
+  it('leaves a call without an id of its own alone', async () => {
+    const tool = countingTool();
+    const runner = runnerWith([tool]);
+    const send = jest.fn<ReturnType<AIClientToolSend>, Parameters<AIClientToolSend>>(() =>
+      Promise.resolve(),
+    );
+
+    runner.run([step({ id: undefined })], send);
+    await settle();
+
+    expect(tool.run).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it('needs at least one attempt', () => {
+    expect(() => runnerWith([countingTool()], 0)).toThrow(RangeError);
+    expect(() => runnerWith([countingTool()], 1)).not.toThrow();
+  });
+
   it('sends a result that could not be sent again, without running the tool again', async () => {
     const tool = countingTool();
     const runner = runnerWith([tool]);

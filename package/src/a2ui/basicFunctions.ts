@@ -33,11 +33,20 @@ import {
   isSignal,
 } from '@a2ui/web_core';
 
-/** The locale formatting falls back to, so it never depends on the host's. */
+/** The locale formatting falls back to when neither the app nor the device names one it has. */
 const DEFAULT_LOCALE = 'en-US';
 
-const resolveLocale = (locale?: string) => {
-  if (!locale) return DEFAULT_LOCALE;
+// The device's locale, as the person reads numbers and dates elsewhere.
+const deviceLocale = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().locale || DEFAULT_LOCALE;
+  } catch {
+    return DEFAULT_LOCALE;
+  }
+};
+
+const resolveLocale = (asked?: string) => {
+  const locale = asked || deviceLocale();
   try {
     return Intl.NumberFormat.supportedLocalesOf(locale).length > 0 ? locale : DEFAULT_LOCALE;
   } catch {
@@ -146,18 +155,21 @@ const formatNumber = (
         useGrouping: grouping,
       }).format(value);
 
+// A currency's amount with `decimals` decimals, or as many as the currency has, such as none for
+// yen.
 const formatCurrency = (
   value: number,
   code: unknown,
-  decimals = 2,
+  decimals?: number,
   grouping?: boolean,
   locale = DEFAULT_LOCALE,
 ) => {
   if (isNaN(value)) return '';
   const currency = String(code).toUpperCase();
   const options = {
-    maximumFractionDigits: decimals,
-    minimumFractionDigits: decimals,
+    ...(decimals === undefined
+      ? {}
+      : { maximumFractionDigits: decimals, minimumFractionDigits: decimals }),
     useGrouping: grouping,
   };
   try {
@@ -242,9 +254,28 @@ const parseTimestamp = (value: string) => {
   return fieldsRoundTrip(value, shifted) ? { instant, shifted } : null;
 };
 
+// Epoch milliseconds start beyond this; a smaller number is epoch seconds.
+const EPOCH_MILLISECONDS_FROM = 100_000_000_000;
+const TIME_OF_DAY = /^\d{2}:\d{2}(:\d{2})?$/;
+
+// An epoch timestamp, in seconds or milliseconds, as the device's clock reads it.
+const parseEpoch = (value: number) => {
+  const instant = new Date(Math.abs(value) > EPOCH_MILLISECONDS_FROM ? value : value * 1000);
+  if (isNaN(instant.getTime())) return null;
+  return {
+    instant,
+    shifted: new Date(instant.getTime() - instant.getTimezoneOffset() * 60_000),
+  };
+};
+
 const formatDate = (value: unknown, pattern = 'yyyy-MM-dd', locale = DEFAULT_LOCALE) => {
-  if (!value) return '';
-  const parsed = parseTimestamp(String(value));
+  if (value === undefined || value === null || value === '') return '';
+  const parsed =
+    typeof value === 'number'
+      ? parseEpoch(value)
+      : TIME_OF_DAY.test(String(value))
+        ? parseTimestamp(`1970-01-01T${String(value)}`)
+        : parseTimestamp(String(value));
   if (!parsed) return '';
   const { instant, shifted } = parsed;
   const format = pattern || 'yyyy-MM-dd';
@@ -372,7 +403,7 @@ type Execute = (args: Args, context: DataContext) => unknown;
 
 /**
  * The basic catalog's functions, for the function definitions `apis` of its document, with
- * `openUrl` run by `openUrl`. Formatting follows `locale`, or `en-US`.
+ * `openUrl` run by `openUrl`. Formatting follows `locale`, or the device's.
  */
 export const basicFunctionsOf = (
   apis: Map<string, FunctionApi>,
@@ -388,7 +419,7 @@ export const basicFunctionsOf = (
       formatCurrency(
         number(value),
         currency,
-        optionalNumber(decimals) ?? 2,
+        optionalNumber(decimals),
         grouping as boolean | undefined,
         resolved,
       ),

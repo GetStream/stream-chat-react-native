@@ -47,7 +47,7 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
     },
     codeBlock: {
       backgroundColor: colors.code_block,
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
       fontWeight: '500',
       color: colors.black,
       paddingLeft: 8,
@@ -68,7 +68,7 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
       color: colors.black,
     },
     codeBlockLineNumberCell: {
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
       color: colors.grey,
       fontSize: primitives.typographyFontSizeXs,
       lineHeight: primitives.typographyLineHeightTight,
@@ -81,7 +81,7 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
     codeBlockHeaderTitle: {
       fontSize: primitives.typographyFontSizeXs,
       color: colors.grey,
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     del: {
       textDecorationLine: 'line-through',
@@ -117,7 +117,7 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
       borderRadius: 3,
       borderWidth: 1,
       color: colors.accent_red,
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
       fontWeight: '500',
       fontSize: primitives.typographyFontSizeSm,
       padding: 3,

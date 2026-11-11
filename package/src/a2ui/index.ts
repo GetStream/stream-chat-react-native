@@ -2,6 +2,7 @@
 // agent never writes A2UI doesn't bundle the A2UI core.
 export {
   A2UI_DEFAULT_CATALOG_ID,
+  A2UI_WEB_CATALOG_ID,
   type A2UIError,
   type A2UIRendererOptions,
   createA2UIRenderer,

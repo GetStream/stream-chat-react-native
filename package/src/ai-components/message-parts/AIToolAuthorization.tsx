@@ -157,6 +157,13 @@ export const AIToolAuthorizationCard = ({
   );
 };
 
+// How long a sign-in that came back connected reads as connecting before Connect is offered
+// again, when the agent never moves the call on.
+const CONNECTED_SETTLE_MS = 30_000;
+
+// The latest sign-in opened for each call, so a late answer to an earlier one changes nothing.
+const attempts = new Map<string, number>();
+
 /**
  * The sign-in this person is asked for on `call` here: one the call waits for them to finish,
  * of a kind this device opens, and only when they can sign in on it.
@@ -214,13 +221,21 @@ export const AIToolAuthorization = ({
     const now = callStateOf(key, idle);
     if (now.isConnecting || now.isDeclining) return;
     update({ ...idle, isConnecting: true });
+    const attempt = (attempts.get(key) ?? 0) + 1;
+    attempts.set(key, attempt);
     signIn.connect(part).then(
       // Your backend has the provider's answer before the sign-in comes back, and its change to
       // the step hides this. Until then it says it is connecting, unless the provider did not
-      // connect them. A sign-in the person closed can't be opened again, so it declines.
+      // connect them, or the step never changes. A sign-in the person closed can't be opened
+      // again, so it declines.
       (connected) => {
         if (connected === 'closed') sendDecline(signIn);
         else if (!connected) update(idle);
+        else {
+          setTimeout(() => {
+            if (attempts.get(key) === attempt && callStateOf(key, idle).isConnecting) update(idle);
+          }, CONNECTED_SETTLE_MS);
+        }
       },
       () => update({ ...idle, connectFailed: true }),
     );

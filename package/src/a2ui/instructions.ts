@@ -20,12 +20,17 @@ import {
   writing,
 } from './A2UIInstructions';
 import { A2UI_VERSION, a2uiMessagesIn, normalizeA2UIMessage } from './A2UIStream';
-import { A2UI_DEFAULT_CATALOG_ID, a2uiAppCatalogDocument } from './catalogDocument';
+import {
+  A2UI_DEFAULT_CATALOG_ID,
+  a2uiAppCatalogDocument,
+  a2uiAppCatalogIds,
+} from './catalogDocument';
 import { basicCatalogDefinitions } from './catalogs';
 
 import type { AIUIComponent } from '../ai-components/generative-ui/AIUIComponent';
 import type { AIUIComponentDefinition } from '../ai-components/generative-ui/AIUIComponentDefinition';
 import { isRecord } from '../ai-components/generative-ui/AIUIHelpers';
+import type { AIClientToolDefinition } from '../ai-components/tool-calls/AIClientToolRunner';
 
 type Entry = ComponentApi;
 
@@ -86,6 +91,28 @@ export const a2uiCatalogFor = ({
   });
 };
 
+// The app's tools as the model is told them, each marked when it only reads, with the rule for
+// where they run: the host runs a tool that changes something only when the person taps for it.
+const toolsSection = (tools: AIClientToolDefinition[]) => {
+  if (!tools.length) return [];
+  const lines = tools
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(({ annotations, description, name }) => {
+      const readOnly = annotations?.readOnlyHint === true ? ' (read-only)' : '';
+      return `- \`${name}\`${readOnly}${description ? `: ${description}` : ''}`;
+    });
+  return [
+    [
+      "## The app's tools",
+      '',
+      'These run on the person\'s device. Call one with `{"@call": "<name>", "args": {...}}`. A read-only tool runs wherever you call it, such as to show its result in a Text. Any other runs only from a Button\'s `functionCall` action, when the person taps it.',
+      '',
+      ...lines,
+    ].join('\n'),
+  ];
+};
+
 /**
  * The instructions that teach an agent's model to write A2UI the app's renderer shows, in
  * Markdown: how a reply carries its UI, the protocol, the catalog's guidelines and the catalog
@@ -109,6 +136,9 @@ export const a2uiInstructionsText = (config: A2UIInstructionsConfig = {}) => {
     A2UI_PROTOCOL_OVERVIEW,
     ...(typeof instructions === 'string' && instructions ? [instructions] : []),
     ...(notes.length ? [`## The app's components\n\n${notes.join('\n')}`] : []),
+    ...toolsSection(
+      (config.tools ?? []).filter(({ name }) => !basicCatalogDefinitions().functions.has(name)),
+    ),
     `## The catalog \`${catalog.id}\`\n\n\`\`\`json\n${JSON.stringify(sorted(document))}\n\`\`\``,
     ...(rules.length
       ? [`## Rules\n\n${rules.map((rule, index) => `${index + 1}. ${rule}`).join('\n')}`]
@@ -183,7 +213,10 @@ export const a2uiProblemsWith = (text: string, catalog: Catalog<Entry>) => {
       created = true;
       const components = componentsOf(body.components);
       problems.push(...duplicates(components, surfaceId));
-      if (typeof body.catalogId === 'string' && body.catalogId !== catalog.id) {
+      if (
+        typeof body.catalogId === 'string' &&
+        !a2uiAppCatalogIds(catalog.id).includes(body.catalogId)
+      ) {
         problems.push(
           `surface ${surfaceId} names the catalog ${body.catalogId}, not ${catalog.id}`,
         );

@@ -11,8 +11,11 @@ import {
 import Animated from 'react-native-reanimated';
 
 import type { VoiceVisualizationStyle } from './styles';
+
 import type { VoiceAgentState, VoiceVisualizationProps } from './types';
 import { useVoiceVisualization, type VoiceVisualization } from './useVoiceVisualization';
+
+import { useAITranslation } from '../contexts';
 
 /** What the renderer draws in: the canvas size, in its own units, and the screen's pixels per unit. */
 export type VoiceCanvasSize = { height: number; pixelRatio: number; width: number };
@@ -21,14 +24,6 @@ type ViewProps = VoiceVisualizationProps & {
   /** Draws the visualization into a canvas of the given size. */
   renderCanvas: (visualization: VoiceVisualization, size: VoiceCanvasSize) => ReactNode;
   visualStyle: VoiceVisualizationStyle;
-};
-
-const DEFAULT_STATE_LABELS: Record<VoiceAgentState, string> = {
-  connecting: 'Connecting',
-  idle: 'Ready',
-  listening: 'Listening',
-  speaking: 'Speaking',
-  thinking: 'Thinking',
 };
 
 /**
@@ -40,7 +35,7 @@ const DEFAULT_STATE_LABELS: Record<VoiceAgentState, string> = {
  * only the shape takes them: around it they reach whatever is behind.
  */
 export const VoiceVisualizationView = ({
-  accessibilityLabel = 'Voice agent',
+  accessibilityLabel,
   accessibilityValue,
   audioLevel,
   colors,
@@ -54,6 +49,14 @@ export const VoiceVisualizationView = ({
   visualStyle,
   ...restProps
 }: ViewProps) => {
+  const { t } = useAITranslation();
+  const defaultStateLabels: Record<VoiceAgentState, string> = {
+    connecting: t('Connecting'),
+    idle: t('Ready'),
+    listening: t('Listening'),
+    speaking: t('Speaking'),
+    thinking: t('Thinking'),
+  };
   const visualization = useVoiceVisualization(
     { audioLevel, colors, expressivity, state },
     visualStyle,
@@ -121,10 +124,10 @@ export const VoiceVisualizationView = ({
 
   return (
     <View
-      accessibilityLabel={accessibilityLabel}
+      accessibilityLabel={accessibilityLabel ?? t('Voice agent')}
       accessibilityRole='image'
       accessibilityValue={
-        accessibilityValue ?? { text: stateLabels?.[state] ?? DEFAULT_STATE_LABELS[state] }
+        accessibilityValue ?? { text: stateLabels?.[state] ?? defaultStateLabels[state] }
       }
       accessible
       onLayout={handleLayout}

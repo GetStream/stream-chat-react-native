@@ -24,7 +24,12 @@ import basicCatalogJSON from '../basicCatalog.json';
 import { a2uiAppCatalogDocument, a2uiTypeName } from '../catalogDocument';
 import { formatMoment, parseMoment } from '../components/DateTimeInput';
 import { A2UI_ICON_PATHS } from '../components/iconPaths';
-import { A2UI_DEFAULT_CATALOG_ID, type A2UIRendererOptions, createA2UIRenderer } from '../index';
+import {
+  A2UI_DEFAULT_CATALOG_ID,
+  A2UI_WEB_CATALOG_ID,
+  type A2UIRendererOptions,
+  createA2UIRenderer,
+} from '../index';
 import { withoutPaths, withoutSecrets } from '../secrets';
 
 const definitionOf = (name: string) => {
@@ -322,6 +327,20 @@ describe('the A2UI versions and catalog it reads', () => {
 });
 
 describe('a reply written in A2UI', () => {
+  it('draws a surface that names the web SDK’s catalog id', async () => {
+    const { errors, ui } = setup();
+    await renderReply(ui, [
+      line({ createSurface: { catalogId: A2UI_WEB_CATALOG_ID, surfaceId: 's' } }),
+      line({
+        updateComponents: {
+          components: [{ component: 'Text', id: 'root', text: 'From the web agent' }],
+          surfaceId: 's',
+        },
+      }),
+    ]);
+    await waitFor(() => expect(screen.getByText(/From the web agent/)).toBeTruthy());
+    expect(errors).toEqual([]);
+  });
   it('shows the Ohrid plan with the basic catalog and the app’s components', async () => {
     const { errors, ui } = setup();
     await renderReply(ui, ohridLines);
@@ -880,6 +899,9 @@ describe('the app’s tools in a reply’s UI', () => {
     expect(instructions).toContain('"weather"');
     expect(instructions).toContain('The weather in a city today.');
     expect(instructions).toContain('"city"');
+    expect(instructions).toContain("## The app's tools");
+    expect(instructions).toContain('- `weather` (read-only): The weather in a city today.');
+    expect(instructions).toContain('Any other runs only from a Button');
   });
 
   it('shows the rest of the UI when a tool fails, and says so', async () => {
@@ -1294,6 +1316,29 @@ describe('the basic catalog', () => {
     await waitFor(() => expect(screen.getByText(/Hello, Ana/)).toBeTruthy());
     expect(screen.getByText(/€42\.00/)).toBeTruthy();
     expect(screen.getByText(/Saturday 14 November/)).toBeTruthy();
+  });
+
+  it('formats yen without decimals, and epoch timestamps and times of day', async () => {
+    const { ui } = setup({ locale: 'en-US' });
+    const text = (id: string, call: string, args: Record<string, unknown>) => ({
+      component: 'Text',
+      id,
+      text: { '@call': call, args },
+    });
+    await renderReply(
+      ui,
+      surfaceOf([
+        { children: ['yen', 'seconds', 'millis', 'time'], component: 'Column', id: 'root' },
+        text('yen', 'formatCurrency', { currency: 'JPY', value: 1500 }),
+        text('seconds', 'formatDate', { format: 'yyyy-MM-dd', value: 1_763_078_400 }),
+        text('millis', 'formatDate', { format: 'd MMMM', value: 1_763_078_400_000 }),
+        text('time', 'formatDate', { format: 'h:mm a', value: '18:30' }),
+      ]),
+    );
+    await waitFor(() => expect(screen.getByText('¥1,500')).toBeTruthy());
+    expect(screen.getByText('2025-11-14')).toBeTruthy();
+    expect(screen.getByText('14 November')).toBeTruthy();
+    expect(screen.getByText('6:30 PM')).toBeTruthy();
   });
 
   it('keeps what the person types in the data model, and holds a button until its checks pass', async () => {

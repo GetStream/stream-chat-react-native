@@ -27,6 +27,15 @@ export type AIConversationCanShowUI = (document: AIUIDocument) => boolean;
 
 const showsNoUI: AIConversationCanShowUI = () => false;
 
+// The id of the person's newest message, looked for from the end: the copy of one they just sent
+// is always it, and while a reply is written it is a step or two from the end.
+const newestFromUserOf = (messages: AIMessage[]) => {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index].role === 'user') return messages[index].id;
+  }
+  return undefined;
+};
+
 // A reply the agent has started but that has nothing to show yet: no text, steps or attachments,
 // and no UI that `canShowUI` says shows.
 const showsNothing = (message: AIMessage, canShowUI: AIConversationCanShowUI) =>
@@ -62,12 +71,18 @@ export const hasFinishedSteps = (
   message.parts.every(isStepOver) &&
   !(message.uiDocument && canShowUI(message.uiDocument));
 
-/** Groups the rows into turns, each starting with one of the person's messages. */
-export const turnsOf = (entries: AIConversationEntry[]) =>
+/**
+ * Groups the rows into turns, each starting with one of the person's messages. A row that
+ * started a turn, kept in `starts`, keeps starting one: a reply that opened the first page loaded
+ * stays the start of its turn when older messages load above it, so the turn keeps its key.
+ */
+export const turnsOf = (entries: AIConversationEntry[], starts = new Set<string>()) =>
   entries.reduce<AIConversationTurn[]>((turns, entry) => {
     const last = turns[turns.length - 1];
-    if (!last || entry.isFromUser) turns.push({ entries: [entry], id: entry.id });
-    else last.entries.push(entry);
+    if (!last || entry.isFromUser || starts.has(entry.id)) {
+      starts.add(entry.id);
+      turns.push({ entries: [entry], id: entry.id });
+    } else last.entries.push(entry);
     return turns;
   }, []);
 
@@ -85,6 +100,10 @@ export class AIPendingMessageTracker {
   // The pending message of the last update, whose copy can arrive in the update that stops
   // passing it.
   private lastPending?: AIPendingMessage;
+  // The person's newest message as of the last update, `null` before the first one. A message on
+  // its way first seen in an update that also brings its copy finds it as the person's newest
+  // message, when that one is new.
+  private lastNewestFromUser: string | null | undefined = null;
 
   // The rows of a conversation: its messages, apart from replies with nothing to show yet, and
   // a message on its way until its copy arrives. A reply's UI shows when `canShowUI` says.
@@ -94,13 +113,21 @@ export class AIPendingMessageTracker {
     canShowUI: AIConversationCanShowUI = showsNoUI,
   ): AIConversationEntry[] {
     let showsPending = !!pending;
+    const newestFromUser = newestFromUserOf(messages);
     // A copy that arrives in the update that stops passing its pending message still takes over
     // its row. Only then: a message sent later is not the copy of one that failed.
     const awaited = pending ?? this.lastPending;
     if (awaited) {
       const sent = messages.filter((message) => message.role === 'user');
       const ids = new Set(sent.map((message) => message.id));
-      const known = this.seen.get(awaited.id) ?? ids;
+      let known = this.seen.get(awaited.id);
+      if (!known) {
+        known = new Set(ids);
+        // The person's message that arrived with this update can be the copy.
+        const arrived =
+          this.lastNewestFromUser !== null && newestFromUser !== this.lastNewestFromUser;
+        if (arrived && newestFromUser !== undefined) known.delete(newestFromUser);
+      }
       const matched = [...this.copies].find(
         ([copyId, original]) => original.id === awaited.id && ids.has(copyId),
       )?.[0];
@@ -113,6 +140,7 @@ export class AIPendingMessageTracker {
       }
     }
     this.lastPending = pending ?? undefined;
+    this.lastNewestFromUser = newestFromUser;
 
     const entries: AIConversationEntry[] = messages
       .filter((message) => !showsNothing(message, canShowUI))

@@ -46,6 +46,7 @@ import {
   ComposerView,
   isAIConversationAnswering,
   useAIConversationState,
+  useAITranslation,
 } from 'stream-chat-expo/ai-components';
 import {
   AIConversation,
@@ -79,6 +80,7 @@ const ComposerArea = ({
   failure: string | undefined;
 }) => {
   const { error } = useAIConversationState(conversation, errorSelector);
+  const { t } = useAITranslation();
 
   const safeAreaInsets = useSafeAreaInsets();
   const insets = useMemo(
@@ -102,7 +104,7 @@ const ComposerArea = ({
           {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
           {error ? (
             <Pressable accessibilityRole='button' onPress={() => conversation.retry()}>
-              <Text style={styles.failureText}>{error.message}</Text>
+              <Text style={styles.failureText}>{t(error.message)}</Text>
               <Text style={styles.retryText}>Try again</Text>
             </Pressable>
           ) : null}

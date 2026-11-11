@@ -151,6 +151,54 @@ describe('AIConversation', () => {
     expect(screen.getAllByText('footer')).toHaveLength(1);
   });
 
+  it('keeps a turn that starts with a reply when older messages load above it', () => {
+    const starts = new Set<string>();
+    const tracker = new AIPendingMessageTracker();
+    const page = [
+      reply('a1', 'It is noon.'),
+      user('u2', 'And the weather?'),
+      reply('a2', 'Sunny.'),
+    ];
+    expect(turnsOf(tracker.entries(page), starts).map((turn) => turn.id)).toEqual(['a1', 'u2']);
+
+    const older = [user('u1', 'What time is it?'), ...page];
+    expect(turnsOf(tracker.entries(older), starts).map((turn) => turn.id)).toEqual([
+      'u1',
+      'a1',
+      'u2',
+    ]);
+  });
+
+  it('takes the copy of a message on its way that arrives in the update that first passes it', () => {
+    const tracker = new AIPendingMessageTracker();
+    const history = [user('u1', 'Hello'), reply('a1', 'Hi!')];
+    tracker.entries(history);
+    const pending = { id: 'local-1', text: 'Plan my day' };
+    const entries = tracker.entries([...history, user('stream-u2', 'Plan my day')], pending);
+    expect(entries.map((entry) => entry.id)).toEqual(['u1', 'a1', 'local-1']);
+    expect(entries.filter((entry) => entry.pending)).toHaveLength(0);
+  });
+
+  it('takes the copy of a message on its way from a window of the same length', () => {
+    const tracker = new AIPendingMessageTracker();
+    tracker.entries([user('u1', 'Hello'), reply('a1', 'Hi!')]);
+    const pending = { id: 'local-1', text: 'Plan my day' };
+    // A reconnect reloads the latest page: as many messages, the newest one the copy.
+    const entries = tracker.entries(
+      [reply('a1', 'Hi!'), user('stream-u2', 'Plan my day')],
+      pending,
+    );
+    expect(entries.map((entry) => entry.id)).toEqual(['a1', 'local-1']);
+  });
+
+  it('takes no older question for the copy of a message on its way when it mounts with one', () => {
+    const history = [user('u1', 'Hello'), reply('a1', 'Hi!'), user('u2', 'Plan my day')];
+    const pending = { id: 'local-3', text: 'Plan my week' };
+    const entries = new AIPendingMessageTracker().entries(history, pending);
+    expect(entries.map((entry) => entry.id)).toEqual(['u1', 'a1', 'u2', 'local-3']);
+    expect(entries[3].pending).toBe(pending);
+  });
+
   it('shows a pending message with the agent thinking, until its reply starts', async () => {
     const mounts: string[] = [];
     const UserMessage = ({ text }: AIConversationUserMessageProps) => {
@@ -693,7 +741,7 @@ describe('AIConversation with a controller', () => {
     for (const text of ['Here is', 'Here is your', 'Here is your plan.']) {
       await update([...history, reply('a2', text, { isGenerating: true })]);
     }
-    expect(screen.getByText('Here is your plan.')).toBeTruthy();
+    expect(await screen.findByText('Here is your plan.')).toBeTruthy();
     expect(renders).toBe(before);
     controller.dispose();
   });
