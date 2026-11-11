@@ -12,6 +12,12 @@ import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
 import type { LegendListRenderItemProps } from '@legendapp/list/react-native';
 
+import type {
+  AIConversationController,
+  AIConversationControllerState,
+} from './controller/AIConversationController';
+import { editActionOf, replyActionsOf } from './controller/offers';
+import { useAIConversationState } from './controller/useAIConversationState';
 import type { AIConversationEntry } from './entries';
 import { AIChatList } from './list/AIChatList';
 import type { AIMessage, AIPendingMessage } from './types';
@@ -37,6 +43,8 @@ export type AIConversationUserMessageProps = {
   text: string;
   /** The message, or `undefined` for one on its way. */
   message?: AIMessage;
+  /** Edits the message: a `conversation` offers it on the person's latest message. */
+  onEdit?: () => void;
 };
 
 export type AIConversationAssistantMessageProps = {
@@ -62,8 +70,16 @@ export type AIConversationReplyActionsProps = {
 };
 
 export type AIConversationProps = {
-  /** The conversation, oldest message first. */
-  messages: AIMessage[];
+  /**
+   * The conversation's state and what the person does in it. The conversation shows its messages,
+   * the message on its way and the agent thinking, loads older messages through it, and offers
+   * its actions: editing the person's latest message, and rating and regenerating replies. It
+   * takes the place of `messages`, `pendingMessage`, `isThinking`, `loadOlderMessages` and
+   * `replyActions`, and gives its `approver` unless one is passed.
+   */
+  conversation?: AIConversationController;
+  /** The conversation, oldest message first. Required without `conversation`. */
+  messages?: AIMessage[];
   /** Who answers tool calls' questions and sign-ins on this device, to ask them. */
   approver?: AIToolApprover;
   /**
@@ -133,8 +149,8 @@ export type AIConversationProps = {
   UserMessage?: ComponentType<AIConversationUserMessageProps>;
 };
 
-const DefaultUserMessage = ({ attachments, text }: AIConversationUserMessageProps) => (
-  <AIUserMessage attachments={attachments} text={text} />
+const DefaultUserMessage = ({ attachments, onEdit, text }: AIConversationUserMessageProps) => (
+  <AIUserMessage attachments={attachments} onEdit={onEdit} text={text} />
 );
 
 const DefaultAssistantMessage = ({
@@ -175,11 +191,15 @@ type ConversationContextValue = {
   ReplyActions: ComponentType<AIConversationReplyActionsProps> | null;
   UserMessage: ComponentType<AIConversationUserMessageProps>;
   approver?: AIToolApprover;
+  editAction?: EditAction;
   replyActions?: AIConversationProps['replyActions'];
   ui?: AIUIHost;
   /** Changes each time the host says what a reply shows changed, so the rows render again. */
   uiVersion: number;
 };
+
+// How the person edits one of their messages, when they can.
+type EditAction = (message: AIMessage) => (() => void) | undefined;
 
 const ConversationContext = createContext<ConversationContextValue | undefined>(undefined);
 
@@ -193,12 +213,15 @@ const ROW_GAPS: Record<RowPosition, number> = {
 type EntryViewProps = {
   AssistantMessage: ComponentType<AIConversationAssistantMessageProps>;
   entry: AIConversationEntry;
+  editAction?: EditAction;
   ReplyActions: ComponentType<AIConversationReplyActionsProps> | null;
   UserMessage: ComponentType<AIConversationUserMessageProps>;
   approver?: AIToolApprover;
   thinkingSince?: number;
   ui?: AIUIHost;
 };
+
+const NO_MESSAGES: AIMessage[] = [];
 
 const REPLY_ACTIONS_IN = FadeIn.duration(200).easing(Easing.out(Easing.ease));
 
@@ -218,6 +241,7 @@ const useReplyWriting = (messageId: string | undefined, isGenerating: boolean) =
 const EntryView = ({
   approver,
   AssistantMessage,
+  editAction,
   entry,
   ReplyActions,
   thinkingSince,
@@ -243,6 +267,7 @@ const EntryView = ({
           entry.sentAttachments.length ? entry.sentAttachments : (message.attachments ?? [])
         }
         message={message}
+        onEdit={editAction?.(message)}
         text={message.text}
       />
     );
@@ -323,6 +348,7 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
             <EntryView
               approver={context.approver}
               AssistantMessage={context.AssistantMessage}
+              editAction={context.editAction}
               entry={row.entry}
               ReplyActions={context.ReplyActions}
               thinkingSince={row.thinkingSince}
@@ -398,22 +424,92 @@ const DefaultConversationReplyActions = ({
  * - A message the person sent shows at once (`pendingMessage`) and the agent thinks under it
  *   (`AIThinking`) until its reply shows something.
  */
-export const AIConversation = ({
+export const AIConversation = (props: AIConversationProps) =>
+  props.conversation ? (
+    <ControlledConversation {...props} conversation={props.conversation} />
+  ) : (
+    <ConversationView {...props} />
+  );
+
+const controlledSelector = ({
+  hasOlderMessages,
+  messages,
+  pendingMessage,
+  ratings,
+  status,
+}: AIConversationControllerState) => ({
+  hasOlderMessages,
+  messages,
+  pendingMessage,
+  ratings,
+  status,
+});
+
+// The conversation as its controller has it. The controller knows when its agent is thinking,
+// including after a stop or a failure that leaves the person's message on its way.
+const ControlledConversation = ({
+  conversation,
+  ...props
+}: AIConversationProps & { conversation: AIConversationController }) => {
+  const { hasOlderMessages, messages, pendingMessage, ratings, status } = useAIConversationState(
+    conversation,
+    controlledSelector,
+  );
+  const replyActions = useMemo(
+    () =>
+      (message: AIMessage, { isLatestReply }: { isLatestReply: boolean }) =>
+        replyActionsOf(conversation, { ratings, status }, message, isLatestReply),
+    [conversation, ratings, status],
+  );
+  const editAction = useMemo<EditAction>(
+    () => (message) => editActionOf(conversation, { messages, status }, message),
+    [conversation, messages, status],
+  );
+  const { ui } = props;
+  // A reply that shows only its UI has started, which the controller can't tell without the
+  // host that reads it.
+  const last = messages[messages.length - 1];
+  const showsReply =
+    !!last && last.role !== 'user' && !!last.uiDocument && !!ui?.canShow(last.uiDocument);
+  return (
+    <ConversationView
+      {...props}
+      approver={props.approver ?? conversation.approver}
+      editAction={editAction}
+      isThinking={status === 'submitted' && !showsReply}
+      isThinkingKnown
+      loadOlderMessages={hasOlderMessages ? conversation.loadOlderMessages : undefined}
+      messages={messages as AIMessage[]}
+      pendingMessage={pendingMessage}
+      replyActions={props.replyActions ?? replyActions}
+    />
+  );
+};
+
+type ConversationViewProps = AIConversationProps & {
+  editAction?: EditAction;
+  // Whether `isThinking` alone says whether the agent is thinking.
+  isThinkingKnown?: boolean;
+};
+
+const ConversationView = ({
   approver,
   AssistantMessage = DefaultAssistantMessage,
   bottomInset = 0,
+  editAction,
   emptyContent,
   footer,
   isThinking = false,
+  isThinkingKnown,
   keyboardOffset,
   loadOlderMessages,
-  messages,
+  messages = NO_MESSAGES,
   pendingMessage,
   ReplyActions: ReplyActionsProp,
   replyActions,
   ui,
   UserMessage = DefaultUserMessage,
-}: AIConversationProps) => {
+}: ConversationViewProps) => {
   // Every reply's UI reaches its renderer before any row asks for its view, oldest first,
   // whether or not the row is on screen. Only what arrived or changed is passed on. The rows
   // show again when the host says what one of them shows changed.
@@ -424,6 +520,7 @@ export const AIConversation = ({
     canShowUI,
     footer,
     isThinking,
+    isThinkingKnown,
     messages,
     pendingMessage,
   });
@@ -445,6 +542,7 @@ export const AIConversation = ({
       approver,
       AssistantMessage,
       clock,
+      editAction,
       ReplyActions,
       replyActions,
       turnFloor,
@@ -456,6 +554,7 @@ export const AIConversation = ({
       approver,
       AssistantMessage,
       clock,
+      editAction,
       ReplyActions,
       replyActions,
       turnFloor,
