@@ -24,10 +24,10 @@ export const EditingMessageChip = ({ onCancel }: EditingMessageChipProps) => {
       testID='ai-editing-message'
     >
       <View style={[styles.icon, theme?.chipIcon]}>
-        <Edit color={theme?.chipText ?? colors.accent_blue} size={16} />
+        <Edit color={theme?.chipText ?? colors.accent_blue} size={14} />
       </View>
       <Text style={[styles.title, { color: theme?.chipText }, theme?.chipTitle]}>
-        {t('Editing message')}
+        {t('Editing')}
       </Text>
       <Pressable
         accessibilityLabel={t('Cancel editing')}
@@ -36,7 +36,7 @@ export const EditingMessageChip = ({ onCancel }: EditingMessageChipProps) => {
         onPress={onCancel}
         style={[styles.removeButton, theme?.chipRemoveButton]}
       >
-        <Close height={20} pathFill={theme?.chipText} width={20} />
+        <Close height={16} pathFill={theme?.chipText} width={16} />
       </Pressable>
     </View>
   );
@@ -48,14 +48,15 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     borderRadius: primitives.radiusXl,
     flexDirection: 'row',
-    gap: primitives.spacingXs,
-    padding: primitives.spacingXs,
+    gap: primitives.spacingXxs,
+    paddingHorizontal: primitives.spacingXs,
+    paddingVertical: primitives.spacingXxs,
   },
   icon: { alignItems: 'center', justifyContent: 'center' },
   removeButton: { alignItems: 'center', justifyContent: 'center' },
   title: {
-    fontSize: primitives.typographyFontSizeMd,
+    fontSize: primitives.typographyFontSizeXs,
     fontWeight: '600',
-    lineHeight: primitives.typographyLineHeightNormal,
+    lineHeight: primitives.typographyLineHeightTight,
   },
 });

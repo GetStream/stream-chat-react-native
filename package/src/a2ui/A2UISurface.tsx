@@ -6,6 +6,7 @@ import React, {
   useContext,
   useLayoutEffect,
   useMemo,
+  useState,
   useSyncExternalStore,
 } from 'react';
 import { type AccessibilityProps, View as RNView, type ViewProps } from 'react-native';
@@ -147,7 +148,8 @@ const PlacedComponent = ({
 /**
  * One part of a surface: its view from the basic catalog, or the app's component of its type,
  * coming in when it shows, with its weight and what the agent tells assistive technology. A part
- * whose type no catalog has, or that is still on its way, shows nothing.
+ * whose type no catalog has, or that is still on its way, shows nothing, and one that holds other
+ * parts, such as a card, shows once one of them does while the agent writes it.
  */
 // The path of the data model a TextField writes what the person types to, when it is obscured,
 // such as a password, which must never reach the agent.
@@ -161,6 +163,18 @@ const secretPathOf = (node: ComponentNode, resolved: Record<string, unknown>) =>
     : undefined;
 };
 
+// Tells the part around a part that it shows.
+const A2UIPartShowsContext = createContext<(() => void) | undefined>(undefined);
+
+// Whether a part's props hold other parts, as a card's child or a column's children do.
+const holdsParts = (value: unknown): boolean =>
+  isComponentNode(value) ||
+  (Array.isArray(value)
+    ? value.some(holdsParts)
+    : isPlainObject(value) && Object.values(value).some(holdsParts));
+
+const hiddenStyle = { display: 'none' } as const;
+
 const A2UINode = memo(({ node }: { node: ComponentNode }) => {
   const engine = useContext(A2UIEngineContext);
   const axis = useContext(A2UIAxisContext);
@@ -172,11 +186,26 @@ const A2UINode = memo(({ node }: { node: ComponentNode }) => {
   useLayoutEffect(() => {
     if (secretPath && surface) keepSecretPath(surface, secretPath);
   }, [secretPath, surface]);
-  const comesIn = useAIUIComesIn();
-  if (!engine || node.isPlaceholder || node.state !== 'resolved') return null;
-  const View = engine.components[node.type];
-  const isApp = !View && !!engine.appComponent(node.type);
-  if (!View && !isApp) return null;
+  const View = engine?.components[node.type];
+  const isApp = !View && !!engine?.appComponent(node.type);
+  const isReady = !!engine && !node.isPlaceholder && node.state === 'resolved' && (!!View || isApp);
+  const holds = useMemo(() => holdsParts(props), [props]);
+  const [hasShownPart, setHasShownPart] = useState(false);
+  const isWritten = !useContext(A2UIReplyContext)?.isStreaming;
+  const shows = isReady && (!holds || hasShownPart || isWritten);
+  const partShows = useContext(A2UIPartShowsContext);
+  useLayoutEffect(() => {
+    if (shows) partShows?.();
+  }, [partShows, shows]);
+  const onPartShown = useCallback(() => setHasShownPart(true), []);
+  const comesIn = useAIUIComesIn(shows);
+  if (!isReady) return null;
+  const content = (
+    <A2UIPartShowsContext.Provider value={onPartShown}>
+      {View ? <View node={node} props={props} /> : <PlacedComponent node={node} props={props} />}
+    </A2UIPartShowsContext.Provider>
+  );
+  if (!shows) return <RNView style={hiddenStyle}>{content}</RNView>;
   // A weighted part shares the room its row leaves, as flex-grow from nothing does.
   const weight = typeof props.weight === 'number' && axis === 'row' ? props.weight : undefined;
   const Part = comesIn ? EnteringPart : ShownPart;
@@ -186,7 +215,7 @@ const A2UINode = memo(({ node }: { node: ComponentNode }) => {
       style={weight !== undefined ? { flexBasis: 0, flexGrow: weight } : undefined}
       testID={`a2ui-${node.componentId}`}
     >
-      {View ? <View node={node} props={props} /> : <PlacedComponent node={node} props={props} />}
+      {content}
     </Part>
   );
 });

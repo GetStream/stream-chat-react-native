@@ -29,15 +29,25 @@ export const replyActionsOf = <Message extends AIMessage>(
   rating: ratings[reply.id] ?? null,
 });
 
+/** The id of the person's latest message, the one they can edit. */
+export const latestUserMessageIdOf = (messages: readonly AIMessage[]) => {
+  for (let index = messages.length - 1; index >= 0; index--) {
+    if (messages[index].role === 'user') return messages[index].id;
+  }
+  return undefined;
+};
+
 // Edits a message of the person's, when it is their latest and the agent isn't answering.
 export const editActionOf = <Message extends AIMessage>(
   offerer: Offerer<Message>,
-  { messages, status }: { messages: readonly Message[]; status: AIConversationStatus },
+  {
+    latestUserMessageId,
+    status,
+  }: { latestUserMessageId: string | undefined; status: AIConversationStatus },
   message: Message,
 ): (() => void) | undefined => {
   if (!offerer.actions.edit || message.role !== 'user' || isAIConversationAnswering(status)) {
     return undefined;
   }
-  const latest = [...messages].reverse().find((item) => item.role === 'user');
-  return latest?.id === message.id ? () => offerer.edit(message) : undefined;
+  return latestUserMessageId === message.id ? () => offerer.edit(message) : undefined;
 };
