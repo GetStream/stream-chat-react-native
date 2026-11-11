@@ -899,6 +899,9 @@ describe('the app’s tools in a reply’s UI', () => {
     expect(instructions).toContain('"weather"');
     expect(instructions).toContain('The weather in a city today.');
     expect(instructions).toContain('"city"');
+    expect(instructions).toContain("## The app's tools");
+    expect(instructions).toContain('- `weather` (read-only): The weather in a city today.');
+    expect(instructions).toContain('Any other runs only from a Button');
   });
 
   it('shows the rest of the UI when a tool fails, and says so', async () => {
