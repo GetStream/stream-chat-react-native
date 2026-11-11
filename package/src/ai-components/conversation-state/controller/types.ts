@@ -45,7 +45,12 @@ export type AIConversationRequest<Message extends AIMessage = AIMessage> = {
   attachments: MediaAsset[];
   /** The option the person picked in the composer, such as thinking harder. */
   chatOption?: AIChatOption;
-  /** What the composer held besides, as `ComposerState.custom`. */
+  /**
+   * What the composer held besides, as `ComposerState.custom`, or what `send` was given as
+   * `custom`. What the person did in a reply's generated UI travels here as `uiAction`, the
+   * action's JSON from `aiUIActionJSON`, and the transport hands it to the agent, such as
+   * `session.responses.create(request.text, { uiAction: request.custom?.uiAction })`.
+   */
   custom?: Record<string, unknown>;
   /** The message it is about: the reply to write again, or the person's message they edited. */
   message?: Message;

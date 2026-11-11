@@ -164,6 +164,9 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   const show = (next: AgentChat) => {
     const previous = current.current;
     const conversation = new AIConversationController({
+      // The agents router keeps the conversation in Stream Chat and can't rewind it, so a reply
+      // can't be written again or a message edited: either would only be asked again as new.
+      actions: { edit: false, regenerate: false },
       approver: approverFor(next),
       transport: createAgentTransport(next, {
         onCreated: () => setConversationsVersion((version) => version + 1),

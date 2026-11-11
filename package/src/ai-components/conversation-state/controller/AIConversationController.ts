@@ -74,6 +74,10 @@ export type AIConversationSendData = {
   attachments?: MediaAsset[];
   /** The option the person picked in the composer. */
   chatOption?: AIChatOption;
+  /**
+   * Goes to the transport as the request's `custom`, such as a generated-UI action as
+   * `{ uiAction: aiUIActionJSON(action) }`.
+   */
   custom?: Record<string, unknown>;
 };
 
@@ -118,9 +122,22 @@ type RatingChange = {
  * `AIConversation` and `ComposerView` as `conversation`, which show it and act on it: sending,
  * stopping, regenerating and rating replies, and editing the person's latest message.
  *
+ * Create it in the effect that disposes it, not in `useState`: React's StrictMode runs an
+ * effect's cleanup and then the effect again, which would leave the views with a disposed
+ * controller.
+ *
  * ```tsx
- * const [conversation] = useState(() => new AIConversationController({ transport }));
- * useEffect(() => () => conversation.dispose(), [conversation]);
+ * const [conversation, setConversation] = useState<AIConversationController>();
+ * useEffect(() => {
+ *   const created = new AIConversationController({ transport });
+ *   setConversation(created);
+ *   return () => {
+ *     created.dispose();
+ *     setConversation(undefined);
+ *   };
+ * }, [transport]);
+ *
+ * if (!conversation) return null;
  *
  * <AIConversation conversation={conversation} />
  * <ComposerView conversation={conversation} />
