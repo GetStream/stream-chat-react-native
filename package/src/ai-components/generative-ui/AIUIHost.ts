@@ -231,6 +231,11 @@ export class AIUIHost {
     return sent;
   }
 
+  /** Whether a reply's UI failed to show, so its text shows in its place. */
+  hasFailed(messageId: string) {
+    return this.failed.has(messageId);
+  }
+
   /**
    * Shows a reply's text in place of its UI, which failed to show, and tells the app. It lasts
    * while the reply is in the conversation, or, for a reply still being written, until it is
