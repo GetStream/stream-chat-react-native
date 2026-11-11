@@ -4,18 +4,30 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { DrawerContentComponentProps } from 'expo-router/drawer';
-import type { Channel as ChannelClass } from 'stream-chat';
+import type { ChannelSort } from 'stream-chat';
+
+import type { Channel as ChannelClass, ChannelFilters } from 'stream-chat';
 import {
   ChannelList,
   ChannelPreviewProps,
   Plus,
   useChannelsContext,
-  useChatContext,
   useStableCallback,
   WithComponents,
 } from 'stream-chat-expo';
 
-import { createChannel, useAppContext } from '../contexts/AppContext';
+import { AgentConfig } from '../agent/config';
+import { useAppContext } from '../contexts/AppContext';
+
+// The router keeps each conversation in an `agent` channel the user is a member of.
+const filters: ChannelFilters = {
+  members: {
+    $in: [AgentConfig.user.id],
+  },
+  type: 'agent',
+};
+
+const sort: ChannelSort = { last_updated: -1 };
 
 const ChannelPreview = (props: ChannelPreviewProps) => {
   const channel = props.channel;
@@ -33,23 +45,22 @@ const ChannelPreview = (props: ChannelPreviewProps) => {
       onPress={onPress}
     >
       <Text style={styles.previewText} numberOfLines={1}>
-        {channel.data?.custom?.name ?? channel.cid}
+        {channel.data?.name ?? channel.cid}
       </Text>
     </Pressable>
   );
 };
 
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
-  const { client } = useChatContext();
-  const { channelListPaginator, setChannel } = useAppContext();
+  const { openConversation, startConversation } = useAppContext();
 
   const onSelect = useStableCallback((channel: ChannelClass) => {
-    setChannel(channel);
+    openConversation(channel);
     navigation.closeDrawer();
   });
 
   const onCreateNewChat = useStableCallback(() => {
-    setChannel(createChannel(client));
+    startConversation();
     navigation.closeDrawer();
   });
 
@@ -62,9 +73,7 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
         </Pressable>
       </View>
       <WithComponents overrides={{ ChannelPreview }}>
-        {channelListPaginator ? (
-          <ChannelList onSelect={onSelect} paginator={channelListPaginator} />
-        ) : null}
+        <ChannelList filters={filters} sort={sort} onSelect={onSelect} />
       </WithComponents>
     </SafeAreaView>
   );
