@@ -62,12 +62,18 @@ export const hasFinishedSteps = (
   message.parts.every(isStepOver) &&
   !(message.uiDocument && canShowUI(message.uiDocument));
 
-/** Groups the rows into turns, each starting with one of the person's messages. */
-export const turnsOf = (entries: AIConversationEntry[]) =>
+/**
+ * Groups the rows into turns, each starting with one of the person's messages. A row that
+ * started a turn, kept in `starts`, keeps starting one: a reply that opened the first page loaded
+ * stays the start of its turn when older messages load above it, so the turn keeps its key.
+ */
+export const turnsOf = (entries: AIConversationEntry[], starts = new Set<string>()) =>
   entries.reduce<AIConversationTurn[]>((turns, entry) => {
     const last = turns[turns.length - 1];
-    if (!last || entry.isFromUser) turns.push({ entries: [entry], id: entry.id });
-    else last.entries.push(entry);
+    if (!last || entry.isFromUser || starts.has(entry.id)) {
+      starts.add(entry.id);
+      turns.push({ entries: [entry], id: entry.id });
+    } else last.entries.push(entry);
     return turns;
   }, []);
 
@@ -85,6 +91,9 @@ export class AIPendingMessageTracker {
   // The pending message of the last update, whose copy can arrive in the update that stops
   // passing it.
   private lastPending?: AIPendingMessage;
+  // The person's messages of the last update. A pending message first seen in an update that
+  // also brings its copy can't take that update's messages as ones its copy isn't.
+  private lastSentIds?: Set<string>;
 
   // The rows of a conversation: its messages, apart from replies with nothing to show yet, and
   // a message on its way until its copy arrives. A reply's UI shows when `canShowUI` says.
@@ -94,13 +103,13 @@ export class AIPendingMessageTracker {
     canShowUI: AIConversationCanShowUI = showsNoUI,
   ): AIConversationEntry[] {
     let showsPending = !!pending;
+    const sent = messages.filter((message) => message.role === 'user');
+    const ids = new Set(sent.map((message) => message.id));
     // A copy that arrives in the update that stops passing its pending message still takes over
     // its row. Only then: a message sent later is not the copy of one that failed.
     const awaited = pending ?? this.lastPending;
     if (awaited) {
-      const sent = messages.filter((message) => message.role === 'user');
-      const ids = new Set(sent.map((message) => message.id));
-      const known = this.seen.get(awaited.id) ?? ids;
+      const known = this.seen.get(awaited.id) ?? this.lastSentIds ?? ids;
       const matched = [...this.copies].find(
         ([copyId, original]) => original.id === awaited.id && ids.has(copyId),
       )?.[0];
@@ -113,6 +122,7 @@ export class AIPendingMessageTracker {
       }
     }
     this.lastPending = pending ?? undefined;
+    this.lastSentIds = ids;
 
     const entries: AIConversationEntry[] = messages
       .filter((message) => !showsNothing(message, canShowUI))

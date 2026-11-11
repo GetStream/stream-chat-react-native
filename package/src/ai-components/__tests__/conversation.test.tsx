@@ -150,6 +150,34 @@ describe('AIConversation', () => {
     expect(screen.getAllByText('footer')).toHaveLength(1);
   });
 
+  it('keeps a turn that starts with a reply when older messages load above it', () => {
+    const starts = new Set<string>();
+    const tracker = new AIPendingMessageTracker();
+    const page = [
+      reply('a1', 'It is noon.'),
+      user('u2', 'And the weather?'),
+      reply('a2', 'Sunny.'),
+    ];
+    expect(turnsOf(tracker.entries(page), starts).map((turn) => turn.id)).toEqual(['a1', 'u2']);
+
+    const older = [user('u1', 'What time is it?'), ...page];
+    expect(turnsOf(tracker.entries(older), starts).map((turn) => turn.id)).toEqual([
+      'u1',
+      'a1',
+      'u2',
+    ]);
+  });
+
+  it('takes the copy of a message on its way that arrives in the update that first passes it', () => {
+    const tracker = new AIPendingMessageTracker();
+    const history = [user('u1', 'Hello'), reply('a1', 'Hi!')];
+    tracker.entries(history);
+    const pending = { id: 'local-1', text: 'Plan my day' };
+    const entries = tracker.entries([...history, user('stream-u2', 'Plan my day')], pending);
+    expect(entries.map((entry) => entry.id)).toEqual(['u1', 'a1', 'local-1']);
+    expect(entries.filter((entry) => entry.pending)).toHaveLength(0);
+  });
+
   it('shows a pending message with the agent thinking, until its reply starts', async () => {
     const mounts: string[] = [];
     const UserMessage = ({ text }: AIConversationUserMessageProps) => {
