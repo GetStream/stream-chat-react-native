@@ -78,7 +78,7 @@ export type A2UIRendererOptions = {
    * answers to write as UI.
    */
   instructions?: string;
-  /** The locale numbers and dates are formatted in. `en-US` by default. */
+  /** The locale numbers and dates are formatted in. The device's by default. */
   locale?: string;
   /**
    * Decides what an Image, Video or AudioPlayer loads for the link the agent wrote: the address

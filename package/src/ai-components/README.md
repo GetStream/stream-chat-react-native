@@ -335,7 +335,7 @@ The label of the message an action sends is the text of the control the person t
 | `components`   | Your own views for basic components, by type, such as `{ Card: MyCard }`. Each gets the node and its resolved props. |
 | `icons`        | Your own icons for the names `Icon` takes, over the Material icons drawn by default.                                 |
 | `removing`     | Basic components or functions to leave out, such as `['Video']`. The agent's instructions leave them out too.        |
-| `locale`       | The locale numbers and dates are formatted in. `en-US` by default.                                                   |
+| `locale`       | The locale numbers and dates are formatted in. The device's by default.                                              |
 | `mediaUrl`     | Decides what an `Image`, `Video` or `AudioPlayer` loads for a link. Public web links only by default.                |
 | `instructions` | What you tell the model before A2UI's own instructions, such as which answers to write as UI.                        |
 | `catalogId`    | The id of the catalog with your own components.                                                                      |

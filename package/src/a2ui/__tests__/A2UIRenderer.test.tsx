@@ -1318,6 +1318,29 @@ describe('the basic catalog', () => {
     expect(screen.getByText(/Saturday 14 November/)).toBeTruthy();
   });
 
+  it('formats yen without decimals, and epoch timestamps and times of day', async () => {
+    const { ui } = setup({ locale: 'en-US' });
+    const text = (id: string, call: string, args: Record<string, unknown>) => ({
+      component: 'Text',
+      id,
+      text: { '@call': call, args },
+    });
+    await renderReply(
+      ui,
+      surfaceOf([
+        { children: ['yen', 'seconds', 'millis', 'time'], component: 'Column', id: 'root' },
+        text('yen', 'formatCurrency', { currency: 'JPY', value: 1500 }),
+        text('seconds', 'formatDate', { format: 'yyyy-MM-dd', value: 1_763_078_400 }),
+        text('millis', 'formatDate', { format: 'd MMMM', value: 1_763_078_400_000 }),
+        text('time', 'formatDate', { format: 'h:mm a', value: '18:30' }),
+      ]),
+    );
+    await waitFor(() => expect(screen.getByText('¥1,500')).toBeTruthy());
+    expect(screen.getByText('2025-11-14')).toBeTruthy();
+    expect(screen.getByText('14 November')).toBeTruthy();
+    expect(screen.getByText('6:30 PM')).toBeTruthy();
+  });
+
   it('keeps what the person types in the data model, and holds a button until its checks pass', async () => {
     const { sent, ui } = setup();
     await renderReply(
