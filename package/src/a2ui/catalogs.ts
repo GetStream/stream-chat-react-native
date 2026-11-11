@@ -10,7 +10,7 @@ import {
 import { A2UI_VERSION } from './A2UIStream';
 import basicCatalogDocument from './basicCatalog.json';
 import { basicFunctionsOf } from './basicFunctions';
-import { a2uiAppCatalogDocument, a2uiTypeName } from './catalogDocument';
+import { a2uiAppCatalogDocument, a2uiAppCatalogIds, a2uiTypeName } from './catalogDocument';
 import { secretValuesOf, withoutSecrets } from './secrets';
 
 import type { AIUIComponent } from '../ai-components/generative-ui/AIUIComponent';
@@ -176,10 +176,6 @@ export const a2uiCatalogsOf = ({
   }
   const basic = [...definitions.components.values()].filter(({ name }) => !removed.has(name));
   const all = [...basic, ...appApis] as ComponentApi[];
-  return [
-    new Catalog<ComponentApi>(catalogId, A2UI_VERSION, all, functions),
-    ...(catalogId === A2UI_BASIC_CATALOG_ID
-      ? []
-      : [new Catalog<ComponentApi>(A2UI_BASIC_CATALOG_ID, A2UI_VERSION, all, functions)]),
-  ];
+  const ids = new Set([...a2uiAppCatalogIds(catalogId), A2UI_BASIC_CATALOG_ID]);
+  return [...ids].map((id) => new Catalog<ComponentApi>(id, A2UI_VERSION, all, functions));
 };

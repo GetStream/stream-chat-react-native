@@ -506,5 +506,14 @@
   "Remove attachment": "Remove attachment",
   "Remove option: {{ option }}": "Remove option: {{ option }}",
   "Play": "Play",
-  "Pause": "Pause"
+  "Pause": "Pause",
+  "Ask anything": "Ask anything",
+  "Connecting": "Connecting",
+  "Listening": "Listening",
+  "Ready": "Ready",
+  "Speaking": "Speaking",
+  "Thinking": "Thinking",
+  "The agent couldn't answer. Try again.": "The agent couldn't answer. Try again.",
+  "Voice agent": "Voice agent",
+  "What it sends": "What it sends"
 }

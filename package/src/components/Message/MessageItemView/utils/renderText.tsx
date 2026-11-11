@@ -95,7 +95,7 @@ export const MarkdownReactiveScrollView = ({ children }: { children: ReactNode }
 
 const defaultMarkdownStyles: MarkdownStyle = {
   codeBlock: {
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     fontWeight: '500',
     marginVertical: primitives.spacingXs,
     fontSize: primitives.typographyFontSizeMd,

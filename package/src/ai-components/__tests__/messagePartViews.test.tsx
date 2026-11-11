@@ -1,5 +1,5 @@
 import React, { type ReactElement } from 'react';
-import { I18nManager } from 'react-native';
+import { I18nManager, Text } from 'react-native';
 
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
@@ -122,6 +122,57 @@ describe('AIToolApproval', () => {
     clientId: 'ios-1',
     decide,
     userId: 'alex',
+  });
+
+  it('shows what the call sends, folding long arguments', () => {
+    const decide = jest.fn(() => Promise.resolve());
+    const { rerender } = renderWithTheme(
+      <AIToolApproval
+        approver={approver(decide)}
+        part={{ ...asking, arguments: { precision: 'city' } }}
+      />,
+    );
+    expect(screen.getByText('What it sends')).toBeTruthy();
+    expect(screen.getByText(/"precision": "city"/)).toBeTruthy();
+
+    const long = { body: 'x'.repeat(300) };
+    rerender(<AIToolApproval approver={approver(decide)} part={{ ...asking, arguments: long }} />);
+    expect(screen.queryByText(/"body"/)).toBeNull();
+    fireEvent.press(screen.getByRole('button', { name: 'What it sends' }));
+    expect(screen.getByText(/"body"/)).toBeTruthy();
+
+    rerender(<AIToolApproval approver={approver(decide)} part={{ ...asking, arguments: {} }} />);
+    expect(screen.queryByText('What it sends')).toBeNull();
+  });
+
+  it('shows the approver’s own preview, or none, and hands it to a card of the app’s', () => {
+    const decide = jest.fn(() => Promise.resolve());
+    const part = { ...asking, arguments: { precision: 'city' } };
+    const { rerender } = renderWithTheme(
+      <AIToolApproval
+        approver={{ ...approver(decide), argumentsPreview: () => <Text>Your city only</Text> }}
+        part={part}
+      />,
+    );
+    expect(screen.getByText('Your city only')).toBeTruthy();
+    expect(screen.queryByText('What it sends')).toBeNull();
+
+    rerender(
+      <AIToolApproval
+        approver={{ ...approver(decide), argumentsPreview: () => null }}
+        part={part}
+      />,
+    );
+    expect(screen.queryByText('What it sends')).toBeNull();
+
+    const children = jest.fn((_approval, _state, _decide, preview) => <>{preview}</>);
+    rerender(
+      <AIToolApproval approver={approver(decide)} part={part}>
+        {children}
+      </AIToolApproval>,
+    );
+    expect(screen.getByText('What it sends')).toBeTruthy();
+    expect(children.mock.calls[0]).toHaveLength(4);
   });
 
   it('asks only the targeted person on the targeted install', () => {

@@ -8,8 +8,8 @@ import { AIDictation } from '../native/AIDictation';
 import type { DictationResult, DictationStartOptions } from '../native-specs/NativeAIDictation';
 import { dictationStore, type DictationStoreState } from '../store';
 
+// No `language`: the device's own language is used, as the person speaks it.
 const DEFAULT_OPTIONS = {
-  language: 'en-US',
   interimResults: true,
   silenceTimeoutMs: 2500,
 };

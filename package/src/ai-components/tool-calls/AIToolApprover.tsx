@@ -1,4 +1,4 @@
-import React, { createContext, type PropsWithChildren, useContext } from 'react';
+import React, { createContext, type PropsWithChildren, type ReactNode, useContext } from 'react';
 
 import type { AIToolCallPart } from '../message-parts/types';
 
@@ -41,6 +41,11 @@ export type AIToolApprover = {
   userId: string;
   /** How this person signs in when a call waits for their account. Without one, no sign-in is offered here. */
   authorizer?: AIToolAuthorizer;
+  /**
+   * What a call sends, shown under its question, such as a formatted email instead of its JSON.
+   * `null` shows nothing; `undefined` shows the call's arguments.
+   */
+  argumentsPreview?: (call: AIToolCallPart) => ReactNode | null | undefined;
 };
 
 const AIToolApproverContext = createContext<AIToolApprover | undefined>(undefined);

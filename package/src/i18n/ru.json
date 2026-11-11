@@ -506,5 +506,14 @@
   "Remove attachment": "Удалить вложение",
   "Remove option: {{ option }}": "Удалить параметр: {{ option }}",
   "Play": "Воспроизвести",
-  "Pause": "Пауза"
+  "Pause": "Пауза",
+  "Ask anything": "Спросите что угодно",
+  "Connecting": "Подключение",
+  "Listening": "Слушает",
+  "Ready": "Готов",
+  "Speaking": "Говорит",
+  "Thinking": "Думает",
+  "The agent couldn't answer. Try again.": "Агенту не удалось ответить. Попробуйте ещё раз.",
+  "Voice agent": "Голосовой агент",
+  "What it sends": "Что будет отправлено"
 }

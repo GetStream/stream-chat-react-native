@@ -3,6 +3,7 @@ import { parseAIUIComponentDefinition } from '../../ai-components';
 import { ohridLines, uiComponents } from '../../mock-builders/a2ui/ohrid';
 import {
   A2UI_DEFAULT_CATALOG_ID,
+  A2UI_WEB_CATALOG_ID,
   a2uiInstructions,
   A2UIInstructionsError,
   a2uiProblems,
@@ -217,6 +218,19 @@ describe('a2uiProblems', () => {
         ].join('\n'),
       ),
     ).toEqual([expect.stringMatching(/^surface s is created again/)]);
+    expect(
+      await a2uiProblems(
+        [
+          line({ createSurface: { catalogId: A2UI_WEB_CATALOG_ID, surfaceId: 's' } }),
+          line({
+            updateComponents: {
+              components: [{ component: 'Text', id: 'root', text: 'One' }],
+              surfaceId: 's',
+            },
+          }),
+        ].join('\n'),
+      ),
+    ).toEqual([]);
     expect(
       await a2uiProblems(
         [

@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 
-import { AIConversation } from '../conversation';
+import { AIConversation, type AIConversationAssistantMessageProps } from '../conversation';
 import {
   AIConversationController,
   type AIMessage,
@@ -191,16 +191,18 @@ describe('AIConversation with generated UI', () => {
   it('has the reply’s actions under a finished UI-only reply, not while its UI is written', async () => {
     const ui = makeHost();
     const question = user('u1', 'Plan');
+    const ReplyActions = () => <Text>Rate this plan</Text>;
     const { rerender } = await renderConversation(
       <AIConversation
         messages={[
           question,
           reply('a1', '', { content: 'Ohrid', format: 'a2ui', status: 'streaming' }),
         ]}
+        ReplyActions={ReplyActions}
         ui={ui}
       />,
     );
-    expect(screen.queryByRole('button', { name: /copy/i })).toBeNull();
+    expect(screen.queryByText('Rate this plan')).toBeNull();
 
     await rerender(
       <AIConversation
@@ -208,10 +210,26 @@ describe('AIConversation with generated UI', () => {
           question,
           reply('a1', '', { content: 'Ohrid', format: 'a2ui', status: 'complete' }),
         ]}
+        ReplyActions={ReplyActions}
         ui={ui}
       />,
     );
-    expect(screen.getByRole('button', { name: /copy/i })).toBeTruthy();
+    expect(screen.getByText('Rate this plan')).toBeTruthy();
+  });
+
+  it('offers no Copy or Share under a reply that answers only in UI', async () => {
+    await renderConversation(
+      <AIConversation
+        messages={[
+          user('u1', 'Plan'),
+          reply('a1', '', { content: 'Ohrid', format: 'a2ui', status: 'complete' }),
+        ]}
+        ui={makeHost()}
+      />,
+    );
+    expect(screen.getByTestId('card')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /copy/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /share/i })).toBeNull();
   });
 
   it('keeps the UI views of rows it reuses for other replies', async () => {
@@ -327,7 +345,37 @@ describe('AIConversation with generated UI', () => {
     expect(screen.getByTestId('card')).toHaveTextContent('Ohrid plan');
     expect(onRenderError).toHaveBeenCalledTimes(1);
     expect(onRenderError).toHaveBeenCalledWith(expect.any(Error), 'a1');
+    expect(ui.hasFailed('a1')).toBe(true);
+    expect(ui.hasFailed('a2')).toBe(false);
     logged.mockRestore();
+  });
+
+  it('tells a custom message whether its reply shows UI, or whose UI failed', async () => {
+    const seen = new Map<string, { showsUI?: boolean; uiFailed?: boolean }>();
+    const AssistantMessage = ({
+      message,
+      showsUI,
+      text,
+      uiFailed,
+    }: AIConversationAssistantMessageProps) => {
+      seen.set(message.id, { showsUI, uiFailed });
+      return <Text>{text}</Text>;
+    };
+    const ui = makeHost();
+    await renderConversation(
+      <AIConversation
+        AssistantMessage={AssistantMessage}
+        messages={[
+          user('u1', 'Plan'),
+          reply('a1', 'A weekend by the lake', { content: 'Ohrid plan', format: 'a2ui' }),
+          user('u2', 'Just text'),
+          reply('a2', 'Plain words'),
+        ]}
+        ui={ui}
+      />,
+    );
+    expect(seen.get('a1')).toEqual({ showsUI: true, uiFailed: false });
+    expect(seen.get('a2')).toEqual({ showsUI: false, uiFailed: false });
   });
 
   it('tries a reply’s UI that failed while it was written again once it is written', async () => {

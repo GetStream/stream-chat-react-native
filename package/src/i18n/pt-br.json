@@ -506,5 +506,14 @@
   "Remove attachment": "Remover anexo",
   "Remove option: {{ option }}": "Remover opção: {{ option }}",
   "Play": "Reproduzir",
-  "Pause": "Pausar"
+  "Pause": "Pausar",
+  "Ask anything": "Pergunte qualquer coisa",
+  "Connecting": "Conectando",
+  "Listening": "Ouvindo",
+  "Ready": "Pronto",
+  "Speaking": "Falando",
+  "Thinking": "Pensando",
+  "The agent couldn't answer. Try again.": "O agente não conseguiu responder. Tente novamente.",
+  "Voice agent": "Agente de voz",
+  "What it sends": "O que será enviado"
 }

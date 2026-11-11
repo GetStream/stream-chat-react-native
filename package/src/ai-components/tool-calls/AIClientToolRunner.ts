@@ -98,9 +98,15 @@ export type AIClientToolRunnerOptions = {
   tools: AIClientTool[];
   /** The person signed in, matched against a call's `target_user_id`. */
   userId: string;
-  /** How many times a result is offered to `send` before the runner gives up on it. Defaults to 3. */
+  /**
+   * How many times a result is offered to `send` before the runner gives up on it. At least 1;
+   * defaults to 3.
+   */
   maxAttempts?: number;
 };
+
+const hasOwnId = (payload: Record<string, unknown>) =>
+  typeof payload.id === 'string' && payload.id !== '';
 
 type CallState = {
   attempts: number;
@@ -114,7 +120,8 @@ type CallState = {
  * as they update. It runs a call when the call awaits this person and this install, the runner
  * has a tool of that name and the call has not run here before, then hands the result to `send`.
  * A result that could not be sent is sent again on a later update, without running the tool
- * again.
+ * again. A call without an `id` of its own is left alone: its step is told apart by its place in
+ * the reply, which another reply repeats.
  *
  * ```ts
  * const runner = new AIClientToolRunner({ clientId: AIClientIdentity.installId(), tools: [localTime], userId });
@@ -129,6 +136,9 @@ export class AIClientToolRunner {
   private readonly tools = new Map<string, AIClientTool>();
 
   constructor({ clientId, maxAttempts = 3, tools, userId }: AIClientToolRunnerOptions) {
+    if (!Number.isInteger(maxAttempts) || maxAttempts < 1) {
+      throw new RangeError(`maxAttempts must be at least 1, was ${maxAttempts}`);
+    }
     this.clientId = clientId;
     this.maxAttempts = maxAttempts;
     this.userId = userId;
@@ -162,8 +172,10 @@ export class AIClientToolRunner {
 
   /** Runs the calls among `parts` that await this device, and sends their results. */
   run(parts: readonly AIMessagePartData[], send: AIClientToolSend) {
-    for (const { toolCall: call } of parts) {
-      if (!call || !isAwaitingClient(call, this.userId, this.clientId)) continue;
+    for (const { payload, toolCall: call } of parts) {
+      if (!call || !hasOwnId(payload) || !isAwaitingClient(call, this.userId, this.clientId)) {
+        continue;
+      }
       const tool = this.tools.get(call.name);
       if (!tool) continue;
       const state = this.calls.get(call.id) ?? { attempts: 0, sending: false, sent: false };

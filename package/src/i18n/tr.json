@@ -506,5 +506,14 @@
   "Remove attachment": "Eki kaldır",
   "Remove option: {{ option }}": "Seçeneği kaldır: {{ option }}",
   "Play": "Oynat",
-  "Pause": "Duraklat"
+  "Pause": "Duraklat",
+  "Ask anything": "Ne istersen sor",
+  "Connecting": "Bağlanıyor",
+  "Listening": "Dinliyor",
+  "Ready": "Hazır",
+  "Speaking": "Konuşuyor",
+  "Thinking": "Düşünüyor",
+  "The agent couldn't answer. Try again.": "Ajan yanıt veremedi. Tekrar deneyin.",
+  "Voice agent": "Sesli ajan",
+  "What it sends": "Gönderilecekler"
 }

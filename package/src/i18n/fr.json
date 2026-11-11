@@ -506,5 +506,14 @@
   "Remove attachment": "Retirer la pièce jointe",
   "Remove option: {{ option }}": "Retirer l'option : {{ option }}",
   "Play": "Lire",
-  "Pause": "Pause"
+  "Pause": "Pause",
+  "Ask anything": "Posez votre question",
+  "Connecting": "Connexion",
+  "Listening": "À l'écoute",
+  "Ready": "Prêt",
+  "Speaking": "Parle",
+  "Thinking": "Réflexion",
+  "The agent couldn't answer. Try again.": "L'agent n'a pas pu répondre. Réessayez.",
+  "Voice agent": "Agent vocal",
+  "What it sends": "Ce qui sera envoyé"
 }

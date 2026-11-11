@@ -64,6 +64,10 @@ export type AIConversationAssistantMessageProps = {
    */
   onWritingChange?: (isWriting: boolean) => void;
   reasoningText?: (stepId: string) => string | undefined;
+  /** Whether the reply answers with UI the agent generated, which shows under it in place of its text. */
+  showsUI?: boolean;
+  /** Whether the reply's generated UI failed to show, so its text shows instead. */
+  uiFailed?: boolean;
 };
 
 export type AIConversationReplyActionsProps = {
@@ -283,6 +287,7 @@ const EntryView = ({
   const { uiDocument } = message;
   const generated = ui && uiDocument ? ui.content(uiDocument, message.id) : null;
   const showsUI = !!uiDocument && generated !== null && generated !== undefined;
+  const uiFailed = !!uiDocument && !!ui?.hasFailed(message.id);
   // A finished reply has its actions under it whether it answers in text or in UI, once the
   // UI is written.
   const hasAnswer = message.text !== '' || showsUI;
@@ -297,7 +302,9 @@ const EntryView = ({
         onWritingChange={onWritingChange}
         parts={message.parts ?? []}
         reasoningText={message.reasoningText}
+        showsUI={showsUI}
         text={showsUI ? '' : message.text}
+        uiFailed={uiFailed}
       />
       {showsUI ? (
         <AIUIGenerated
