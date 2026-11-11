@@ -125,7 +125,8 @@ describe('AIToolAuthorization', () => {
     expect(screen.getByRole('button', { name: 'Not now' })).toBeEnabled();
   });
 
-  it('keeps connecting once connected, until the step changes', async () => {
+  it('keeps connecting once connected, until the step changes or 30 seconds pass', async () => {
+    jest.useFakeTimers();
     renderWithTheme(
       <AIToolAuthorization
         approver={approverWith({ connect: () => Promise.resolve(true), decline: jest.fn() })}
@@ -135,6 +136,15 @@ describe('AIToolAuthorization', () => {
     fireEvent.press(screen.getByRole('button', { name: 'Connect' }));
     await act(() => Promise.resolve());
     expect(screen.getByRole('button', { name: 'Connecting...' })).toBeDisabled();
+    act(() => {
+      jest.advanceTimersByTime(29_000);
+    });
+    expect(screen.getByRole('button', { name: 'Connecting...' })).toBeDisabled();
+    act(() => {
+      jest.advanceTimersByTime(1_000);
+    });
+    expect(screen.getByRole('button', { name: 'Connect' })).toBeEnabled();
+    jest.useRealTimers();
   });
 
   it('says when the sign-in could not open, and lets the person try again', async () => {
