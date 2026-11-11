@@ -1,5 +1,13 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,25 +15,27 @@ import { useHeaderHeight } from 'expo-router/react-navigation';
 
 import type { MessageProps, ResolvedComponents } from 'stream-chat-expo';
 import {
-  AIStates,
   Channel,
   isLocalUrl,
   mergeThemes,
   Message,
   MessageList,
   ThemeProvider,
-  useAIState,
-  useChannelContext,
   useComponentsContext,
   useMessageContext,
+  usePaginatedMessageListContext,
   useTheme,
   WithComponents,
 } from 'stream-chat-expo';
 
 import {
   AI_MESSAGE_PART_TYPE_PREFIX,
+  AIMessageParts,
+  AIThinking,
+  AIToolApproverProvider,
   AITypingIndicatorView,
   ComposerView,
+  parseMessageParts,
   StreamingMessageView,
 } from 'stream-chat-expo/ai-components';
 
@@ -84,33 +94,43 @@ const CustomMessage = (props: MessageProps) => {
 type UnsupportedAttachmentComponent = ResolvedComponents['UnsupportedAttachment'];
 
 // A reply's steps (`ai_reasoning`, `ai_tool_call`) are attachments the chat SDK doesn't know. They
-// get their own views; until then they're left out rather than shown as unsupported files, and any
-// other unknown attachment keeps the SDK's own view.
+// show in the reply's own view, so they're left out here; any other unknown attachment keeps the
+// SDK's own view.
 const hidingAISteps = (Fallback: UnsupportedAttachmentComponent) => {
   const HideAISteps: UnsupportedAttachmentComponent = (props) =>
     props.attachment.type?.startsWith(AI_MESSAGE_PART_TYPE_PREFIX) ? null : <Fallback {...props} />;
   return HideAISteps;
 };
 
+// A reply: its steps (reasoning, tool calls and their questions), then its answer.
 const CustomStreamingMessageView = () => {
   const { message } = useMessageContext();
+  // Read so the steps render again as more of their reasoning arrives.
+  const { reasoningText, reasoningVersion } = useAppContext();
+  const parts = useMemo(() => parseMessageParts(message.attachments), [message.attachments]);
+  const stepText = useMemo(
+    () => (stepId: string) => reasoningText(message.id, stepId),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- a new function per slice of reasoning
+    [message.id, reasoningText, reasoningVersion],
+  );
+  // The message list sizes a bubble to its content; a reply's steps take the row's whole width,
+  // the screen less the list's 16 on each side.
+  const { width } = useWindowDimensions();
   return (
-    <View style={styles.streamingMessageViewWrapper}>
-      <StreamingMessageView text={message.text ?? ''} />
+    <View style={[styles.streamingMessageViewWrapper, { width: width - 32 }]}>
+      {parts.length > 0 ? <AIMessageParts parts={parts} reasoningText={stepText} /> : null}
+      {message.text ? <StreamingMessageView text={message.text} /> : null}
     </View>
   );
 };
 
 const CustomComposerView = () => {
-  const { channel } = useChannelContext();
-  const { stop } = useAppContext();
-
-  const { aiState } = useAIState(channel);
+  const { agentState, stop } = useAppContext();
 
   // The router stops through its own session, not with an AI indicator event.
   const stopGenerating = useMemo(() => () => Promise.resolve(stop()), [stop]);
 
-  const isGenerating = [AIStates.Thinking, AIStates.Generating].includes(aiState);
+  const isGenerating = agentState.kind === 'responding' || agentState.kind === 'working';
 
   const safeAreaInsets = useSafeAreaInsets();
   const insets = useMemo(
@@ -142,27 +162,30 @@ const EmptyStateIndicator = () => (
   </View>
 );
 
+// What the agent is doing while its reply shows nothing yet: thinking, or running skills.
 const CustomAITypingIndicatorView = () => {
-  const { channel } = useChannelContext();
-  const { aiState } = useAIState(channel);
+  const { agentState } = useAppContext();
+  const { messages } = usePaginatedMessageListContext();
+  const latest = messages[messages.length - 1];
+  const replyHasBegun =
+    !!latest?.ai_generated && (!!latest.text || parseMessageParts(latest.attachments).length > 0);
 
-  const allowedStates = {
-    [AIStates.Thinking]: 'Thinking about the question...',
-    [AIStates.Generating]: 'Generating a response...',
-    [AIStates.ExternalSources]: 'Checking external sources...',
-  };
-
-  const indicatorText = allowedStates[aiState as keyof typeof allowedStates];
-
-  if (!indicatorText) {
-    return null;
+  if (agentState.kind === 'working') {
+    const skills = agentState.skills.map((skill) => skill.replace(/_/g, ' ')).join(' and ');
+    return (
+      <View style={styles.aiTypingIndicatorWrapper}>
+        <AITypingIndicatorView text={`Working on ${skills}`} />
+      </View>
+    );
   }
-
-  return (
-    <View style={styles.aiTypingIndicatorWrapper}>
-      <AITypingIndicatorView text={indicatorText} />
-    </View>
-  );
+  if (agentState.kind === 'responding' && !replyHasBegun) {
+    return (
+      <View style={styles.aiTypingIndicatorWrapper}>
+        <AIThinking />
+      </View>
+    );
+  }
+  return null;
 };
 
 const RenderNull = () => null;
@@ -176,7 +199,7 @@ const additionalFlatListProps = {
 };
 
 export const ChatContent = () => {
-  const { channel, failure } = useAppContext();
+  const { approver, channel, failure } = useAppContext();
   const { bottom } = useSafeAreaInsets();
   // The channel sits below the drawer header, so the keyboard offset has to account for it
   // (without it, Android keeps the composer behind the keyboard).
@@ -211,13 +234,19 @@ export const ChatContent = () => {
           UnsupportedAttachment: CustomUnsupportedAttachment,
         }}
       >
-        <Channel channel={channel} keyboardVerticalOffset={headerHeight} enableSwipeToReply={false}>
-          <MessageList additionalFlatListProps={additionalFlatListProps} />
-          <CustomAITypingIndicatorView />
-          {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
-          <VoiceMode />
-          <CustomComposerView />
-        </Channel>
+        <AIToolApproverProvider approver={approver}>
+          <Channel
+            channel={channel}
+            keyboardVerticalOffset={headerHeight}
+            enableSwipeToReply={false}
+          >
+            <MessageList additionalFlatListProps={additionalFlatListProps} />
+            <CustomAITypingIndicatorView />
+            {failure ? <Text style={styles.failureText}>{failure}</Text> : null}
+            <VoiceMode />
+            <CustomComposerView />
+          </Channel>
+        </AIToolApproverProvider>
       </WithComponents>
     </Animated.View>
   );
@@ -234,7 +263,7 @@ const styles = StyleSheet.create({
   },
   emptyContainerText: { fontSize: 24, fontWeight: 'bold' },
   failureText: { color: '#B00020', fontSize: 15, paddingHorizontal: 24, textAlign: 'center' },
-  streamingMessageViewWrapper: { width: '100%', paddingHorizontal: 16 },
+  streamingMessageViewWrapper: { paddingHorizontal: 16 },
   aiTypingIndicatorWrapper: {
     paddingHorizontal: 24,
     paddingVertical: 12,

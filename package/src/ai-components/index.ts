@@ -7,6 +7,8 @@ export * from './AITypingIndicatorView';
 export * from './voice-visualization';
 
 export * from './message-parts';
+export * from './reasoning';
+export * from './tool-calls';
 
 export * from './components';
 

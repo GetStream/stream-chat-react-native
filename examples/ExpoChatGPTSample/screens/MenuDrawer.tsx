@@ -1,61 +1,40 @@
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import type { Schemas } from '@stream-io/calypso';
 import type { DrawerContentComponentProps } from 'expo-router/drawer';
-import type { ChannelSort } from 'stream-chat';
 
-import type { Channel as ChannelClass, ChannelFilters } from 'stream-chat';
-import {
-  ChannelList,
-  ChannelPreviewProps,
-  Plus,
-  useChannelsContext,
-  useStableCallback,
-  WithComponents,
-} from 'stream-chat-expo';
+import { Plus, useStableCallback } from 'stream-chat-expo';
 
-import { AgentConfig } from '../agent/config';
+import { agentSessions } from '../agent/agents';
 import { useAppContext } from '../contexts/AppContext';
 
-// The router keeps each conversation in an `agent` channel the user is a member of.
-const filters: ChannelFilters = {
-  members: {
-    $in: [AgentConfig.user.id],
-  },
-  type: 'agent',
-};
+type SessionRow = Schemas['Session'];
 
-const sort: ChannelSort = { last_updated: -1 };
+const keyExtractor = (session: SessionRow) => session.id;
 
-const ChannelPreview = (props: ChannelPreviewProps) => {
-  const channel = props.channel;
-  const { onSelect } = useChannelsContext();
-  const onPress = useStableCallback(() => {
-    onSelect?.(channel);
-  });
-  return (
-    <Pressable
-      style={({ pressed }) => ({
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        opacity: pressed ? 0.6 : 1,
-      })}
-      onPress={onPress}
-    >
-      <Text style={styles.previewText} numberOfLines={1}>
-        {channel.data?.name ?? channel.cid}
-      </Text>
-    </Pressable>
-  );
-};
-
+/** The agent's conversations, newest first, as the router lists them. */
 export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
-  const { openConversation, startConversation } = useAppContext();
+  const { conversationsVersion, openConversation, sessionId, startConversation } = useAppContext();
+  const [sessions, setSessions] = useState<readonly SessionRow[]>([]);
 
-  const onSelect = useStableCallback((channel: ChannelClass) => {
-    openConversation(channel);
+  useEffect(() => {
+    let cancelled = false;
+    agentSessions()
+      .query({ limit: 30 })
+      .then((page) => {
+        if (!cancelled) setSessions(page.items);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [conversationsVersion]);
+
+  const onSelect = useStableCallback((id: string) => {
+    openConversation(id);
     navigation.closeDrawer();
   });
 
@@ -64,31 +43,42 @@ export const MenuDrawer = ({ navigation }: DrawerContentComponentProps) => {
     navigation.closeDrawer();
   });
 
+  const renderItem = ({ item }: { item: SessionRow }) => (
+    <Pressable
+      onPress={() => onSelect(item.id)}
+      style={({ pressed }) => [styles.row, { opacity: pressed ? 0.6 : 1 }]}
+    >
+      <Text numberOfLines={1} style={[styles.previewText, item.id === sessionId && styles.current]}>
+        {item.title || 'New conversation'}
+      </Text>
+    </Pressable>
+  );
+
   return (
     <SafeAreaView style={styles.wrapper}>
       <View style={styles.container}>
         <Text style={styles.title}>Conversations</Text>
-        <Pressable onPress={onCreateNewChat}>
+        <Pressable accessibilityLabel='New conversation' onPress={onCreateNewChat}>
           <Plus size={24} stroke='#000000' />
         </Pressable>
       </View>
-      <WithComponents overrides={{ ChannelPreview }}>
-        <ChannelList filters={filters} sort={sort} onSelect={onSelect} />
-      </WithComponents>
+      <FlatList data={sessions} keyExtractor={keyExtractor} renderItem={renderItem} />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: { flex: 1, backgroundColor: '#FFFFFF' },
   container: {
+    borderBottomColor: 'grey',
+    borderBottomWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 12,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'grey',
   },
-  title: { fontSize: 15, fontWeight: 'bold' },
+  current: { color: '#005FFF' },
   previewText: { fontSize: 15, fontWeight: 'bold' },
+  row: { paddingHorizontal: 12, paddingVertical: 8 },
+  title: { fontSize: 15, fontWeight: 'bold' },
+  wrapper: { backgroundColor: '#FFFFFF', flex: 1 },
 });

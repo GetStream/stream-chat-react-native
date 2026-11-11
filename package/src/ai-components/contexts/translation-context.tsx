@@ -33,9 +33,12 @@ export const defaultAITranslate: AITranslate = (key, options) => interpolateAISt
  * no translator set up (no `<Chat>`, or before it has one) they are in English.
  */
 export const useAITranslation = () => {
-  const { t } = useContext(TranslationContext);
+  const { t, userLanguage } = useContext(TranslationContext);
   return useMemo(
-    () => ({ t: t === defaultTranslatorFunction ? defaultAITranslate : (t as AITranslate) }),
-    [t],
+    () => ({
+      t: t === defaultTranslatorFunction ? defaultAITranslate : (t as AITranslate),
+      userLanguage: userLanguage ?? 'en',
+    }),
+    [t, userLanguage],
   );
 };

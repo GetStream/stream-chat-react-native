@@ -32,14 +32,16 @@ describe('AI translation', () => {
     expect(interpolateAIString('Thought for {{ duration }}', {})).toBe(
       'Thought for {{ duration }}',
     );
-    expect(interpolateAIString('Thinking…')).toBe('Thinking…');
+    expect(interpolateAIString('Thinking...')).toBe('Thinking...');
     expect(interpolateAIString('{{ count }} files', { count: 0 })).toBe('0 files');
   });
 
   it('is English without <Chat>', () => {
     const { result } = renderHook(() => useAITranslation());
     expect(result.current.t).toBe(defaultAITranslate);
-    expect(result.current.t('Thinking… {{ duration }}', { duration: '4s' })).toBe('Thinking… 4s');
+    expect(result.current.t('Thinking... {{ duration }}', { duration: '4s' })).toBe(
+      'Thinking... 4s',
+    );
   });
 
   it('follows the chat SDK translator, as inside <Chat>', async () => {
