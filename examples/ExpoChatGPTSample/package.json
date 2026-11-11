@@ -35,6 +35,7 @@
     "stream-chat": "^10.0.1",
     "stream-chat-expo": "workspace:^",
     "stream-chat-react-native-core": "workspace:^",
+    "use-sync-external-store": "^1.7.0",
     "victory-native": "^42.0.1"
   },
   "devDependencies": {
