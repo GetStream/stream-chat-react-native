@@ -65,7 +65,7 @@ export const useVoiceConversation = (active: boolean) => {
 
   const latestReply = useStableCallback(() => {
     const seenIds = turn.current?.seenIds ?? new Set<string>();
-    const messages = chat?.state.getLatestValue().messages ?? [];
+    const messages = chat?.messages ?? [];
     for (let i = messages.length - 1; i >= 0; i--) {
       const message = messages[i];
       if (seenIds.has(message.id)) break;
@@ -129,7 +129,7 @@ export const useVoiceConversation = (active: boolean) => {
     }
     turn.current = {
       sawWorking: false,
-      seenIds: new Set((chat?.state.getLatestValue().messages ?? []).map((message) => message.id)),
+      seenIds: new Set((chat?.messages ?? []).map((message) => message.id)),
     };
     setPhase('thinking');
     void send({ text });

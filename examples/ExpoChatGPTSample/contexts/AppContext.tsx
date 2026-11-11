@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { type ConversationSnapshot, type Session, type UIAction } from '@stream-io/calypso';
-import type { StreamChat } from 'stream-chat';
+import type { MessagePaginatorState, StreamChat } from 'stream-chat';
 import { useStableCallback, useStateStore } from 'stream-chat-expo';
 import {
   AIClientIdentity,
@@ -17,6 +17,7 @@ import { agents, agentSessions, streamToken } from '../agent/agents';
 import { createAgentTransport } from '../agent/agentTransport';
 import { AgentConfig } from '../agent/config';
 import { createDeviceTools } from '../agent/deviceTools';
+import { useAgentMessages } from '../agent/useAgentMessages';
 
 const IDLE: ConversationSnapshot = { kind: 'idle', skills: [] };
 
@@ -120,9 +121,10 @@ const messageOf = (error: unknown) => (error instanceof Error ? error.message : 
 
 // What the provider follows of the messages: the latest reply, whose calls this phone runs, and
 // the session, once one is open.
-const selector = ({ messages, session }: AgentChatState) => ({
-  lastReply: [...messages].reverse().find(isAgentReply),
-  session,
+const sessionSelector = ({ session }: AgentChatState) => ({ session });
+
+const lastReplySelector = ({ items }: MessagePaginatorState) => ({
+  lastReply: [...(items ?? [])].reverse().find(isAgentReply),
 });
 
 // Carries a conversation on, or creates one, with the phone's tools declared on it.
@@ -148,11 +150,10 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   const current = useRef<Opened | undefined>(undefined);
   const chat = opened?.chat;
 
-  const followed = useStateStore(chat?.state, selector);
-  const session = followed?.session;
+  const session = useStateStore(chat?.state, sessionSelector)?.session;
 
   // Runs the calls of the latest reply that wait for this phone, each once.
-  const lastReply = followed?.lastReply;
+  const lastReply = useAgentMessages(chat, lastReplySelector)?.lastReply;
   useEffect(() => {
     if (!lastReply) return;
     deviceTools.runner.run(parseMessageParts(lastReply.attachments), (call, result) =>

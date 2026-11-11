@@ -1,4 +1,5 @@
 import type { ConversationSnapshot, Session, UIAction } from '@stream-io/calypso';
+import type { Channel } from 'stream-chat';
 import {
   type AIAgentActivity,
   AIAgentActivityStates,
@@ -9,7 +10,7 @@ import {
   createFromStreamMessage,
 } from 'stream-chat-expo/ai-components';
 
-import type { AgentChat, AgentChatState } from './agentChat';
+import type { AgentChat } from './agentChat';
 import { DISPLAY_TITLES } from './crewTools';
 import { toDataUri } from './photos';
 
@@ -92,11 +93,25 @@ export const createAgentTransport = (
         reasoningText: (messageId, stepId) => chat.reasoning.get(messageId, stepId),
       }),
     );
+    let followedChannel: Channel | undefined;
+    let stopFollowingMessages: (() => void) | undefined;
     let followedSession: Session | undefined;
     let stopFollowingSession: (() => void) | undefined;
-    const update = ({ hasOlderMessages, messages, session }: AgentChatState) => {
-      feed.updateMessages(messages.map(fromStreamMessage));
-      feed.updateHasOlderMessages(hasOlderMessages);
+    const unsubscribe = chat.state.subscribe(({ channel, session }) => {
+      if (channel !== followedChannel) {
+        stopFollowingMessages?.();
+        followedChannel = channel;
+        // The messages as the channel's paginator holds them, oldest first: a new array on each
+        // change, in which only the messages that changed are new objects.
+        stopFollowingMessages = channel?.messagePaginator.state.subscribeWithSelector(
+          ({ hasMoreTail, items }) => ({ hasMoreTail, items }),
+          ({ hasMoreTail, items }) => {
+            if (!items) return;
+            feed.updateMessages(items.map(fromStreamMessage));
+            feed.updateHasOlderMessages(hasMoreTail);
+          },
+        );
+      }
       if (session === followedSession) return;
       stopFollowingSession?.();
       followedSession = session;
@@ -104,11 +119,10 @@ export const createAgentTransport = (
         feed.updateActivity(activityOf(session.state.get())),
       );
       if (session) feed.updateActivity(activityOf(session.state.get()));
-    };
-    update(chat.state.getLatestValue());
-    const unsubscribe = chat.state.subscribe(update);
+    });
     return () => {
       unsubscribe();
+      stopFollowingMessages?.();
       stopFollowingSession?.();
     };
   },

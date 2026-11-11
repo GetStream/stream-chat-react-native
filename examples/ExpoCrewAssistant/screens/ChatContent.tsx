@@ -30,7 +30,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { Attachment, LocalMessage } from 'stream-chat';
+import type { Attachment, LocalMessage, MessagePaginatorState } from 'stream-chat';
 import { AudioAttachment, AudioPlayerProvider, useStateStore } from 'stream-chat-expo';
 
 import { createA2UIRenderer } from 'stream-chat-expo/a2ui';
@@ -59,6 +59,7 @@ import { VoiceMemoBar, VoiceMemoButton } from './VoiceMemo';
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
 import { crewBackend } from '../agent/agents';
 import type { AgentRequestCustom } from '../agent/agentTransport';
+import { useAgentChatLoaded, useAgentMessages } from '../agent/useAgentMessages';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
 import { type Flow, FLOWS } from '../flows';
@@ -153,10 +154,7 @@ const Flows = ({ conversation }: { conversation: AIConversationController }) => 
   );
 };
 
-const emptySelector = ({ awaitingAgent, isLoaded }: AgentChatState) => ({
-  awaitingAgent,
-  isLoaded,
-});
+const awaitingSelector = ({ awaitingAgent }: AgentChatState) => ({ awaitingAgent });
 
 const EmptyContent = ({
   chat,
@@ -165,7 +163,8 @@ const EmptyContent = ({
   chat: AgentChat;
   conversation: AIConversationController;
 }) => {
-  const { awaitingAgent, isLoaded } = useStateStore(chat.state, emptySelector);
+  const { awaitingAgent } = useStateStore(chat.state, awaitingSelector);
+  const { isLoaded } = useAgentChatLoaded(chat);
   if (awaitingAgent) {
     return (
       <View>
@@ -191,12 +190,12 @@ const useChatMessage = (messageId: string | undefined) => {
   const chat = useContext(ConversationChatContext);
   const selector = useMemo(
     () =>
-      ({ messages }: AgentChatState) => ({
-        message: messages.find(({ id }) => id === messageId),
+      ({ items }: MessagePaginatorState) => ({
+        message: items?.find(({ id }) => id === messageId),
       }),
     [messageId],
   );
-  return useStateStore(chat?.state, selector)?.message;
+  return useAgentMessages(chat, selector)?.message;
 };
 
 const SOURCES_OPEN = { duration: 300, easing: Easing.out(Easing.ease) };

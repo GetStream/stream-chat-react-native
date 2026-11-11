@@ -6,12 +6,11 @@ import type { Channel, Event, LocalMessage } from 'stream-chat';
 const PAGE_SIZE = 30;
 
 export type AgentChatState = {
-  /** The channel's messages, oldest first. */
-  messages: readonly LocalMessage[];
-  /** Whether the channel holds messages older than those loaded. */
-  hasOlderMessages: boolean;
-  /** Whether the first page of messages is in. A new conversation has none to wait for. */
-  isLoaded: boolean;
+  /**
+   * The channel the router keeps the conversation in, once it is followed. Its `messagePaginator`
+   * holds the messages.
+   */
+  channel: Channel | undefined;
   /** The session the conversation is held in, once something here needed it. */
   session: Session | undefined;
 };
@@ -22,8 +21,8 @@ export type AgentChatState = {
 export type OpenSession = (sessionId: string | undefined) => Promise<Session>;
 
 /**
- * A written conversation as the AI components want it: the messages of the channel the router
- * keeps it in, and the whole of each reply's thinking.
+ * A written conversation as the AI components want it: the channel the router keeps it in, and the
+ * whole of each reply's thinking.
  *
  * The router writes everything there. Asking goes through the session, which records the question
  * in the channel and answers it there: the reply's text, and its steps (each round of reasoning and
@@ -42,9 +41,8 @@ export class AgentChat {
   /** Whether the person asked something here, which may not have arrived in `messages` yet. */
   wasAsked = false;
 
-  readonly state: StateStore<AgentChatState>;
+  readonly state = new StateStore<AgentChatState>({ channel: undefined, session: undefined });
 
-  private channel: Channel | undefined;
   private stops: (() => void)[] = [];
   private opening: Promise<Session> | undefined;
   private closed = false;
@@ -57,52 +55,41 @@ export class AgentChat {
     readonly key: string,
     private readonly sessionId: string | undefined,
     private readonly openSession: OpenSession,
-  ) {
-    this.state = new StateStore<AgentChatState>({
-      hasOlderMessages: false,
-      isLoaded: sessionId === undefined,
-      messages: [],
-      session: undefined,
-    });
-  }
+  ) {}
 
   /** The conversation's session id: the one it was opened with, or the one asking created. */
   get id() {
     return this.state.getLatestValue().session?.id ?? this.sessionId;
   }
 
-  /** Watches the channel and loads its latest messages. */
+  /** Whether this is a new conversation, which has no messages to wait for. */
+  get isNew() {
+    return this.sessionId === undefined;
+  }
+
+  /** The messages loaded, oldest first. */
+  get messages(): readonly LocalMessage[] {
+    return this.state.getLatestValue().channel?.messagePaginator.state.getLatestValue().items ?? [];
+  }
+
+  /**
+   * Watches the channel and loads its latest messages, as the chat SDK's `<Channel>` does. While it
+   * is followed the channel is active, so the client reloads it after a reconnect.
+   */
   async follow(channel: Channel) {
-    if (this.channel || this.closed) return;
-    this.channel = channel;
-    // Every event rather than the list kept for us: each live update carries its own window of the
-    // reply's thinking, and folding them into one would lose all but the last.
+    if (this.state.getLatestValue().channel || this.closed) return;
+    // Every event rather than the paginator's messages: each live update carries its own window of
+    // the reply's thinking, and folding them into one would lose all but the last.
     const subscription = channel.on((event: Event) => {
       if (event.type === 'message.updated' && event.message) this.reasoning.read(event.message);
     });
-    this.stops.push(() => subscription.unsubscribe());
+    this.stops.push(() => subscription.unsubscribe(), channel.activate());
+    this.state.partialNext({ channel });
 
-    // The messages as the channel's paginator keeps them, oldest first: a new array on each change,
-    // in which only the messages that changed are new objects.
-    const unsubscribe = channel.messagePaginator.state.subscribeWithSelector(
-      ({ hasMoreTail, items }) => ({ hasMoreTail, items }),
-      ({ hasMoreTail, items }) => {
-        if (!items) return;
-        this.state.partialNext({
-          hasOlderMessages: hasMoreTail,
-          messages: items,
-          ...(items.length > 0 ? { isLoaded: true } : {}),
-        });
-      },
-    );
-    this.stops.push(unsubscribe);
-
-    const reconnected = channel.getClient().on('connection.recovered', () => {
-      void this.watchLatest().catch(() => {});
-    });
-    this.stops.push(() => reconnected.unsubscribe());
-
-    await this.watchLatest();
+    const paginator = channel.messagePaginator;
+    paginator.pageSize = PAGE_SIZE;
+    await channel.watch();
+    if (!paginator.state.getLatestValue().items?.length) await paginator.reload();
   }
 
   /**
@@ -123,8 +110,8 @@ export class AgentChat {
    * question creates another.
    */
   async discardUnusedSession() {
-    const { messages, session } = this.state.getLatestValue();
-    if (this.sessionId !== undefined || !session || messages.length > 0) return;
+    const { session } = this.state.getLatestValue();
+    if (!this.isNew || !session || this.messages.length > 0) return;
     this.opening = undefined;
     this.state.partialNext({ session: undefined });
     await session.delete().catch(() => {});
@@ -132,7 +119,7 @@ export class AgentChat {
 
   /** Loads the messages before the oldest one loaded. Throws when it can't, to be asked again. */
   loadOlderMessages = async () => {
-    const paginator = this.channel?.messagePaginator;
+    const paginator = this.state.getLatestValue().channel?.messagePaginator;
     if (!paginator?.hasMoreTail) return;
     await paginator.toTail();
     // The paginator keeps a failure rather than throwing it.
@@ -151,31 +138,15 @@ export class AgentChat {
     const session = await this.openSession(this.sessionId);
     if (this.closed) {
       // The person moved on while it opened. A conversation created for them was never used.
-      await (this.sessionId === undefined ? session.delete() : session.close()).catch(() => {});
+      await (this.isNew ? session.delete() : session.close()).catch(() => {});
       throw new Error('The conversation was closed');
     }
-    if (!this.channel) {
+    if (!this.state.getLatestValue().channel) {
       const { channel } = await session.chat();
       await this.follow(channel as Channel);
     }
     this.state.partialNext({ session });
     return session;
-  }
-
-  /** Watches the channel again and takes its latest page, as the chat SDK's channel does. */
-  private async watchLatest() {
-    const channel = this.channel;
-    if (!channel) return;
-    const paginator = channel.messagePaginator;
-    paginator.pageSize = PAGE_SIZE;
-    await channel.watch();
-    if (!paginator.state.getLatestValue().items?.length) await paginator.reload();
-    if (this.closed) return;
-    this.state.partialNext({
-      hasOlderMessages: paginator.hasMoreTail,
-      isLoaded: true,
-      messages: paginator.state.getLatestValue().items ?? [],
-    });
   }
 }
 
