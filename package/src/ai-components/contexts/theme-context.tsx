@@ -2,7 +2,7 @@ import React, { createContext, type PropsWithChildren, useContext, useMemo } fro
 
 import merge from 'lodash/merge';
 
-import { defaultTheme, type Theme } from '../theme';
+import { defaultTheme, PALETTE_COLORED_PARTS, type Theme } from '../theme';
 
 export type DeepPartial<T> = T extends (...args: never[]) => unknown
   ? T
@@ -39,6 +39,13 @@ export const mergeThemes = (params: MergedThemesParams) => {
 
   if (style) {
     merge(finalTheme, styleRest);
+    // The parts drawn in a palette color follow it when the style changes it, as for dark mode.
+    const parts = styleRest as Record<string, Record<string, unknown> | undefined>;
+    const sections = finalTheme as unknown as Record<string, Record<string, unknown>>;
+    for (const [section, part, color] of PALETTE_COLORED_PARTS) {
+      if (styleRest.colors?.[color] === undefined || parts[section]?.[part] !== undefined) continue;
+      (sections[section] ??= {})[part] = finalTheme.colors[color];
+    }
   }
 
   if (themeIcons || styleIcons) {

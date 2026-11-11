@@ -23,7 +23,8 @@
     "*.podspec",
     "react-native.config.js",
     "package.json",
-    "ai-components"
+    "ai-components",
+    "a2ui"
   ],
   "license": "SEE LICENSE IN LICENSE",
   "main": "src/index.js",

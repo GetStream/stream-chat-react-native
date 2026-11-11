@@ -1,0 +1,6 @@
+{
+  "main": "../lib/commonjs/a2ui/index.js",
+  "module": "../lib/module/a2ui/index.js",
+  "react-native": "../src/a2ui/index.ts",
+  "types": "../lib/typescript/a2ui/index.d.ts"
+}

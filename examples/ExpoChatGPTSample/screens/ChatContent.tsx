@@ -5,11 +5,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useStateStore } from 'stream-chat-expo';
 
+import { createA2UIRenderer } from 'stream-chat-expo/a2ui';
 import {
   AIConversation,
   type AIMessage,
   AISuggestions,
   AITypingIndicatorView,
+  aiUIActionJSON,
+  AIUIHost,
   ComposerView,
   createFromStreamMessage,
   createNewComposerStore,
@@ -17,6 +20,7 @@ import {
 
 import type { AgentChat, AgentChatState } from '../agent/agentChat';
 import { chatOptions, STARTERS, THINK_HARDER } from '../chatOptions';
+import { tripComponents } from '../components/TripComponents';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
 import { useSendAIMessage } from '../hooks/useSendAIMessage';
@@ -110,8 +114,24 @@ const conversationSelector = ({ hasOlderMessages, messages }: AgentChatState) =>
 
 /** The open conversation, read from its channel by `AgentChat`. */
 const Conversation = ({ chat }: { chat: AgentChat }) => {
-  const { agentState, approver, isThinking, pending, rate, ratings } = useAppContext();
+  const { agentState, approver, ask, isThinking, pending, rate, ratings } = useAppContext();
   const { hasOlderMessages, messages } = useStateStore(chat.state, conversationSelector);
+
+  // The UI the agent writes for its replies, in A2UI, with the trip planner's own components. One
+  // host per conversation, for as long as it shows, so what a reply's UI holds survives scrolling.
+  // What the person does in it goes to the agent as their next message.
+  const [ui] = useState(
+    () =>
+      new AIUIHost({
+        components: tripComponents,
+        renderers: [createA2UIRenderer()],
+        send: async (action) => {
+          if (!(await ask(action.label, [], false, aiUIActionJSON(action)))) {
+            throw new Error('The agent is still answering');
+          }
+        },
+      }),
+  );
 
   // The same message object for each Stream message that didn't change, so only the messages an
   // update touched render again. The live thinking is read through `chat.reasoning`.
@@ -151,6 +171,7 @@ const Conversation = ({ chat }: { chat: AgentChat }) => {
       messages={conversation}
       pendingMessage={pending}
       replyActions={replyActions}
+      ui={ui}
     />
   );
 };

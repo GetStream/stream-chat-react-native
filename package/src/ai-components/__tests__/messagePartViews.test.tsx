@@ -15,6 +15,10 @@ import {
   parseMessagePart,
   StreamTheme,
 } from '../index';
+import { forgetCallStates } from '../message-parts/callStates';
+
+// Each test's questions start unanswered, though tests reuse calls.
+afterEach(forgetCallStates);
 
 const renderWithTheme = (ui: ReactElement) => {
   const result = render(<StreamTheme>{ui}</StreamTheme>);
@@ -125,6 +129,24 @@ describe('AIToolApproval', () => {
     expect(screen.queryByText('Share your location?')).toBeNull();
     rerender(<AIToolApproval approver={approver(decide)} part={asking} />);
     expect(screen.getByText('Share your location?')).toBeTruthy();
+  });
+
+  it('keeps an answer on its way when a list remounts or reuses the row', () => {
+    const decide = jest.fn(() => new Promise<void>(() => undefined));
+    const other = { ...asking, id: 'call-2' };
+    const { rerender, unmount } = renderWithTheme(
+      <AIToolApproval approver={approver(decide)} part={asking} />,
+    );
+    fireEvent.press(screen.getByRole('button', { name: 'Allow' }));
+    // The row now shows another call: its question starts unanswered.
+    rerender(<AIToolApproval approver={approver(decide)} part={other} />);
+    expect(screen.getByRole('button', { name: 'Allow' })).toBeEnabled();
+    unmount();
+    // The first call's row comes back: its answer is still on its way, so it can't be sent twice.
+    renderWithTheme(<AIToolApproval approver={approver(decide)} part={asking} />);
+    expect(screen.getByRole('button', { name: 'Allow' })).toBeDisabled();
+    fireEvent.press(screen.getByRole('button', { name: "Don't Allow" }));
+    expect(decide).toHaveBeenCalledTimes(1);
   });
 
   it('sends the answer once, and lets the person answer again when it fails', async () => {

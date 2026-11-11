@@ -78,7 +78,8 @@ export const readConnectorSignInResult = (returned: string): ConnectorSignInResu
 export type AuthSessionAuthorizerOptions = {
   /**
    * Your app's own URL scheme, such as `com.example.app`. It is the scheme of the return URL your
-   * sessions give their sign-ins (`return_url`), which the sign-in comes back to.
+   * sessions give their sign-ins (`return_url`), which the sign-in comes back to. Written as a
+   * URL's start, such as `myapp://`, it is read as `myapp`.
    */
   callbackScheme: string;
   /**
@@ -106,10 +107,13 @@ export type AuthSessionAuthorizer = AIToolAuthorizer & { callbackScheme: string 
  * otherwise. It rejects with an `AIConnectorSignInError` when the sign-in couldn't be opened.
  */
 export const createAuthSessionAuthorizer = ({
-  callbackScheme,
+  callbackScheme: written,
   decline,
   declineOnClose = true,
 }: AuthSessionAuthorizerOptions): AuthSessionAuthorizer => {
+  // The scheme alone, as iOS's web authentication session takes it: `myapp://` would never match
+  // the return URL there, or be refused.
+  const callbackScheme = written.trim().replace(/:\/*$/, '');
   const connect = async (call: AIToolCallPart) => {
     const authorization = call.authorization;
     if (!authorization || !NativeAIAgent) throw new AIConnectorSignInError('unavailable');

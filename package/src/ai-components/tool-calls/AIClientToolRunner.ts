@@ -43,6 +43,19 @@ export const completedToolResult = (output: unknown, summary?: string): AIClient
 /** A call the device could not run. */
 export const failedToolResult = (reason: string): AIClientToolResult => ({ failure: reason });
 
+// `result` with output the agent can read: JSON, as it goes to the model. Other output, such as a
+// value that refers to itself, is a failure rather than a result that can't be sent.
+const jsonResultOf = (result: AIClientToolResult): AIClientToolResult => {
+  if (result.output === undefined) return result;
+  try {
+    const json = JSON.stringify(result.output);
+    if (json !== undefined) return { ...result, output: JSON.parse(json) as unknown };
+  } catch {
+    // Falls through to the failure.
+  }
+  return failedToolResult("The tool's output isn't JSON");
+};
+
 /**
  * A tool this device runs when an AI agent asks for it. Describe it to the agent with
  * `AIClientToolRunner`'s `registrations`. The agent writes each call on its reply as an
@@ -171,8 +184,9 @@ export class AIClientToolRunner {
   ) {
     if (!state.result) {
       try {
-        state.result = await tool.run(call);
+        state.result = jsonResultOf(await tool.run(call));
       } catch {
+        // What the tool threw stays on the device: the failure is shown to everyone in the channel.
         state.result = failedToolResult("The tool couldn't run");
       }
     }

@@ -8,32 +8,33 @@ import {
   completedToolResult,
 } from 'stream-chat-expo/ai-components';
 
-/** What only this phone knows: its clock and time zone. */
-const localTime: AIClientTool = {
+/**
+ * What only this phone knows: its date, clock, time zone and language. The same tool, by the same
+ * name, as the iOS, Android and web assistants, whose instructions call it before a plan with
+ * dates.
+ */
+const localContext: AIClientTool = {
   definition: {
     annotations: { readOnlyHint: true },
     description:
-      "Gets the date, time and time zone on the person's phone. The only way to know their local time.",
+      "The person's current date, local time, timezone and language. Call it before answering anything that depends on today or the time.",
     inputSchema: { properties: {}, type: 'object' },
-    name: 'get_local_time',
+    name: 'get_local_context',
   },
   run: () => {
     const now = new Date();
+    const { locale, timeZone } = Intl.DateTimeFormat().resolvedOptions();
     return completedToolResult(
-      {
-        local: now.toString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        utc: now.toISOString(),
-      },
+      { language: locale, local: now.toString(), timeZone, utc: now.toISOString() },
       'Shared the local time',
     );
   },
 };
 
-const DEVICE_TOOLS = [localTime];
+const DEVICE_TOOLS = [localContext];
 
 // What a call says it is doing on the reply's step, by tool.
-const DISPLAY_TITLES: Record<string, string> = { get_local_time: "Checking your phone's time" };
+const DISPLAY_TITLES: Record<string, string> = { get_local_context: "Checking your phone's time" };
 
 /**
  * The results the runner reported, by call, for the session's socket to answer with. A call can

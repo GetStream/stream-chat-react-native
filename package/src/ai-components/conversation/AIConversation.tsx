@@ -24,6 +24,8 @@ import type { AIMessage, AIPendingMessage } from './types';
 import { type ConversationRow, type RowPosition, useConversationRows } from './useConversationRows';
 
 import { useTheme } from '../contexts';
+import type { AIUIHost } from '../generative-ui/AIUIHost';
+import { AIUIGenerated, useAIUIHostRefresh } from '../generative-ui/AIUIView';
 import { primitives } from '../internal/tokens';
 import { AIAssistantMessage } from '../message/AIAssistantMessage';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
@@ -124,6 +126,12 @@ export type AIConversationProps = {
     message: AIMessage,
     context: { isLatestReply: boolean },
   ) => Omit<AIReplyActionsProps, 'text'> | undefined;
+  /**
+   * Shows the UI the agent writes for its replies (`AIMessage.uiDocument`) in place of their
+   * text, with the renderers of the formats it writes, such as A2UI. A reply whose UI none of
+   * them shows shows its text. Keep one host per conversation, for as long as it shows.
+   */
+  ui?: AIUIHost;
   /** The view of the person's messages. Defaults to `AIUserMessage`. */
   UserMessage?: ComponentType<AIConversationUserMessageProps>;
 };
@@ -171,6 +179,9 @@ type ConversationContextValue = {
   UserMessage: ComponentType<AIConversationUserMessageProps>;
   approver?: AIToolApprover;
   replyActions?: AIConversationProps['replyActions'];
+  ui?: AIUIHost;
+  /** Changes each time the host says what a reply shows changed, so the rows render again. */
+  uiVersion: number;
 };
 
 const ConversationContext = createContext<ConversationContextValue | undefined>(undefined);
@@ -188,6 +199,7 @@ type EntryViewProps = {
   ReplyActions: ComponentType<AIConversationReplyActionsProps> | null;
   UserMessage: ComponentType<AIConversationUserMessageProps>;
   approver?: AIToolApprover;
+  ui?: AIUIHost;
 };
 
 const REPLY_ACTIONS_IN = FadeIn.duration(200).easing(Easing.out(Easing.ease));
@@ -210,6 +222,7 @@ const EntryView = ({
   AssistantMessage,
   entry,
   ReplyActions,
+  ui,
   UserMessage,
 }: EntryViewProps) => {
   const { message, pending } = entry;
@@ -235,6 +248,15 @@ const EntryView = ({
       />
     );
   }
+  // The UI the agent generated for the reply, when one of the host's renderers shows it. It
+  // shows in place of the reply's text, after the reply's steps.
+  const { uiDocument } = message;
+  const generated = ui && uiDocument ? ui.content(uiDocument, message.id) : null;
+  const showsUI = !!uiDocument && generated !== null && generated !== undefined;
+  // A finished reply has its actions under it whether it answers in text or in UI, once the
+  // UI is written.
+  const hasAnswer = message.text !== '' || showsUI;
+  const isWritingUI = showsUI && uiDocument.isStreaming;
   return (
     <View style={styles.reply}>
       <AssistantMessage
@@ -245,9 +267,18 @@ const EntryView = ({
         onWritingChange={onWritingChange}
         parts={message.parts ?? []}
         reasoningText={message.reasoningText}
-        text={message.text}
+        text={showsUI ? '' : message.text}
       />
-      {ReplyActions && !isGenerating && !isWriting && message.text !== '' ? (
+      {showsUI ? (
+        <AIUIGenerated
+          isStreaming={uiDocument.isStreaming}
+          key={`${message.id}-ui`}
+          onError={(error) => ui?.fail(message.id, error)}
+        >
+          {generated}
+        </AIUIGenerated>
+      ) : null}
+      {ReplyActions && !isGenerating && !isWriting && hasAnswer && !isWritingUI ? (
         <Animated.View entering={wasWatched ? REPLY_ACTIONS_IN : undefined} key={message.id}>
           <ReplyActions isLatestReply={entry.isLatestReply} message={message} text={message.text} />
         </Animated.View>
@@ -300,6 +331,7 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
             AssistantMessage={context.AssistantMessage}
             entry={row.entry}
             ReplyActions={context.ReplyActions}
+            ui={context.ui}
             UserMessage={context.UserMessage}
           />
         ) : (
@@ -357,9 +389,17 @@ export const AIConversation = ({
   pendingMessage,
   ReplyActions: ReplyActionsProp,
   replyActions,
+  ui,
   UserMessage = DefaultUserMessage,
 }: AIConversationProps) => {
+  // Every reply's UI reaches its renderer before any row asks for its view, oldest first,
+  // whether or not the row is on screen. Only what arrived or changed is passed on. The rows
+  // show again when the host says what one of them shows changed.
+  const uiVersion = useAIUIHostRefresh(ui);
+  ui?.receive(messages);
+  const canShowUI = useMemo(() => (ui ? ui.canShow.bind(ui) : undefined), [ui]);
   const { anchorKey, clock, rows } = useConversationRows({
+    canShowUI,
     footer,
     isThinking,
     messages,
@@ -386,9 +426,21 @@ export const AIConversation = ({
       ReplyActions,
       replyActions,
       turnFloor,
+      ui,
+      uiVersion,
       UserMessage,
     }),
-    [approver, AssistantMessage, clock, ReplyActions, replyActions, turnFloor, UserMessage],
+    [
+      approver,
+      AssistantMessage,
+      clock,
+      ReplyActions,
+      replyActions,
+      turnFloor,
+      ui,
+      uiVersion,
+      UserMessage,
+    ],
   );
 
   return (

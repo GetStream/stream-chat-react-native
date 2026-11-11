@@ -223,7 +223,75 @@ export type Theme = {
     item?: ViewStyle;
     itemText?: TextStyle;
   };
+  /** The UI the agent generates for a reply, in place of its text. Optional, as above. */
+  generatedUI?: {
+    /** What a reply's generated UI sits in, as wide as the reply. */
+    container?: ViewStyle;
+  };
+  /**
+   * A2UI's basic catalog, from the `a2ui` entry point: its colors, over ones from the theme's own,
+   * and the look of its parts. Optional, as above.
+   */
+  a2ui?: {
+    colors?: {
+      /** Primary buttons, chosen chips and tabs, links and the slider. */
+      accent?: string;
+      /** Text on the accent. */
+      onAccent?: string;
+      text?: string;
+      secondaryText?: string;
+      /** Inputs and chips. */
+      surface?: string;
+      /** Cards, default buttons and placeholders. */
+      subtleSurface?: string;
+      border?: string;
+      /** What a check found, and the border of the input it found it in. */
+      error?: string;
+    };
+    /** What a reply's surfaces sit in, one under another. */
+    surfaces?: ViewStyle;
+    card?: ViewStyle;
+    button?: ViewStyle;
+    buttonText?: TextStyle;
+    input?: TextStyle;
+    label?: TextStyle;
+    chip?: ViewStyle;
+    chipText?: TextStyle;
+    tab?: ViewStyle;
+    tabText?: TextStyle;
+    divider?: ViewStyle;
+    caption?: TextStyle;
+    image?: ImageStyle;
+  };
 };
+
+/**
+ * The colors of the conversation's parts that the design sets, each with the palette color it is
+ * drawn as. A style that changes that palette color, such as for dark mode, changes the part too,
+ * unless it sets the part's own.
+ */
+export const PALETTE_COLORED_PARTS = [
+  ['conversation', 'loadingIndicator', 'grey_dark'],
+  ['conversation', 'scrollButtonBackground', 'white'],
+  ['conversation', 'scrollButtonBorder', 'grey_gainsboro'],
+  ['conversation', 'scrollButtonIcon', 'black'],
+  ['message', 'userMessageBackground', 'grey_whisper'],
+  ['message', 'userMessageText', 'black'],
+  ['message', 'messageAction', 'grey_dark'],
+  ['message', 'attachmentBackground', 'white'],
+  ['message', 'attachmentBorder', 'grey_gainsboro'],
+  ['message', 'attachmentIcon', 'white'],
+  ['message', 'attachmentIconBackground', 'accent_blue'],
+  ['message', 'attachmentName', 'black'],
+  ['message', 'attachmentDetails', 'grey_dark'],
+  ['message', 'attachmentImagePlaceholder', 'white_smoke'],
+  ['chatOptions', 'chipBackground', 'white'],
+  ['chatOptions', 'chipText', 'accent_blue'],
+  ['chatOptions', 'descriptionText', 'grey_dark'],
+  ['chatOptions', 'titleText', 'black'],
+  ['suggestions', 'background', 'grey_whisper'],
+  ['suggestions', 'text', 'black'],
+] as const satisfies readonly (readonly [keyof Theme, string, keyof typeof colors])[];
 
 export const defaultTheme: Theme = {
   colors,
@@ -397,5 +465,24 @@ export const defaultTheme: Theme = {
     content: {},
     item: {},
     itemText: {},
+  },
+  generatedUI: {
+    container: {},
+  },
+  a2ui: {
+    colors: {},
+    surfaces: {},
+    card: {},
+    button: {},
+    buttonText: {},
+    input: {},
+    label: {},
+    chip: {},
+    chipText: {},
+    tab: {},
+    tabText: {},
+    divider: {},
+    caption: {},
+    image: {},
   },
 };

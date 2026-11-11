@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { type ConversationSnapshot, type Session } from '@stream-io/calypso';
+import { type ConversationSnapshot, type Session, type UIAction } from '@stream-io/calypso';
 import type { Channel, LocalMessage, StreamChat } from 'stream-chat';
 import { useStableCallback, useStateStore } from 'stream-chat-expo';
 import {
@@ -32,34 +32,43 @@ const deviceTools = createDeviceTools({ clientId, userId: AgentConfig.user.id })
 const SIGN_IN_SCHEME = 'io.getstream.expochatgptsample';
 const SIGN_IN_RETURN_URL = `${SIGN_IN_SCHEME}://sign-in`;
 
-// The person's "not now" on a sign-in. calypso 0.2.3 has no `declineLogin` yet, so this sends
-// the frame Vision-Agents' JS SDK sends for it over the session's socket.
-const declineLogin = (session: Session, toolCallId: string) =>
-  (session as unknown as { held(): { send(frame: Record<string, unknown>): void } })
-    .held()
-    .send({ allowed: false, tool_call_id: toolCallId, type: 'tool_approval' });
+// The person's answer to a call that asks first. calypso's `decide` answers only a call this
+// session was asked on its own socket, and leaves any other alone, so a question shown from the
+// channel, as after reopening the conversation or reloading the app, would wait forever. Such a
+// call is answered with the frames `decide` sends, which the router matches by the call's id: an
+// allowed client tool's call then waits for this phone, whose runner runs it.
+const answerApproval = (session: Session, toolCallId: string, allowed: boolean) => {
+  if (session.approvals.some((request) => request.id === toolCallId)) {
+    session.decide(toolCallId, { allowed });
+    return;
+  }
+  const socket = (
+    session as unknown as { held(): { send(frame: Record<string, unknown>): void } }
+  ).held();
+  socket.send({ allowed, tool_call_id: toolCallId, type: 'tool_approval' });
+  if (!allowed) {
+    socket.send({
+      error: 'The person declined this call.',
+      tool_call_id: toolCallId,
+      type: 'tool_result',
+    });
+  }
+};
 
-// Asks. The router addresses a client tool's call to the install a question came from, which
-// only its `respond` endpoint takes. `responses` (calypso's `responses.create`) takes photos and a
-// reasoning effort but no install, so a question with either reaches the device's tools without
-// one, and the phone runs them itself.
+// Asks, with calypso's `responses.create`, which takes photos, a reasoning effort and what the
+// person did in a reply's UI. The router's `respond`, which addresses a client tool's call to the
+// install a question came from, is only for an app's backend, and this is a phone: the calls reach
+// the device's tools without an install, and the phone runs them itself.
 const respond = async (
   session: Session,
   text: string,
-  options: { images: { url: string }[]; reasoningEffort?: string },
+  options: { images: { url: string }[]; reasoningEffort?: string; uiAction?: UIAction },
 ) => {
-  if (options.images.length > 0 || options.reasoningEffort) {
-    deviceTools.addressed = false;
-    await session.responses.create(text, {
-      ...(options.images.length > 0 ? { images: options.images } : {}),
-      ...(options.reasoningEffort ? { reasoningEffort: options.reasoningEffort } : {}),
-    });
-    return;
-  }
-  deviceTools.addressed = true;
-  await agents.post('/v1/agents/sessions/{id}/respond', {
-    body: { client_id: clientId, request_id: crypto.randomUUID(), text },
-    path: { id: session.id },
+  deviceTools.addressed = false;
+  await session.responses.create(text, {
+    ...(options.images.length > 0 ? { images: options.images } : {}),
+    ...(options.reasoningEffort ? { reasoningEffort: options.reasoningEffort } : {}),
+    ...(options.uiAction ? { uiAction: options.uiAction } : {}),
   });
 };
 
@@ -87,10 +96,16 @@ export type AppContextValue = {
   /** The open conversation's session id. */
   sessionId: string | undefined;
   /**
-   * Asks the agent, with photos by their local URIs, and with more time to reason when
-   * `thinkHarder`. Its reply arrives in the channel.
+   * Asks the agent, with photos by their local URIs, with more time to reason when
+   * `thinkHarder`, and with what the person did in a reply's UI as `uiAction`. Its reply arrives
+   * in the channel. Resolves to whether it was asked: not while the agent is busy.
    */
-  ask: (text: string, photos?: string[], thinkHarder?: boolean) => Promise<void>;
+  ask: (
+    text: string,
+    photos?: string[],
+    thinkHarder?: boolean,
+    uiAction?: UIAction,
+  ) => Promise<boolean>;
   /** Carries on a conversation from the drawer, by its session id. */
   openConversation: (sessionId: string) => void;
   /** Rates a reply, or takes the rating back with null. */
@@ -106,7 +121,7 @@ export type AppContextValue = {
 export const AppContext = React.createContext<AppContextValue>({
   agentState: IDLE,
   approver: undefined,
-  ask: async () => {},
+  ask: () => Promise.resolve(false),
   chat: undefined,
   conversationsVersion: 0,
   failure: undefined,
@@ -144,6 +159,8 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   // The newest message when something was last asked here, until it fails or is stopped.
   const [askedAfter, setAskedAfter] = useState<string>();
   const current = useRef<AgentChat | undefined>(undefined);
+  // The latest conversation asked to open: one that opens after it was asked for another is let go.
+  const openings = useRef(0);
   const askedRef = useRef<Asked | undefined>(undefined);
   askedRef.current = asked;
 
@@ -159,37 +176,51 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   }, [lastReply]);
 
   // Opening one conversation after another: the newest wins, and one that was never asked
-  // anything is deleted rather than left in the drawer.
-  const open = useStableCallback(async (opening: () => Promise<Session>) => {
+  // anything is deleted rather than left in the drawer. A conversation counts as asked from the
+  // moment the question goes, before Stream's copy of it arrives.
+  const letGo = (chat: AgentChat) => {
+    chat.close();
+    const unused = !chat.wasAsked && chat.state.getLatestValue().messages.length === 0;
+    return (unused ? chat.session.delete() : chat.session.close()).catch(() => {});
+  };
+
+  const open = useStableCallback(async (opening: () => Promise<Session>, isNew: boolean) => {
+    const attempt = ++openings.current;
     setFailure(undefined);
+    let session: Session | undefined;
     try {
-      const session = await opening();
+      session = await opening();
       const { channel } = await session.chat();
       const next = new AgentChat(session, channel as Channel);
       await next.follow();
+      if (attempt !== openings.current) {
+        // Another conversation was asked for while this one opened.
+        await letGo(next);
+        return;
+      }
       const previous = current.current;
       current.current = next;
       setAsked(undefined);
       setAskedAfter(undefined);
       setChat(next);
-      if (previous && previous.session.id !== session.id) {
-        previous.close();
-        const unused = previous.state.getLatestValue().messages.length === 0;
-        await (unused ? previous.session.delete() : previous.session.close()).catch(() => {});
-      }
+      if (previous && previous.session.id !== session.id) await letGo(previous);
       setConversationsVersion((version) => version + 1);
     } catch (error) {
-      setFailure(messageOf(error));
+      // A new conversation that couldn't open was never asked anything: it isn't left in the drawer.
+      if (isNew) await session?.delete().catch(() => {});
+      if (attempt === openings.current) setFailure(messageOf(error));
     }
   });
 
   const startConversation = useStableCallback(() => {
-    void open(() =>
-      agentSessions().create({
-        modelOverwrites: { llm: AgentConfig.chatModel },
-        return_url: SIGN_IN_RETURN_URL,
-        tools: deviceTools.sessionTools(),
-      }),
+    void open(
+      () =>
+        agentSessions().create({
+          modelOverwrites: { llm: AgentConfig.chatModel },
+          return_url: SIGN_IN_RETURN_URL,
+          tools: deviceTools.sessionTools(),
+        }),
+      true,
     );
   });
 
@@ -197,17 +228,20 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     if (sessionId === current.current?.session.id) {
       return;
     }
-    void open(() => agentSessions().resume(sessionId, { tools: deviceTools.sessionTools() }));
+    void open(
+      () => agentSessions().resume(sessionId, { tools: deviceTools.sessionTools() }),
+      false,
+    );
   });
 
   const isResponding = agentState.kind === 'responding' || agentState.kind === 'working';
   const isBusy = !!asked || isResponding || followed?.lastReply?.generating === true;
 
   const ask = useStableCallback(
-    async (text: string, photos: string[] = [], thinkHarder = false) => {
+    async (text: string, photos: string[] = [], thinkHarder = false, uiAction?: UIAction) => {
       const opened = current.current;
       if (!opened || isBusy) {
-        return;
+        return false;
       }
       // Shows at once, with the photos as they were picked.
       const asking: Asked = {
@@ -219,6 +253,8 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
         },
       };
       const messages = opened.state.getLatestValue().messages;
+      // From now on the conversation is used, even before Stream's copy of the question arrives.
+      opened.wasAsked = true;
       setFailure(undefined);
       setAsked(asking);
       setAskedAfter(messages[messages.length - 1]?.id ?? '');
@@ -229,11 +265,14 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
         await respond(opened.session, text, {
           images,
           reasoningEffort: thinkHarder ? 'high' : undefined,
+          uiAction,
         });
+        return true;
       } catch (error) {
         setFailure(messageOf(error));
         setAskedAfter(undefined);
         if (askedRef.current === asking) setAsked(undefined);
+        return false;
       }
     },
   );
@@ -306,15 +345,16 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
               callbackScheme: SIGN_IN_SCHEME,
               decline: (call) =>
                 new Promise<void>((resolve) => {
-                  declineLogin(chat.session, call.id);
+                  chat.session.declineLogin(call.id);
                   resolve();
                 }),
             }),
             clientId,
-            // `decide` sends over the session's socket and throws when it can't.
+            // Sends over the session's socket, and throws when it can't, so the card lets the
+            // person answer again.
             decide: (call, allowed) =>
               new Promise<void>((resolve) => {
-                chat.session.decide(call.id, { allowed });
+                answerApproval(chat.session, call.id, allowed);
                 resolve();
               }),
             userId: AgentConfig.user.id,

@@ -9,7 +9,9 @@
  *    the AI components or their dependencies. Apps that don't use AI must not bundle any of it.
  * 2. The AI entry points (core `src/ai-components/index.ts` and the wrappers'
  *    `ai-components/index.js`) may only reach the AI sources plus an explicit allowlist of other
- *    files. Apps that only use the AI components must not bundle the chat SDK.
+ *    files. Apps that only use the AI components must not bundle the chat SDK. Nor the A2UI
+ *    renderer: the `a2ui` entry points (core `src/a2ui/index.ts` and the wrappers'
+ *    `a2ui/index.js`) reach it and `@a2ui/web_core`, besides what the AI entry points reach.
  * 3. The codegen spec copies the wrappers need (codegen only reads a package's own `jsSrcsDir`) stay
  *    byte-identical to the core source of truth.
  *
@@ -23,6 +25,7 @@ const ts = require('typescript');
 const PACKAGE_DIR = path.resolve(__dirname, '..');
 const CORE_SRC = path.join(PACKAGE_DIR, 'src');
 const AI_SRC = path.join(CORE_SRC, 'ai-components');
+const A2UI_SRC = path.join(CORE_SRC, 'a2ui');
 const WRAPPERS = ['native-package', 'expo-package'].map((name) => path.join(PACKAGE_DIR, name));
 
 // Third-party packages only the AI components may use. (`lodash` and `@stream-io/state-store` are
@@ -36,6 +39,10 @@ const AI_ONLY_PACKAGES = [
   'victory-native',
   'zod',
 ];
+
+// Third-party packages only the A2UI renderer may use: its own entry point keeps them out of apps
+// that use the AI components without it.
+const A2UI_ONLY_PACKAGES = ['@a2ui/web_core'];
 
 // Files outside `src/ai-components` that the AI entry points are allowed to reach.
 const AI_ALLOWED_FILES = [
@@ -90,6 +97,9 @@ const resolveSpecifier = (specifier, fromFile) => {
   }
   if (specifier === 'stream-chat-react-native-core/ai-components') {
     return { file: path.join(AI_SRC, 'index.ts') };
+  }
+  if (specifier === 'stream-chat-react-native-core/a2ui') {
+    return { file: path.join(A2UI_SRC, 'index.ts') };
   }
   return { pkg: packageNameOf(specifier), specifier };
 };
@@ -176,13 +186,15 @@ for (const entry of [
   for (const [file, chain] of files) {
     if (
       file.startsWith(AI_SRC + path.sep) ||
-      file.includes(`${path.sep}ai-components${path.sep}`)
+      file.startsWith(A2UI_SRC + path.sep) ||
+      file.includes(`${path.sep}ai-components${path.sep}`) ||
+      file.includes(`${path.sep}a2ui${path.sep}`)
     ) {
       report(`${relative(entry)} reaches the AI components (${relative(file)})`, chain);
     }
   }
   for (const [specifier, chain] of packages) {
-    if (AI_ONLY_PACKAGES.includes(packageNameOf(specifier))) {
+    if ([...AI_ONLY_PACKAGES, ...A2UI_ONLY_PACKAGES].includes(packageNameOf(specifier))) {
       report(`${relative(entry)} reaches the AI-only dependency "${specifier}"`, chain);
     }
   }
@@ -196,6 +208,33 @@ for (const entry of [
   const { files, packages } = walk(entry);
   for (const [file, chain] of files) {
     if (!file.startsWith(AI_SRC + path.sep) && !AI_ALLOWED_FILES.includes(file)) {
+      report(
+        `${relative(entry)} reaches ${relative(file)}, which is not in the AI allowlist`,
+        chain,
+      );
+    }
+  }
+  for (const [specifier, chain] of packages) {
+    if (AI_FORBIDDEN_PACKAGES.includes(specifier)) {
+      report(`${relative(entry)} reaches "${specifier}"`, chain);
+    }
+    if (A2UI_ONLY_PACKAGES.includes(packageNameOf(specifier))) {
+      report(`${relative(entry)} reaches the A2UI-only dependency "${specifier}"`, chain);
+    }
+  }
+}
+
+// 2b. The A2UI entry points reach the AI components and the A2UI renderer only.
+const A2UI_WRAPPER_ENTRIES = WRAPPERS.map((w) => path.join(w, 'a2ui/index.js'));
+for (const entry of [path.join(A2UI_SRC, 'index.ts'), ...A2UI_WRAPPER_ENTRIES]) {
+  const { files, packages } = walk(entry);
+  for (const [file, chain] of files) {
+    if (
+      !file.startsWith(AI_SRC + path.sep) &&
+      !file.startsWith(A2UI_SRC + path.sep) &&
+      !AI_ALLOWED_FILES.includes(file) &&
+      !A2UI_WRAPPER_ENTRIES.includes(file)
+    ) {
       report(
         `${relative(entry)} reaches ${relative(file)}, which is not in the AI allowlist`,
         chain,

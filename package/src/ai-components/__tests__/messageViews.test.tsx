@@ -17,7 +17,11 @@ import {
   parseMessageParts,
   StreamTheme,
 } from '../index';
+import { forgetCallStates } from '../message-parts/callStates';
 import { setClipboardString } from '../services/clipboard-service';
+
+// Each test's questions start unanswered, though tests reuse calls.
+afterEach(forgetCallStates);
 
 jest.mock('../services/clipboard-service', () => ({ setClipboardString: jest.fn() }));
 

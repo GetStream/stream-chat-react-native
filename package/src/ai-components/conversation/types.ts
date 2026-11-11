@@ -1,3 +1,4 @@
+import type { AIUIDocument } from '../generative-ui/AIUIDocument';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
 import type { AIMessagePartData } from '../message-parts/types';
 
@@ -26,6 +27,11 @@ export type AIMessage = {
    * rather than work it out.
    */
   reasoningText?: (stepId: string) => string | undefined;
+  /**
+   * The UI the agent wrote for a reply, which shows in place of its text when the
+   * conversation's `ui` host has a renderer for it. A person's message has none.
+   */
+  uiDocument?: AIUIDocument;
 };
 
 /**
