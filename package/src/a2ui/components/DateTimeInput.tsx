@@ -230,7 +230,7 @@ export const DateTimeInputView = ({
       </Pressable>
       <Modal animationType='slide' onRequestClose={() => setOpen(false)} transparent visible={open}>
         <Pressable
-          accessibilityLabel={t('Close')}
+          accessibilityLabel={t('a2ui.dateTimeInput.close.accessibilityLabel', 'Close')}
           onPress={() => setOpen(false)}
           style={styles.backdrop}
         />
@@ -238,7 +238,9 @@ export const DateTimeInputView = ({
           <View style={styles.sheetHeader}>
             <Text style={[styles.sheetTitle, { color: palette.text }]}>{label ?? ''}</Text>
             <Pressable accessibilityRole='button' hitSlop={12} onPress={() => setOpen(false)}>
-              <Text style={[styles.close, { color: palette.accent }]}>{t('Close')}</Text>
+              <Text style={[styles.close, { color: palette.accent }]}>
+                {t('a2ui.dateTimeInput.close.label', 'Close')}
+              </Text>
             </Pressable>
           </View>
           {enableDate ? (

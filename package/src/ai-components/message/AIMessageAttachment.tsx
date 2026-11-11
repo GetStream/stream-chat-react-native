@@ -130,7 +130,9 @@ export const AIMessageAttachment = ({
   const name =
     attachment.name ||
     (url && !url.startsWith('data:') ? url.split(/[?#]/)[0]?.split('/').pop() : undefined) ||
-    (attachment.kind === 'image' ? t('Image') : t('File'));
+    (attachment.kind === 'image'
+      ? t('aiComponents.messageAttachment.image.text', 'Image')
+      : t('aiComponents.messageAttachment.file.text', 'File'));
 
   if (attachment.kind === 'image' && url) {
     return (

@@ -1,7 +1,9 @@
 import { useContext, useMemo } from 'react';
 
-import { TranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { defaultTranslatorFunction } from '../../i18n/utils';
+import {
+  TranslationContext,
+  type TranslationContextValue,
+} from '../../contexts/translationContext/TranslationContext';
 
 // The chat SDK's own provider, for apps that use the AI components without `<Chat>`.
 export {
@@ -10,23 +12,10 @@ export {
 } from '../../contexts/translationContext/TranslationContext';
 
 /**
- * Translates one of the AI components' strings. The key is the English string itself, with
- * `{{ name }}` placeholders filled from `options`, as in the chat SDK's i18n files.
+ * Translates one of the AI components' strings: the chat SDK's `t`, which takes a catalog key and
+ * its English copy, as in `t('aiComponents.replyActions.copy.accessibilityLabel', 'Copy')`.
  */
-export type AITranslate = (key: string, options?: Record<string, unknown>) => string;
-
-const PLACEHOLDER = /{{\s*([\w.]+)\s*}}/g;
-
-/** Fills `{{ name }}` placeholders in `text` from `options`, leaving unknown ones as they are. */
-export const interpolateAIString = (text: string, options?: Record<string, unknown>) =>
-  options
-    ? text.replace(PLACEHOLDER, (placeholder, name: string) =>
-        options[name] === undefined || options[name] === null ? placeholder : String(options[name]),
-      )
-    : text;
-
-/** English: the key itself, with its placeholders filled. */
-export const defaultAITranslate: AITranslate = (key, options) => interpolateAIString(key, options);
+export type AITranslate = TranslationContextValue['t'];
 
 /**
  * The chat SDK's translator, so the AI components follow the chat's language inside `<Chat>`. With
@@ -34,11 +23,5 @@ export const defaultAITranslate: AITranslate = (key, options) => interpolateAISt
  */
 export const useAITranslation = () => {
   const { t, userLanguage } = useContext(TranslationContext);
-  return useMemo(
-    () => ({
-      t: t === defaultTranslatorFunction ? defaultAITranslate : (t as AITranslate),
-      userLanguage: userLanguage ?? 'en',
-    }),
-    [t, userLanguage],
-  );
+  return useMemo(() => ({ t, userLanguage: userLanguage ?? 'en' }), [t, userLanguage]);
 };

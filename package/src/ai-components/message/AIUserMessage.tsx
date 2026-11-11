@@ -51,7 +51,7 @@ export const AIUserMessage = ({
         <View style={defaultStyles.row}>
           {onEdit ? (
             <Pressable
-              accessibilityLabel={t('Edit')}
+              accessibilityLabel={t('aiComponents.userMessage.edit.accessibilityLabel', 'Edit')}
               accessibilityRole='button'
               hitSlop={8}
               onPress={onEdit}

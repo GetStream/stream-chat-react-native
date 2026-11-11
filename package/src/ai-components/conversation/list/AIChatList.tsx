@@ -41,7 +41,10 @@ const LoadingOlder = () => {
   } = useTheme();
   return (
     <View
-      accessibilityLabel={t('Loading older messages')}
+      accessibilityLabel={t(
+        'aiComponents.conversation.loadingOlderMessages.accessibilityLabel',
+        'Loading older messages',
+      )}
       accessibilityRole='progressbar'
       accessible
       style={[styles.loadingOlder, conversation?.loadingOlder]}
@@ -74,7 +77,10 @@ const ScrollToLatestButton = ({ onPress }: { onPress: () => void }) => {
   const { ArrowDown } = useAIIcons();
   return (
     <Pressable
-      accessibilityLabel={t('Scroll to latest')}
+      accessibilityLabel={t(
+        'aiComponents.conversation.scrollToLatest.accessibilityLabel',
+        'Scroll to latest',
+      )}
       accessibilityRole='button'
       hitSlop={4}
       onPress={onPress}

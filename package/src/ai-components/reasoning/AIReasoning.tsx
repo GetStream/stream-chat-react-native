@@ -379,15 +379,15 @@ export const AIReasoning = ({
 
   const title = isThinking
     ? elapsed >= 1
-      ? t('Thinking... {{ duration }}', {
+      ? t('aiComponents.reasoning.thinkingFor.title', 'Thinking... {{ duration }}', {
           duration: formatMinutesAndSeconds(elapsed, userLanguage),
         })
-      : t('Thinking...')
+      : t('aiComponents.reasoning.thinking.title', 'Thinking...')
     : thought !== undefined
-      ? t('Thought for {{ duration }}', {
+      ? t('aiComponents.reasoning.thoughtFor.title', 'Thought for {{ duration }}', {
           duration: formatMinutesAndSeconds(Math.max(1, thought), userLanguage),
         })
-      : t('Thought process');
+      : t('aiComponents.reasoning.thoughtProcess.title', 'Thought process');
 
   // Live reasoning is open before any of it arrives, but there is nothing to show until then.
   const expanded = open && text !== '';

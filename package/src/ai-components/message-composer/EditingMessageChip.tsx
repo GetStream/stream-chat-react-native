@@ -27,10 +27,13 @@ export const EditingMessageChip = ({ onCancel }: EditingMessageChipProps) => {
         <Edit color={theme?.chipText ?? colors.accent_blue} size={14} />
       </View>
       <Text style={[styles.title, { color: theme?.chipText }, theme?.chipTitle]}>
-        {t('Editing')}
+        {t('aiComponents.editingMessage.editing.label', 'Editing')}
       </Text>
       <Pressable
-        accessibilityLabel={t('Cancel editing')}
+        accessibilityLabel={t(
+          'aiComponents.editingMessage.cancel.accessibilityLabel',
+          'Cancel editing',
+        )}
         accessibilityRole='button'
         hitSlop={8}
         onPress={onCancel}

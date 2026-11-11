@@ -51,11 +51,11 @@ export const VoiceVisualizationView = ({
 }: ViewProps) => {
   const { t } = useAITranslation();
   const defaultStateLabels: Record<VoiceAgentState, string> = {
-    connecting: t('Connecting'),
-    idle: t('Ready'),
-    listening: t('Listening'),
-    speaking: t('Speaking'),
-    thinking: t('Thinking'),
+    connecting: t('aiComponents.voiceVisualization.connecting.text', 'Connecting'),
+    idle: t('aiComponents.voiceVisualization.ready.text', 'Ready'),
+    listening: t('aiComponents.voiceVisualization.listening.text', 'Listening'),
+    speaking: t('aiComponents.voiceVisualization.speaking.text', 'Speaking'),
+    thinking: t('aiComponents.voiceVisualization.thinking.text', 'Thinking'),
   };
   const visualization = useVoiceVisualization(
     { audioLevel, colors, expressivity, state },
@@ -124,7 +124,10 @@ export const VoiceVisualizationView = ({
 
   return (
     <View
-      accessibilityLabel={accessibilityLabel ?? t('Voice agent')}
+      accessibilityLabel={
+        accessibilityLabel ??
+        t('aiComponents.voiceVisualization.voiceAgent.accessibilityLabel', 'Voice agent')
+      }
       accessibilityRole='image'
       accessibilityValue={
         accessibilityValue ?? { text: stateLabels?.[state] ?? defaultStateLabels[state] }

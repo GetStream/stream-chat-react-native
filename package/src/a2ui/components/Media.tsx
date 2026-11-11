@@ -99,7 +99,11 @@ export const VideoView = ({
         <Image resizeMode='cover' source={{ uri: posterUrl }} style={styles.fill} />
       ) : null}
       <Pressable
-        accessibilityLabel={paused ? t('Play') : t('Pause')}
+        accessibilityLabel={
+          paused
+            ? t('a2ui.media.play.accessibilityLabel', 'Play')
+            : t('a2ui.media.pause.accessibilityLabel', 'Pause')
+        }
         accessibilityRole='button'
         onPress={() => {
           setStarted(true);
@@ -199,7 +203,11 @@ export const AudioView = ({
   return (
     <View style={[styles.audio, { backgroundColor: palette.subtleSurface }]}>
       <Pressable
-        accessibilityLabel={playing ? t('Pause') : t('Play')}
+        accessibilityLabel={
+          playing
+            ? t('a2ui.media.pause.accessibilityLabel', 'Pause')
+            : t('a2ui.media.play.accessibilityLabel', 'Play')
+        }
         accessibilityRole='button'
         hitSlop={8}
         onPress={() => void toggle()}

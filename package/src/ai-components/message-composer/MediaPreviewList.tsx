@@ -71,7 +71,10 @@ export const MediaPreviewList = () => {
             </View>
           )}
           <Pressable
-            accessibilityLabel={t('Remove attachment')}
+            accessibilityLabel={t(
+              'aiComponents.attachmentPreview.removeAttachment.accessibilityLabel',
+              'Remove attachment',
+            )}
             accessibilityRole='button'
             hitSlop={8}
             style={[styles.mediaPreviewRemoveButton, mediaPreviewRemoveButton]}

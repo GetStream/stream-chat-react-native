@@ -61,7 +61,7 @@ export const AIToolArguments = ({ args }: AIToolArgumentsProps) => {
   const [isOpen, setIsOpen] = useState(false);
   if (!text) return null;
 
-  const label = t('What it sends');
+  const label = t('aiComponents.toolApproval.arguments.label', 'What it sends');
   const code = (
     <Text selectable style={[styles.argumentsCode, { color: colors.black }, card?.argumentsCode]}>
       {text}
@@ -156,7 +156,7 @@ export const AIToolApprovalCard = ({
           ]}
         >
           <Text style={[styles.buttonText, { color: colors.white }, card?.allowButtonText]}>
-            {approval.allowTitle ?? t('Allow')}
+            {approval.allowTitle ?? t('aiComponents.toolApproval.allow.label', 'Allow')}
           </Text>
         </Pressable>
         <Pressable
@@ -172,7 +172,7 @@ export const AIToolApprovalCard = ({
           ]}
         >
           <Text style={[styles.buttonText, { color: colors.black }, card?.declineButtonText]}>
-            {approval.declineTitle ?? t("Don't Allow")}
+            {approval.declineTitle ?? t('aiComponents.toolApproval.dontAllow.label', "Don't Allow")}
           </Text>
         </Pressable>
         {state.isSending ? <ActivityIndicator color={colors.grey} size='small' /> : null}
@@ -182,7 +182,10 @@ export const AIToolApprovalCard = ({
           accessibilityRole='alert'
           style={[styles.failure, { color: colors.accent_red }, card?.failure]}
         >
-          {t("Your answer couldn't be sent. Try again.")}
+          {t(
+            'aiComponents.toolApproval.answerNotSent.text',
+            "Your answer couldn't be sent. Try again.",
+          )}
         </Text>
       ) : null}
     </View>

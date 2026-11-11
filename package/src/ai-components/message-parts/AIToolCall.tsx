@@ -27,18 +27,26 @@ export const AIToolCall = ({ part }: AIToolCallProps) => {
 
   const title = part.displayTitle ?? part.name.replace(/_/g, ' ');
   const detail = (() => {
-    if (isDeclined(part)) return part.summary ?? t('Declined');
+    if (isDeclined(part))
+      return part.summary ?? t('aiComponents.toolCall.declined.text', 'Declined');
     switch (part.status) {
       case 'awaiting_approval':
-        return part.summary ?? t('Waiting for approval');
+        return (
+          part.summary ?? t('aiComponents.toolCall.waitingForApproval.text', 'Waiting for approval')
+        );
       case 'awaiting_authorization':
-        return part.summary ?? t('Waiting for you to sign in');
+        return (
+          part.summary ??
+          t('aiComponents.toolCall.waitingForSignIn.text', 'Waiting for you to sign in')
+        );
       case 'awaiting_client':
-        return part.summary ?? t('Waiting for the device');
+        return (
+          part.summary ?? t('aiComponents.toolCall.waitingForDevice.text', 'Waiting for the device')
+        );
       case 'failed':
-        return part.summary ?? t("Didn't complete");
+        return part.summary ?? t('aiComponents.toolCall.didntComplete.text', "Didn't complete");
       case 'cancelled':
-        return part.summary ?? t('Cancelled');
+        return part.summary ?? t('aiComponents.toolCall.cancelled.text', 'Cancelled');
       default:
         return part.summary;
     }

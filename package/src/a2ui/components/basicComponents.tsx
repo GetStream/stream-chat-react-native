@@ -365,7 +365,7 @@ const Modal = ({ props }: A2UIComponentProps) => {
             style={styles.sheetClose}
           >
             <NativeText style={[styles.buttonText, { color: palette.accent }]}>
-              {t('Close')}
+              {t('a2ui.modal.close.label', 'Close')}
             </NativeText>
           </Pressable>
           <ScrollView contentContainerStyle={styles.flex}>
@@ -580,7 +580,7 @@ const ChoicePicker = ({ props }: A2UIComponentProps) => {
       {props.filterable === true ? (
         <TextInput
           onChangeText={setFilter}
-          placeholder={t('Search')}
+          placeholder={t('a2ui.choicePicker.search.placeholder', 'Search')}
           placeholderTextColor={palette.secondaryText}
           style={[
             styles.input,

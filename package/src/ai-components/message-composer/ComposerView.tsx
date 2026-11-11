@@ -250,7 +250,7 @@ export const AIMessageInput = () => {
     <TextInput
       value={text}
       onChangeText={setText}
-      placeholder={t('Ask anything')}
+      placeholder={t('aiComponents.messageComposer.textInput.placeholder', 'Ask anything')}
       placeholderTextColor={grey_neutral}
       ref={inputRef}
       style={[styles.textInput, textInput]}

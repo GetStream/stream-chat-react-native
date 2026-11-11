@@ -96,7 +96,10 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
 
   return (
     <View
-      accessibilityLabel={t('Reply actions')}
+      accessibilityLabel={t(
+        'aiComponents.replyActions.replyActions.accessibilityLabel',
+        'Reply actions',
+      )}
       accessibilityRole='toolbar'
       style={[defaultStyles.container, message?.replyActions?.container]}
       testID='ai-reply-actions'
@@ -104,25 +107,39 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
       {copy ? (
         <Action
           Icon={isCopied ? icons.Copied : icons.Copy}
-          label={isCopied ? t('Copied') : t('Copy')}
+          label={
+            isCopied
+              ? t('aiComponents.replyActions.copied.accessibilityLabel', 'Copied')
+              : t('aiComponents.replyActions.copy.accessibilityLabel', 'Copy')
+          }
           onPress={copy}
         />
       ) : null}
-      {hasText ? <Action Icon={icons.Share} label={t('Share')} onPress={share} /> : null}
+      {hasText ? (
+        <Action
+          Icon={icons.Share}
+          label={t('aiComponents.replyActions.share.accessibilityLabel', 'Share')}
+          onPress={share}
+        />
+      ) : null}
       {onRegenerate ? (
-        <Action Icon={icons.Regenerate} label={t('Regenerate')} onPress={onRegenerate} />
+        <Action
+          Icon={icons.Regenerate}
+          label={t('aiComponents.replyActions.regenerate.accessibilityLabel', 'Regenerate')}
+          onPress={onRegenerate}
+        />
       ) : null}
       {onRate ? (
         <>
           <Action
             Icon={positive ? icons.ThumbsUpFilled : icons.ThumbsUp}
-            label={t('Good response')}
+            label={t('aiComponents.replyActions.goodResponse.accessibilityLabel', 'Good response')}
             onPress={() => onRate(positive ? null : 'positive')}
             selected={positive}
           />
           <Action
             Icon={negative ? icons.ThumbsDownFilled : icons.ThumbsDown}
-            label={t('Bad response')}
+            label={t('aiComponents.replyActions.badResponse.accessibilityLabel', 'Bad response')}
             onPress={() => onRate(negative ? null : 'negative')}
             selected={negative}
           />

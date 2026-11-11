@@ -60,7 +60,7 @@ export const AIMessagePart = ({ approver, part, reasoningText, stepKey }: AIMess
       <Text
         style={[styles.unsupportedText, { color: colors.grey }, messageParts?.unsupported?.text]}
       >
-        {t("A step this app version can't show")}
+        {t('aiComponents.messageParts.unsupportedStep.text', "A step this app version can't show")}
       </Text>
     </View>
   );

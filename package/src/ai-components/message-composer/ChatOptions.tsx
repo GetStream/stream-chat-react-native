@@ -98,7 +98,11 @@ export const SelectedChatOptionChip = ({
       {option.icon ? <View style={[styles.chipIcon, theme?.chipIcon]}>{option.icon}</View> : null}
       <Text style={[styles.chipTitle, { color: theme?.chipText }, theme?.chipTitle]}>{title}</Text>
       <Pressable
-        accessibilityLabel={t('Remove option: {{ option }}', { option: title })}
+        accessibilityLabel={t(
+          'aiComponents.chatOptions.removeOption.accessibilityLabel',
+          'Remove option: {{ option }}',
+          { option: title },
+        )}
         accessibilityRole='button'
         accessibilityState={{ disabled }}
         disabled={disabled}

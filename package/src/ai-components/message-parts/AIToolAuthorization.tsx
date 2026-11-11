@@ -64,22 +64,36 @@ export const AIToolAuthorizationCard = ({
   const busy = state.isConnecting || state.isDeclining;
 
   const outcome = (() => {
-    if (expired) return t('This sign-in has expired.');
+    if (expired)
+      return t('aiComponents.toolAuthorization.signInExpired.text', 'This sign-in has expired.');
     switch (authorization.status) {
       case undefined:
         return undefined;
       case 'connected':
-        return t('Connected to {{ provider }}', { provider });
+        return t('aiComponents.toolAuthorization.connectedTo.text', 'Connected to {{ provider }}', {
+          provider,
+        });
       case 'declined':
-        return t('Not connected');
+        return t('aiComponents.toolAuthorization.notConnected.text', 'Not connected');
       default:
-        return t("The sign-in didn't complete.");
+        return t(
+          'aiComponents.toolAuthorization.signInDidntComplete.text',
+          "The sign-in didn't complete.",
+        );
     }
   })();
 
   const failure = (() => {
-    if (state.connectFailed) return t("The sign-in couldn't be opened. Try again.");
-    if (state.declineFailed) return t("Your answer couldn't be sent. Try again.");
+    if (state.connectFailed)
+      return t(
+        'aiComponents.toolAuthorization.signInCouldntOpen.text',
+        "The sign-in couldn't be opened. Try again.",
+      );
+    if (state.declineFailed)
+      return t(
+        'aiComponents.toolAuthorization.answerNotSent.text',
+        "Your answer couldn't be sent. Try again.",
+      );
     return undefined;
   })();
 
@@ -121,7 +135,9 @@ export const AIToolAuthorizationCard = ({
               ]}
             >
               <Text style={[styles.buttonText, { color: colors.white }, card?.connectButtonText]}>
-                {state.isConnecting ? t('Connecting...') : t('Connect')}
+                {state.isConnecting
+                  ? t('aiComponents.toolAuthorization.connecting.label', 'Connecting...')
+                  : t('aiComponents.toolAuthorization.connect.label', 'Connect')}
               </Text>
             </Pressable>
           ) : null}
@@ -139,7 +155,7 @@ export const AIToolAuthorizationCard = ({
             ]}
           >
             <Text style={[styles.buttonText, { color: colors.black }, card?.declineButtonText]}>
-              {t('Not now')}
+              {t('aiComponents.toolAuthorization.notNow.label', 'Not now')}
             </Text>
           </Pressable>
           {busy ? <ActivityIndicator color={colors.grey} size='small' /> : null}
