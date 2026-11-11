@@ -20,6 +20,7 @@ import {
   parseAIUIComponentDefinition,
   parseAIUIDocument,
   requiredAIUIParameter,
+  aiUIClientToolJSON,
 } from '../index';
 
 import type { AIMessage } from '../index';
@@ -602,10 +603,42 @@ describe('AIUIHost', () => {
         { catalog_id: 'app', components: 1, format: 'a2ui' },
         { format: 'openui', instructions: 'Write OpenUI.' },
       ],
-      tools: [],
       v: 1,
     });
     expect(ui.component('place_card')?.definition).toBe(definition);
+  });
+
+  it('tells the backend the app’s tools as Model Context Protocol tools', async () => {
+    const ui = new AIUIHost({
+      renderers: [],
+      send: jest.fn(),
+      tools: [
+        { definition: { name: 'local_time' }, run: () => ({ output: '12:00' }) },
+        {
+          definition: {
+            annotations: { readOnlyHint: true },
+            description: 'The weather in a city.',
+            inputSchema: { properties: { city: { type: 'string' } }, type: 'object' },
+            name: 'weather',
+          },
+          run: () => ({ output: 'Sunny' }),
+        },
+      ],
+    });
+    expect((await ui.capabilities()).tools).toEqual([
+      { annotations: { readOnlyHint: false }, inputSchema: { type: 'object' }, name: 'local_time' },
+      {
+        annotations: { readOnlyHint: true },
+        description: 'The weather in a city.',
+        inputSchema: { properties: { city: { type: 'string' } }, type: 'object' },
+        name: 'weather',
+      },
+    ]);
+    expect(aiUIClientToolJSON({ name: 'x' })).toEqual({
+      annotations: { readOnlyHint: false },
+      inputSchema: { type: 'object' },
+      name: 'x',
+    });
   });
 });
 

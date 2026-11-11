@@ -75,6 +75,23 @@ const openWebOrEmailLink = (url: string) => {
 };
 
 /**
+ * A tool of the app's as a Model Context Protocol tool, as the agent's backend reads it: its
+ * `name`, `description`, the `inputSchema` of its arguments (an object with no properties when it
+ * has none) and whether it only reads.
+ */
+export const aiUIClientToolJSON = ({
+  annotations,
+  description,
+  inputSchema,
+  name,
+}: AIClientToolDefinition) => ({
+  annotations: { readOnlyHint: annotations?.readOnlyHint === true },
+  ...(description ? { description } : {}),
+  inputSchema: inputSchema ?? { type: 'object' },
+  name,
+});
+
+/**
  * The generated UI of one conversation: the renderers of the formats the agent writes, the
  * app's components and tools, what each reply's UI was left in, and where what the person does
  * goes. Give it to `AIConversation` as `ui`; keep one per conversation, for as long as it shows.
@@ -334,8 +351,7 @@ export class AIUIHost {
   async capabilities() {
     return {
       components: this.components.map(({ definition }) => aiUIComponentDefinitionJSON(definition)),
-      // The app's tools as Model Context Protocol tools.
-      tools: this.toolDefinitions,
+      ...(this.tools.size > 0 ? { tools: this.toolDefinitions.map(aiUIClientToolJSON) } : {}),
       renderers: await Promise.all(
         this.renderers.map(async (renderer) => ({
           ...(await renderer.capabilities?.(this.components, this.toolDefinitions)),
