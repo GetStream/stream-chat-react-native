@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import * as Speech from 'expo-speech';
 
-import { AIStates, useAIState, useChannelContext, useStableCallback } from 'stream-chat-expo';
+import { useStableCallback } from 'stream-chat-expo';
 
 import {
   dictationStore,
@@ -12,12 +12,11 @@ import {
   type VoiceAgentState,
 } from 'stream-chat-expo/ai-components';
 
+import { useAppContext } from '../../contexts/AppContext';
 import { useSendAIMessage } from '../../hooks/useSendAIMessage';
 
 /** A turn the agent is never seen working on ends after this long. */
 const TURN_TIMEOUT_MS = 20_000;
-
-const WORKING_STATES: string[] = [AIStates.Thinking, AIStates.Generating, AIStates.ExternalSources];
 
 // Marks voice mode's dictation as its own, so the composer underneath ignores it.
 const DICTATION_SOURCE = { source: 'voice-mode' };
@@ -45,8 +44,9 @@ export const useVoiceConversation = (active: boolean) => {
   const { state: dictationState, error } = useDictationState();
   const { transcript } = useDictationTranscript();
   const send = useSendAIMessage();
-  const { channel } = useChannelContext();
-  const { aiState } = useAIState(channel);
+  const { agentState, chat } = useAppContext();
+  // The agent answering, from the session's socket.
+  const isWorking = agentState.kind === 'responding' || agentState.kind === 'working';
 
   // The messages already in the channel when the question was sent, so the reply is found by
   // identity rather than by comparing the server's timestamps with the device's clock.
@@ -65,11 +65,11 @@ export const useVoiceConversation = (active: boolean) => {
 
   const latestReply = useStableCallback(() => {
     const seenIds = turn.current?.seenIds ?? new Set<string>();
-    const messages = channel?.messagePaginator.items ?? [];
+    const messages = chat?.state.getLatestValue().messages ?? [];
     for (let i = messages.length - 1; i >= 0; i--) {
       const message = messages[i];
       if (seenIds.has(message.id)) break;
-      if (message.custom?.ai_generated && message.text) return message.text;
+      if (message.ai_generated && message.text) return message.text;
     }
     return null;
   });
@@ -129,25 +129,25 @@ export const useVoiceConversation = (active: boolean) => {
     }
     turn.current = {
       sawWorking: false,
-      seenIds: new Set((channel?.messagePaginator.items ?? []).map((message) => message.id)),
+      seenIds: new Set((chat?.state.getLatestValue().messages ?? []).map((message) => message.id)),
     };
     setPhase('thinking');
     void send({ text });
     timeout.current = setTimeout(() => {
       if (!turn.current?.sawWorking) finishTurn();
     }, TURN_TIMEOUT_MS);
-  }, [active, channel, dictationState, error, finishTurn, listen, phase, send, transcript]);
+  }, [active, chat, dictationState, error, finishTurn, listen, phase, send, transcript]);
 
   // Follows the agent: its turn ends once it has been seen working and is done.
   useEffect(() => {
     const current = turn.current;
     if (!active || !current) return;
-    if (WORKING_STATES.includes(aiState)) {
+    if (isWorking) {
       current.sawWorking = true;
     } else if (current.sawWorking) {
       finishTurn();
     }
-  }, [active, aiState, finishTurn]);
+  }, [active, isWorking, finishTurn]);
 
   return {
     // Only an error from the current attempt, not one left over while dictation restarts.

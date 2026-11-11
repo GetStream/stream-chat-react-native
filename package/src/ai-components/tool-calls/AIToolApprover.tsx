@@ -11,10 +11,12 @@ export type AIToolAuthorizer = {
   /**
    * Opens the call's sign-in. Resolves `true` once the account is connected: your backend then
    * updates the call's step, and until it does the sign-in reads as connecting. Resolves `false`
-   * when the person closed the sign-in or it ended without connecting, so they can try again.
-   * Rejects when the sign-in could not be opened.
+   * when it ended without connecting, so the person can try again. Resolves `'closed'` when the
+   * person closed it and it can't be opened again, as the router's sign-in can't once its page
+   * has opened: the call is then declined, as with "Not now". Rejects when the sign-in could
+   * not be opened.
    */
-  connect: (call: AIToolCallPart) => Promise<boolean>;
+  connect: (call: AIToolCallPart) => Promise<boolean | 'closed'>;
   /**
    * Tells your backend the person won't sign in now. Your backend ends the call, which never
    * runs. A rejection lets the person answer again.

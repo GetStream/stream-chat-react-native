@@ -7,6 +7,8 @@ import type {
   AIToolCallStatus,
 } from './types';
 
+import { withCustomFields } from '../internal/customFields';
+
 /** The attachment type prefix every AI step uses. */
 export const AI_MESSAGE_PART_TYPE_PREFIX = 'ai_';
 /** The newest format version of the built-in kinds this SDK understands. */
@@ -116,15 +118,16 @@ export const parseMessagePart = (
   if (typeof type !== 'string' || !type.startsWith(AI_MESSAGE_PART_TYPE_PREFIX)) {
     return undefined;
   }
-  const id = string(attachment, 'id') ?? `${type}-${position}`;
-  const version = int(attachment, 'v') ?? 1;
+  const fields = withCustomFields(attachment);
+  const id = string(fields, 'id') ?? `${type}-${position}`;
+  const version = int(fields, 'v') ?? 1;
   const known = version <= AI_MESSAGE_PART_SUPPORTED_VERSION;
   return {
     id,
     kind: type,
-    payload: attachment,
-    reasoning: known && type === 'ai_reasoning' ? parseReasoning(id, attachment) : undefined,
-    toolCall: known && type === 'ai_tool_call' ? parseToolCall(id, attachment) : undefined,
+    payload: fields,
+    reasoning: known && type === 'ai_reasoning' ? parseReasoning(id, fields) : undefined,
+    toolCall: known && type === 'ai_tool_call' ? parseToolCall(id, fields) : undefined,
     version,
   };
 };

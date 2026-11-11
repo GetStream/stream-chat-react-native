@@ -148,6 +148,22 @@ describe('parseMessageParts', () => {
     expect(parts.every(isSupportedPart)).toBe(true);
   });
 
+  it('reads the fields stream-chat keeps under custom', () => {
+    const [part] = parseMessageParts([
+      {
+        custom: { duration_ms: 1200, id: 'r1', status: 'completed', summary: 'Checked', v: 1 },
+        type: 'ai_reasoning',
+      },
+    ]);
+    expect(part).toMatchObject({ id: 'r1', kind: 'ai_reasoning', version: 1 });
+    expect(part.payload).toMatchObject({ id: 'r1', status: 'completed', type: 'ai_reasoning' });
+    expect(part.reasoning).toMatchObject({
+      durationMs: 1200,
+      status: 'completed',
+      summary: 'Checked',
+    });
+  });
+
   it('reads a reasoning step', () => {
     expect(parseMessagePart(reasoning)?.reasoning).toEqual({
       durationMs: 4200,

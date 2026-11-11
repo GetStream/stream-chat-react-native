@@ -3,6 +3,7 @@ import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { useAITranslation, useTheme } from '../contexts';
 import { type AIIcons, useAIIcons } from '../icons';
+import { primitives } from '../internal/tokens';
 
 /**
  * What a message carries besides its text, such as an image or a file. The counterpart of
@@ -233,7 +234,7 @@ const defaultStyles = StyleSheet.create({
     maxWidth: 280,
     padding: 8,
   },
-  fileDetails: { fontSize: 12 },
+  fileDetails: { fontSize: primitives.typographyFontSizeXs },
   fileIcon: {
     alignItems: 'center',
     borderRadius: 8,
@@ -241,7 +242,7 @@ const defaultStyles = StyleSheet.create({
     justifyContent: 'center',
     width: 36,
   },
-  fileName: { fontSize: 14, fontWeight: '500' },
+  fileName: { fontSize: primitives.typographyFontSizeSm, fontWeight: '600' },
   fileText: { flexShrink: 1 },
   image: { borderRadius: 16, height: 180, overflow: 'hidden', width: 180 },
 });

@@ -1,25 +1,21 @@
 import type { PropsWithChildren } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-  type ConversationSnapshot,
-  type ImageSource,
-  LiveReasoning,
-  type Session,
-} from '@stream-io/calypso';
-import type { Channel, Event, StreamChat } from 'stream-chat';
-import { useStableCallback } from 'stream-chat-expo';
+import { type ConversationSnapshot, type Session } from '@stream-io/calypso';
+import type { Channel, LocalMessage, StreamChat } from 'stream-chat';
+import { useStableCallback, useStateStore } from 'stream-chat-expo';
 import {
   AIClientIdentity,
   type AIMessageRating,
+  type AIPendingMessage,
   type AIToolApprover,
   createAuthSessionAuthorizer,
 } from 'stream-chat-expo/ai-components';
 
+import { AgentChat, type AgentChatState, isAgentReply, isEmptyReply } from '../agent/agentChat';
 import { agents, agentSessions, streamToken } from '../agent/agents';
 import { AgentConfig } from '../agent/config';
-
-type Conversation = { channel: Channel; reasoning: LiveReasoning; session: Session };
+import { toDataUri } from '../agent/photos';
 
 const IDLE: ConversationSnapshot = { kind: 'idle', skills: [] };
 
@@ -38,31 +34,37 @@ const declineLogin = (session: Session, toolCallId: string) =>
     .held()
     .send({ allowed: false, tool_call_id: toolCallId, type: 'tool_approval' });
 
+// A question on its way: what shows until Stream's copy arrives, and how many of the person's
+// messages there were when it was asked, so its copy is the first one after them.
+type Asked = { message: AIPendingMessage; after: number };
+
 export type AppContextValue = {
   /** What the agent is doing in the open conversation, from the session's socket. */
   agentState: ConversationSnapshot;
   /** Answers the open conversation's tool calls that ask first. */
   approver: AIToolApprover | undefined;
-  /** The channel the router writes the open conversation into. */
-  channel: Channel | undefined;
+  /** The open conversation's messages and live reasoning. */
+  chat: AgentChat | undefined;
   /** Bumped when the drawer's list of conversations may have changed. */
   conversationsVersion: number;
   /** Why the last conversation couldn't be opened, or what asking failed with. */
   failure: string | undefined;
+  /** Whether a question is on its way or being answered, from the first thought to the last word. */
+  isBusy: boolean;
+  /** Whether the agent is answering and its reply shows nothing yet. */
+  isThinking: boolean;
+  /** The question on its way, until Stream's copy of it arrives. */
+  pending: AIPendingMessage | undefined;
   /** The open conversation's session id. */
   sessionId: string | undefined;
-  /** Asks the agent, with photos as data URIs. Its reply arrives in the channel. */
-  ask: (text: string, images?: ImageSource[]) => Promise<void>;
+  /** Asks the agent, with photos by their local URIs. Its reply arrives in the channel. */
+  ask: (text: string, photos?: string[]) => Promise<void>;
   /** Carries on a conversation from the drawer, by its session id. */
   openConversation: (sessionId: string) => void;
   /** Rates a reply, or takes the rating back with null. */
   rate: (messageId: string, rating: AIMessageRating | null) => void;
   /** How the person rated replies, by message. Kept for this run only: the router takes no ratings yet. */
   ratings: Readonly<Record<string, AIMessageRating>>;
-  /** The whole of a reply's reasoning step so far, from its live updates. */
-  reasoningText: (messageId: string, stepId: string) => string | undefined;
-  /** Bumped as reasoning arrives, so the steps showing it render again. */
-  reasoningVersion: number;
   /** Starts a new conversation. */
   startConversation: () => void;
   /** Stops the reply being written. What it wrote so far stays. */
@@ -73,14 +75,15 @@ export const AppContext = React.createContext<AppContextValue>({
   agentState: IDLE,
   approver: undefined,
   ask: async () => {},
-  channel: undefined,
+  chat: undefined,
   conversationsVersion: 0,
   failure: undefined,
+  isBusy: false,
+  isThinking: false,
   openConversation: () => {},
+  pending: undefined,
   rate: () => {},
   ratings: {},
-  reasoningText: () => undefined,
-  reasoningVersion: 0,
   sessionId: undefined,
   startConversation: () => {},
   stop: () => {},
@@ -88,14 +91,31 @@ export const AppContext = React.createContext<AppContextValue>({
 
 const messageOf = (error: unknown) => (error instanceof Error ? error.message : String(error));
 
+const userMessageCount = (messages: readonly LocalMessage[]) =>
+  messages.filter((message) => !isAgentReply(message)).length;
+
+// What the provider follows of the messages: what decides whether the agent is thinking or busy,
+// and when a question's copy has arrived.
+const selector = ({ messages }: AgentChatState) => ({
+  last: messages[messages.length - 1] as LocalMessage | undefined,
+  lastReply: [...messages].reverse().find(isAgentReply),
+  userMessages: userMessageCount(messages),
+});
+
 export const AppProvider = ({ client, children }: PropsWithChildren<{ client: StreamChat }>) => {
-  const [conversation, setConversation] = useState<Conversation>();
+  const [chat, setChat] = useState<AgentChat>();
   const [failure, setFailure] = useState<string>();
   const [agentState, setAgentState] = useState<ConversationSnapshot>(IDLE);
-  const [reasoningVersion, setReasoningVersion] = useState(0);
   const [conversationsVersion, setConversationsVersion] = useState(0);
   const [ratings, setRatings] = useState<Readonly<Record<string, AIMessageRating>>>({});
-  const current = useRef<Conversation | undefined>(undefined);
+  const [asked, setAsked] = useState<Asked>();
+  // The newest message when something was last asked here, until it fails or is stopped.
+  const [askedAfter, setAskedAfter] = useState<string>();
+  const current = useRef<AgentChat | undefined>(undefined);
+  const askedRef = useRef<Asked | undefined>(undefined);
+  askedRef.current = asked;
+
+  const followed = useStateStore(chat?.state, selector);
 
   // Opening one conversation after another: the newest wins, and one that was never asked
   // anything is deleted rather than left in the drawer.
@@ -104,12 +124,16 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     try {
       const session = await opening();
       const { channel } = await session.chat();
+      const next = new AgentChat(session, channel as Channel);
+      await next.follow();
       const previous = current.current;
-      const next = { channel: channel as Channel, reasoning: new LiveReasoning(), session };
       current.current = next;
-      setConversation(next);
+      setAsked(undefined);
+      setAskedAfter(undefined);
+      setChat(next);
       if (previous && previous.session.id !== session.id) {
-        const unused = previous.channel.state.messages.length === 0;
+        previous.close();
+        const unused = previous.state.getLatestValue().messages.length === 0;
         await (unused ? previous.session.delete() : previous.session.close()).catch(() => {});
       }
       setConversationsVersion((version) => version + 1);
@@ -134,20 +158,47 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     void open(() => agentSessions().resume(sessionId));
   });
 
-  const ask = useStableCallback(async (text: string, images: ImageSource[] = []) => {
-    const session = current.current?.session;
-    if (!session) {
+  const isResponding = agentState.kind === 'responding' || agentState.kind === 'working';
+  const isBusy = !!asked || isResponding || followed?.lastReply?.generating === true;
+
+  const ask = useStableCallback(async (text: string, photos: string[] = []) => {
+    const opened = current.current;
+    if (!opened || isBusy) {
       return;
     }
+    // Shows at once, with the photos as they were picked.
+    const asking: Asked = {
+      after: userMessageCount(opened.state.getLatestValue().messages),
+      message: {
+        attachments: photos.map((url) => ({ kind: 'image', url })),
+        id: crypto.randomUUID(),
+        text,
+      },
+    };
+    const messages = opened.state.getLatestValue().messages;
     setFailure(undefined);
+    setAsked(asking);
+    setAskedAfter(messages[messages.length - 1]?.id ?? '');
     try {
-      await session.responses.create(text, images.length > 0 ? { images } : undefined);
+      const images = await Promise.all(photos.map(async (uri) => ({ url: await toDataUri(uri) })));
+      await opened.session.responses.create(text, images.length > 0 ? { images } : undefined);
     } catch (error) {
       setFailure(messageOf(error));
+      setAskedAfter(undefined);
+      if (askedRef.current === asking) setAsked(undefined);
     }
   });
 
+  // Stream's copy of the question on its way is the person's first message after the ones there
+  // were when they asked: once it is in, the question on its way goes.
+  useEffect(() => {
+    if (asked && followed && followed.userMessages > asked.after) {
+      setAsked(undefined);
+    }
+  }, [asked, followed]);
+
   const stop = useStableCallback(() => {
+    setAskedAfter(undefined);
     try {
       current.current?.session.interrupt();
     } catch {
@@ -167,45 +218,46 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     }),
   );
 
-  const reasoningText = useStableCallback((messageId: string, stepId: string) =>
-    current.current?.reasoning.get(messageId, stepId),
-  );
+  // Whether the agent is answering and its reply shows nothing yet. The session can pass through
+  // idle between the question and the first of its reply, which would hide it for a moment.
+  const last = followed?.last;
+  const replyHasBegun = !!last && isAgentReply(last) && !isEmptyReply(last);
+  const isAwaitingReply =
+    askedAfter !== undefined &&
+    !!last &&
+    last.id !== askedAfter &&
+    (!isAgentReply(last) || (last.generating === true && !replyHasBegun));
+  const isThinking =
+    agentState.kind === 'responding'
+      ? !replyHasBegun
+      : agentState.kind === 'working'
+        ? false
+        : isAwaitingReply;
 
-  // The open conversation: what the agent is doing, and every live update's slice of thinking,
-  // read from each event rather than the message list, which can fold several into one.
+  // The open conversation: what the agent is doing, from the session's socket.
   useEffect(() => {
-    if (!conversation) {
+    if (!chat) {
       return;
     }
-    const { channel, reasoning, session } = conversation;
+    const { session } = chat;
     setAgentState(session.state.get());
-    const stopState = session.state.subscribe(() => {
+    return session.state.subscribe(() => {
       const state = session.state.get();
       setAgentState(state);
       // The router titles a conversation as it goes.
       if (state.kind === 'idle') setConversationsVersion((version) => version + 1);
     });
-    const subscription = channel.on('message.updated', (event: Event) => {
-      if (event.message) {
-        reasoning.read(event.message as { id: string; reasoning?: unknown });
-        setReasoningVersion((version) => version + 1);
-      }
-    });
-    return () => {
-      stopState();
-      subscription.unsubscribe();
-    };
-  }, [conversation]);
+  }, [chat]);
 
   const approver = useMemo<AIToolApprover | undefined>(
     () =>
-      conversation
+      chat
         ? {
             authorizer: createAuthSessionAuthorizer({
               callbackScheme: SIGN_IN_SCHEME,
               decline: (call) =>
                 new Promise<void>((resolve) => {
-                  declineLogin(conversation.session, call.id);
+                  declineLogin(chat.session, call.id);
                   resolve();
                 }),
             }),
@@ -213,13 +265,13 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
             // `decide` sends over the session's socket and throws when it can't.
             decide: (call, allowed) =>
               new Promise<void>((resolve) => {
-                conversation.session.decide(call.id, { allowed });
+                chat.session.decide(call.id, { allowed });
                 resolve();
               }),
             userId: AgentConfig.user.id,
           }
         : undefined,
-    [conversation],
+    [chat],
   );
 
   useEffect(() => {
@@ -241,20 +293,22 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
     };
   }, [client, startConversation]);
 
+  const pending = asked?.message;
   const contextValue = useMemo(
     () => ({
       agentState,
       approver,
       ask,
-      channel: conversation?.channel,
+      chat,
       conversationsVersion,
       failure,
+      isBusy,
+      isThinking,
       openConversation,
+      pending,
       rate,
       ratings,
-      reasoningText,
-      reasoningVersion,
-      sessionId: conversation?.session.id,
+      sessionId: chat?.session.id,
       startConversation,
       stop,
     }),
@@ -262,14 +316,15 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
       agentState,
       approver,
       ask,
-      conversation,
+      chat,
       conversationsVersion,
       failure,
+      isBusy,
+      isThinking,
       openConversation,
+      pending,
       rate,
       ratings,
-      reasoningText,
-      reasoningVersion,
       startConversation,
       stop,
     ],

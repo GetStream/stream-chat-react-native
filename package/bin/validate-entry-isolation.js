@@ -29,6 +29,7 @@ const WRAPPERS = ['native-package', 'expo-package'].map((name) => path.join(PACK
 // not among them: the main entry point imports both too.)
 const AI_ONLY_PACKAGES = [
   '@khanacademy/simple-markdown',
+  '@legendapp/list',
   '@shopify/react-native-skia',
   'react-syntax-highlighter',
   'victory-native',
@@ -44,6 +45,11 @@ const AI_ALLOWED_FILES = [
   path.join(CORE_SRC, 'contexts/translationContext/types.ts'),
   path.join(CORE_SRC, 'contexts/utils/isTestEnvironment.ts'),
   path.join(CORE_SRC, 'i18n/utils.ts'),
+  // The design tokens (plain data, no imports), which the AI components size their text with. Metro
+  // picks the platform's file; this check resolves the fallback, which re-exports the web one.
+  ...['', '.ios', '.android', '.web'].map((platform) =>
+    path.join(CORE_SRC, `theme/generated/light/StreamTokens${platform}.ts`),
+  ),
   ...WRAPPERS.flatMap((wrapper) => [
     path.join(wrapper, 'ai-components/index.js'),
     path.join(wrapper, 'src/optionalDependencies/NativeShimmerView.ts'),

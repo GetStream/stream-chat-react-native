@@ -41,6 +41,33 @@ describe('ai-components streaming', () => {
       expect(result.current.streamedMessageText).toBe('Hello world');
     });
 
+    it('shows another text at once rather than typing it out', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) =>
+          useStreamingMessage({ letterInterval: 10, renderingLetterCount: 2, text }),
+        { initialProps: { text: 'Hi' } },
+      );
+
+      // As when a list reuses the view for another, longer message.
+      rerender({ text: 'Goodbye, and thanks for all the fish' });
+      expect(result.current.streamedMessageText).toBe('Goodbye, and thanks for all the fish');
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+      expect(result.current.streamedMessageText).toBe('Goodbye, and thanks for all the fish');
+
+      // And one shorter than what was shown.
+      rerender({ text: 'Bye' });
+      expect(result.current.streamedMessageText).toBe('Bye');
+
+      // Text added to the end of it is still typed out.
+      rerender({ text: 'Bye now' });
+      act(() => {
+        jest.advanceTimersByTime(10);
+      });
+      expect(result.current.streamedMessageText).toBe('Bye n');
+    });
+
     it('optimistically closes a code fence while it is being streamed', () => {
       const { result, rerender } = renderHook(
         ({ text }: { text: string }) =>

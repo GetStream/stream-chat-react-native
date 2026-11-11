@@ -1,0 +1,331 @@
+import React, {
+  type ComponentType,
+  createContext,
+  memo,
+  type ReactNode,
+  useContext,
+  useMemo,
+} from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import type { LegendListRenderItemProps } from '@legendapp/list/react-native';
+
+import type { AIConversationEntry } from './entries';
+import { AIChatList } from './list/AIChatList';
+import type { AIMessage, AIPendingMessage } from './types';
+import { type ConversationRow, type RowPosition, useConversationRows } from './useConversationRows';
+
+import { useTheme } from '../contexts';
+import { primitives } from '../internal/tokens';
+import { AIAssistantMessage } from '../message/AIAssistantMessage';
+import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
+import { AIReplyActions, type AIReplyActionsProps } from '../message/AIReplyActions';
+import { AIUserMessage } from '../message/AIUserMessage';
+import type { AIMessagePartData } from '../message-parts/types';
+import { AIThinking } from '../reasoning/AIReasoning';
+import { type AIThinkingClock, AIThinkingTurnContext } from '../reasoning/thinkingClock';
+import { type AIToolApprover, AIToolApproverProvider } from '../tool-calls/AIToolApprover';
+
+export type AIConversationUserMessageProps = {
+  /** What the person sent with it, such as images and files. */
+  attachments: AIMessageAttachmentData[];
+  /** What the person wrote. */
+  text: string;
+  /** The message, or `undefined` for one on its way. */
+  message?: AIMessage;
+};
+
+export type AIConversationAssistantMessageProps = {
+  attachments: AIMessageAttachmentData[];
+  isGenerating: boolean;
+  message: AIMessage;
+  parts: AIMessagePartData[];
+  text: string;
+  approver?: AIToolApprover;
+  reasoningText?: (stepId: string) => string | undefined;
+};
+
+export type AIConversationReplyActionsProps = {
+  /** Whether it is the reply that ends the conversation, which can be asked for again. */
+  isLatestReply: boolean;
+  message: AIMessage;
+  text: string;
+};
+
+export type AIConversationProps = {
+  /** The conversation, oldest message first. */
+  messages: AIMessage[];
+  /** Who answers tool calls' questions and sign-ins on this device, to ask them. */
+  approver?: AIToolApprover;
+  /**
+   * The view of the agent's replies. Defaults to `AIAssistantMessage`.
+   *
+   * The list reuses its rows: a view scrolled out of sight renders another reply next, so state a
+   * view keeps of its own has to start afresh for a new `message.id` (such as with a `key`).
+   * The same holds for `UserMessage` and `ReplyActions`.
+   */
+  AssistantMessage?: ComponentType<AIConversationAssistantMessageProps>;
+  /**
+   * Room left under the latest turn, for a composer floating over the bottom of the conversation.
+   * The question of a new turn pins to the top of what is visible above it.
+   */
+  bottomInset?: number;
+  /** What the conversation shows while there are no messages, centered in it. */
+  emptyContent?: ReactNode;
+  /** A view under the latest turn's messages, such as what the agent is doing, or an error with a way to retry. */
+  footer?: ReactNode;
+  /**
+   * Whether the agent is answering the latest message and its reply shows nothing yet.
+   * Meanwhile the latest turn ends with `AIThinking`, and the reply's first reasoning step takes
+   * over its seconds. The conversation also knows it is while `pendingMessage` waits, and while
+   * the latest reply is being written but shows nothing.
+   */
+  isThinking?: boolean;
+  /**
+   * Loads the messages before the first one, which the conversation asks for as the person
+   * scrolls to its start. It shows a spinner meanwhile, and what is on screen stays in place as
+   * they arrive. Pass `undefined` once there are none left.
+   */
+  loadOlderMessages?: () => Promise<void> | void;
+  /**
+   * A message the person sent that is not in `messages` yet. Keep passing it until its reply
+   * starts: the conversation stops showing it once its copy arrives.
+   */
+  pendingMessage?: AIPendingMessage | null;
+  /** The actions under each finished reply. Defaults to `AIReplyActions`; `null` shows none. */
+  ReplyActions?: ComponentType<AIConversationReplyActionsProps> | null;
+  /**
+   * What the default `AIReplyActions` offers for a reply besides copy and share, such as its
+   * rating and how to rate or regenerate it. Every message renders again when it changes, so keep
+   * it the same between renders (`useCallback`) unless what it returns changed.
+   */
+  replyActions?: (
+    message: AIMessage,
+    context: { isLatestReply: boolean },
+  ) => Omit<AIReplyActionsProps, 'text'> | undefined;
+  /** The view of the person's messages. Defaults to `AIUserMessage`. */
+  UserMessage?: ComponentType<AIConversationUserMessageProps>;
+};
+
+const DefaultUserMessage = ({ attachments, text }: AIConversationUserMessageProps) => (
+  <AIUserMessage attachments={attachments} text={text} />
+);
+
+const DefaultAssistantMessage = ({
+  approver,
+  attachments,
+  isGenerating,
+  message,
+  parts,
+  reasoningText,
+  text,
+}: AIConversationAssistantMessageProps) => (
+  <AIAssistantMessage
+    approver={approver}
+    attachments={attachments}
+    id={message.id}
+    isGenerating={isGenerating}
+    parts={parts}
+    reasoningText={reasoningText}
+    text={text}
+  />
+);
+
+// What every row reads, rather than each row's item carrying it: a row renders again only when
+// its item is a new object, or when this changes.
+type ConversationContextValue = {
+  AssistantMessage: ComponentType<AIConversationAssistantMessageProps>;
+  clock: AIThinkingClock;
+  ReplyActions: ComponentType<AIConversationReplyActionsProps> | null;
+  UserMessage: ComponentType<AIConversationUserMessageProps>;
+  approver?: AIToolApprover;
+  replyActions?: AIConversationProps['replyActions'];
+};
+
+const ConversationContext = createContext<ConversationContextValue | undefined>(undefined);
+
+// StreamChatAI's layout, from the design tokens: turns 8 apart, each with 16 above it, its
+// messages 16 apart, and 16 around the whole.
+const ROW_GAPS: Record<RowPosition, number> = {
+  message: primitives.spacingMd,
+  turn: primitives.spacingXs + primitives.spacingMd,
+};
+
+type EntryViewProps = {
+  AssistantMessage: ComponentType<AIConversationAssistantMessageProps>;
+  entry: AIConversationEntry;
+  ReplyActions: ComponentType<AIConversationReplyActionsProps> | null;
+  UserMessage: ComponentType<AIConversationUserMessageProps>;
+  approver?: AIToolApprover;
+};
+
+const EntryView = ({
+  approver,
+  AssistantMessage,
+  entry,
+  ReplyActions,
+  UserMessage,
+}: EntryViewProps) => {
+  const { message, pending } = entry;
+  if (!message) {
+    return pending ? (
+      <UserMessage attachments={pending.attachments ?? []} text={pending.text} />
+    ) : null;
+  }
+  if (message.role === 'user') {
+    return (
+      <UserMessage
+        attachments={
+          entry.sentAttachments.length ? entry.sentAttachments : (message.attachments ?? [])
+        }
+        message={message}
+        text={message.text}
+      />
+    );
+  }
+  return (
+    <View style={styles.reply}>
+      <AssistantMessage
+        approver={approver}
+        attachments={message.attachments ?? []}
+        isGenerating={!!message.isGenerating}
+        message={message}
+        parts={message.parts ?? []}
+        reasoningText={message.reasoningText}
+        text={message.text}
+      />
+      {ReplyActions && !message.isGenerating && message.text !== '' ? (
+        // Keyed: a row reused for another reply starts its actions afresh, such as not "Copied".
+        <ReplyActions
+          isLatestReply={entry.isLatestReply}
+          key={message.id}
+          message={message}
+          text={message.text}
+        />
+      ) : null}
+    </View>
+  );
+};
+
+const Row = memo(({ row }: { row: ConversationRow }) => {
+  const context = useContext(ConversationContext);
+  const {
+    theme: { conversation },
+  } = useTheme();
+  const clock = context?.clock;
+  const turn = useMemo(
+    () => (clock ? { clock, firstStepId: row.firstStepId, key: row.turnKey } : undefined),
+    [clock, row.firstStepId, row.turnKey],
+  );
+  if (!context) return null;
+  return (
+    <View
+      style={[
+        styles.row,
+        { paddingTop: row.kind === 'entry' ? ROW_GAPS[row.position] : primitives.spacingMd },
+        conversation?.row,
+      ]}
+    >
+      <AIThinkingTurnContext.Provider value={turn}>
+        {row.kind === 'entry' ? (
+          <EntryView
+            approver={context.approver}
+            AssistantMessage={context.AssistantMessage}
+            entry={row.entry}
+            ReplyActions={context.ReplyActions}
+            UserMessage={context.UserMessage}
+          />
+        ) : (
+          <>
+            {row.isThinking ? <AIThinking /> : null}
+            {row.footer}
+          </>
+        )}
+      </AIThinkingTurnContext.Provider>
+    </View>
+  );
+});
+Row.displayName = 'AIConversationRow';
+
+const renderRow = ({ item }: LegendListRenderItemProps<ConversationRow>) => <Row row={item} />;
+
+const keyOf = (row: ConversationRow) => row.key;
+
+// A row reused for another takes one of its kind, which renders the same views.
+const typeOf = (row: ConversationRow) =>
+  row.kind === 'tail' ? 'tail' : row.entry.isFromUser ? 'user' : 'assistant';
+
+// `AIReplyActions` with what the conversation's `replyActions` offers for the reply.
+const DefaultConversationReplyActions = ({
+  isLatestReply,
+  message,
+  text,
+}: AIConversationReplyActionsProps) => {
+  const offered = useContext(ConversationContext)?.replyActions;
+  return <AIReplyActions {...offered?.(message, { isLatestReply })} text={text} />;
+};
+
+/**
+ * The conversation with an AI agent, laid out by turn: each of the person's questions starts a
+ * turn, with the agent's reply under it. The counterpart of `AIConversationView`.
+ *
+ * - A new question pins to the top of what is visible, and the reply writes out below it,
+ *   without moving what is on screen. The latest turn is at least as tall as the conversation.
+ * - It opens at the end; older messages load as the person scrolls to the start, and what is on
+ *   screen stays in place as they arrive.
+ * - A button scrolls back to the latest message when the end is out of view.
+ * - A message the person sent shows at once (`pendingMessage`) and the agent thinks under it
+ *   (`AIThinking`) until its reply shows something.
+ */
+export const AIConversation = ({
+  approver,
+  AssistantMessage = DefaultAssistantMessage,
+  bottomInset = 0,
+  emptyContent,
+  footer,
+  isThinking = false,
+  loadOlderMessages,
+  messages,
+  pendingMessage,
+  ReplyActions: ReplyActionsProp,
+  replyActions,
+  UserMessage = DefaultUserMessage,
+}: AIConversationProps) => {
+  const { anchorKey, clock, rows } = useConversationRows({
+    footer,
+    isThinking,
+    messages,
+    pendingMessage,
+  });
+
+  const ReplyActions =
+    ReplyActionsProp === undefined ? DefaultConversationReplyActions : ReplyActionsProp;
+
+  const contextValue = useMemo<ConversationContextValue>(
+    () => ({ approver, AssistantMessage, clock, ReplyActions, replyActions, UserMessage }),
+    [approver, AssistantMessage, clock, ReplyActions, replyActions, UserMessage],
+  );
+
+  return (
+    <AIToolApproverProvider approver={approver}>
+      <ConversationContext.Provider value={contextValue}>
+        <AIChatList
+          anchorKey={anchorKey}
+          bottomInset={bottomInset}
+          data={rows}
+          emptyContent={emptyContent}
+          getItemType={typeOf}
+          keyExtractor={keyOf}
+          loadOlderMessages={loadOlderMessages}
+          renderItem={renderRow}
+          testID='ai-conversation'
+        />
+      </ConversationContext.Provider>
+    </AIToolApproverProvider>
+  );
+};
+
+const styles = StyleSheet.create({
+  reply: { gap: 8 },
+  row: { paddingHorizontal: primitives.spacingMd },
+});

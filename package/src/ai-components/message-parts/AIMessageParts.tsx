@@ -8,6 +8,7 @@ import type { AIMessagePartData } from './types';
 
 import { useAITranslation, useTheme } from '../contexts';
 import { useAIIcons } from '../icons';
+import { primitives } from '../internal/tokens';
 import { AIReasoning } from '../reasoning/AIReasoning';
 import type { AIToolApprover } from '../tool-calls/AIToolApprover';
 
@@ -93,5 +94,5 @@ const styles = StyleSheet.create({
   parts: { gap: 8, width: '100%' },
   tool: { gap: 8 },
   unsupported: { alignItems: 'center', flexDirection: 'row', gap: 8 },
-  unsupportedText: { flexShrink: 1, fontSize: 14 },
+  unsupportedText: { flexShrink: 1, fontSize: primitives.typographyFontSizeSm },
 });

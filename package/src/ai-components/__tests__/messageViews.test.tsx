@@ -150,6 +150,34 @@ describe('AIAssistantMessage', () => {
     expect(screen.getByText('chart.csv')).toBeTruthy();
   });
 
+  it('starts its steps afresh for another message, whose step ids may repeat', () => {
+    // Every reply's first reasoning step can be `r1`: only the message tells them apart.
+    const parts = parseMessageParts([
+      { id: 'r1', status: 'completed', summary: 'Looked it up', type: 'ai_reasoning' },
+    ]);
+    const view = (id: string) => (
+      <StreamTheme>
+        <AIAssistantMessage
+          id={id}
+          parts={parts}
+          reasoningText={() => 'The whole thought'}
+          text='The answer'
+        />
+      </StreamTheme>
+    );
+    const { rerender } = render(view('a'));
+    fireEvent.press(screen.getByRole('button', { expanded: false }));
+    expect(screen.getByText('The whole thought')).toBeTruthy();
+
+    rerender(view('a'));
+    expect(screen.getByRole('button', { expanded: true })).toBeTruthy();
+
+    // As when a list reuses the view for another reply.
+    rerender(view('b'));
+    expect(screen.getByRole('button', { expanded: false })).toBeTruthy();
+    expect(screen.queryByText('The whole thought')).toBeNull();
+  });
+
   it('is busy while the agent writes it', () => {
     renderWithTheme(<AIAssistantMessage isGenerating text='Partial' />);
     expect(screen.getByTestId('ai-assistant-message').props.accessibilityState).toEqual({

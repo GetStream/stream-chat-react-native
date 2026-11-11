@@ -1,0 +1,486 @@
+import React, { type ReactElement, useEffect } from 'react';
+import { Text } from 'react-native';
+
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import type { Attachment } from 'stream-chat';
+
+import { AIPendingMessageTracker, turnsOf } from '../conversation/entries';
+import {
+  AIConversation,
+  type AIConversationAssistantMessageProps,
+  type AIConversationUserMessageProps,
+  type AIMessage,
+  type AIToolApprover,
+  createFromStreamMessage,
+  fromStreamMessage,
+  parseMessageParts,
+  StreamTheme,
+} from '../index';
+
+jest.mock('../services/clipboard-service', () => ({ setClipboardString: jest.fn() }));
+
+const user = (id: string, text: string): AIMessage => ({ id, role: 'user', text });
+const reply = (id: string, text: string, extra: Partial<AIMessage> = {}): AIMessage => ({
+  id,
+  role: 'assistant',
+  text,
+  ...extra,
+});
+
+const layoutOf = (height: number) => ({
+  nativeEvent: { layout: { height, width: 400, x: 0, y: 0 } },
+});
+
+// Lets the list apply what it measured, which it does on a later tick, with fake timers too.
+const settle = async (ms = 20) => {
+  if ('clock' in setTimeout) {
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(ms);
+    });
+  } else {
+    await act(() => new Promise<void>((resolve) => setTimeout(resolve, ms)));
+  }
+};
+
+// The list renders its rows once it knows its size, and lets them be touched once each one is
+// measured, which a real layout does.
+const layOut = async () => {
+  const list = screen.queryByTestId('ai-conversation-list');
+  if (!list) return;
+  act(() => {
+    fireEvent(list, 'layout', layoutOf(800));
+  });
+  // Measuring rows can bring more into the range it renders: until every row is measured.
+  for (let pass = 0; pass < 10; pass++) {
+    const measured = screen.UNSAFE_root.findAll(
+      (node) => typeof node.type === 'string' && !!node.props.onLayout && node !== list,
+    );
+    act(() => {
+      for (const node of measured) node.props.onLayout(layoutOf(60));
+    });
+    await settle();
+    const waiting = screen.UNSAFE_root.findAll(
+      (node) => typeof node.type === 'string' && node.props.pointerEvents === 'none',
+    );
+    if (waiting.length === 0) return;
+  }
+};
+
+// A scroll event at the start of the list.
+const atStart = {
+  nativeEvent: {
+    contentInset: { bottom: 0, left: 0, right: 0, top: 0 },
+    contentOffset: { x: 0, y: 0 },
+    contentSize: { height: 800, width: 400 },
+    layoutMeasurement: { height: 800, width: 400 },
+  },
+};
+
+// The person scrolling to the start of the list.
+const scrollToStart = () => {
+  act(() => {
+    fireEvent.scroll(screen.getByTestId('ai-conversation-list'), atStart);
+  });
+};
+
+const renderConversation = async (ui: ReactElement) => {
+  const result = render(<StreamTheme>{ui}</StreamTheme>);
+  await layOut();
+  return {
+    ...result,
+    rerender: async (next: ReactElement) => {
+      result.rerender(<StreamTheme>{next}</StreamTheme>);
+      await layOut();
+    },
+  };
+};
+
+afterEach(() => {
+  jest.useRealTimers();
+});
+
+describe('AIConversation', () => {
+  it('shows the empty content while there are no messages', async () => {
+    await renderConversation(
+      <AIConversation emptyContent={<Text>Ask me anything</Text>} messages={[]} />,
+    );
+    expect(screen.getByText('Ask me anything')).toBeTruthy();
+    expect(screen.queryByTestId('ai-conversation-list')).toBeNull();
+  });
+
+  it('groups the messages into turns, each starting with a question', async () => {
+    const messages = [
+      reply('a0', 'Hi, I am Juno.'),
+      user('u1', 'What time is it?'),
+      reply('a1', 'It is noon.'),
+      user('u2', 'And the weather?'),
+      reply('a2', 'Sunny.'),
+    ];
+    const turns = turnsOf(new AIPendingMessageTracker().entries(messages));
+    expect(turns.map((turn) => turn.id)).toEqual(['a0', 'u1', 'u2']);
+    expect(turns[2].entries.map((entry) => entry.id)).toEqual(['u2', 'a2']);
+    expect(turns[2].entries[1].isLatestReply).toBe(true);
+
+    await renderConversation(<AIConversation footer={<Text>footer</Text>} messages={messages} />);
+    for (const { text } of messages) expect(screen.getByText(text)).toBeTruthy();
+    expect(screen.getAllByText('footer')).toHaveLength(1);
+  });
+
+  it('shows a pending message with the agent thinking, until its reply starts', async () => {
+    const mounts: string[] = [];
+    const UserMessage = ({ text }: AIConversationUserMessageProps) => {
+      useEffect(() => {
+        mounts.push(text);
+      }, [text]);
+      return <Text>{text}</Text>;
+    };
+    const history = [user('u1', 'Hello'), reply('a1', 'Hi!')];
+    const pending = { id: 'local-1', text: 'Plan my day' };
+    const { rerender } = await renderConversation(
+      <AIConversation messages={history} pendingMessage={pending} UserMessage={UserMessage} />,
+    );
+    expect(screen.getByText('Plan my day')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Thinking...' })).toBeTruthy();
+
+    // Stream's copy arrives with another id: it takes over the pending row, under its key.
+    await rerender(
+      <AIConversation
+        messages={[...history, user('stream-u2', 'Plan my day')]}
+        pendingMessage={pending}
+        UserMessage={UserMessage}
+      />,
+    );
+    expect(screen.getAllByText('Plan my day')).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Thinking...' })).toBeTruthy();
+
+    // A reply being written that shows nothing yet: still thinking.
+    await rerender(
+      <AIConversation
+        messages={[
+          ...history,
+          user('stream-u2', 'Plan my day'),
+          reply('a2', '', { isGenerating: true }),
+        ]}
+        pendingMessage={pending}
+        UserMessage={UserMessage}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Thinking...' })).toBeTruthy();
+
+    await rerender(
+      <AIConversation
+        messages={[
+          ...history,
+          user('stream-u2', 'Plan my day'),
+          reply('a2', 'Here is your plan.', { isGenerating: true }),
+        ]}
+        UserMessage={UserMessage}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: 'Thinking...' })).toBeNull();
+    expect(screen.getByText('Here is your plan.')).toBeTruthy();
+    // The row the pending message showed in was never mounted again.
+    expect(mounts.filter((text) => text === 'Plan my day')).toHaveLength(1);
+  });
+
+  it('finds the copy of a pending message by its id', async () => {
+    const pending = { id: 'm-2', text: 'Draft' };
+    const { rerender } = await renderConversation(
+      <AIConversation messages={[user('m-1', 'Draft')]} pendingMessage={pending} />,
+    );
+    // the earlier message saying the same is not its copy
+    expect(screen.getAllByText('Draft')).toHaveLength(2);
+    await rerender(
+      <AIConversation
+        messages={[user('m-1', 'Draft'), user('m-2', 'Draft')]}
+        pendingMessage={pending}
+      />,
+    );
+    expect(screen.getAllByText('Draft')).toHaveLength(2);
+  });
+
+  it('shows the agent thinking when told to', async () => {
+    await renderConversation(<AIConversation isThinking messages={[user('u1', 'Hi')]} />);
+    expect(screen.getByRole('button', { name: 'Thinking...' })).toBeTruthy();
+  });
+
+  it('shows reply actions under finished replies only', async () => {
+    const onRate = jest.fn();
+    const replyActions = (message: AIMessage, { isLatestReply }: { isLatestReply: boolean }) => ({
+      onRate: (rating: 'positive' | 'negative' | null) => onRate(message.id, rating, isLatestReply),
+      rating: null,
+    });
+    const { rerender } = await renderConversation(
+      <AIConversation
+        messages={[
+          user('u1', 'One'),
+          reply('a1', 'Done.'),
+          user('u2', 'Two'),
+          reply('a2', 'Writing', { isGenerating: true }),
+        ]}
+        replyActions={replyActions}
+      />,
+    );
+    expect(screen.getAllByTestId('ai-reply-actions')).toHaveLength(1);
+    fireEvent.press(screen.getByRole('button', { name: 'Good response' }));
+    expect(onRate).toHaveBeenCalledWith('a1', 'positive', false);
+
+    await rerender(
+      <AIConversation messages={[user('u1', 'One'), reply('a1', 'Done.')]} ReplyActions={null} />,
+    );
+    expect(screen.queryByTestId('ai-reply-actions')).toBeNull();
+  });
+
+  it('shows a new rating when the messages stay the same', async () => {
+    const messages = [user('u1', 'One'), reply('a1', 'Done.')];
+    const rated = (rating: 'positive' | null) => (
+      <AIConversation messages={messages} replyActions={() => ({ onRate: jest.fn(), rating })} />
+    );
+    const { rerender } = await renderConversation(rated(null));
+    expect(screen.getByRole('button', { name: 'Good response', selected: false })).toBeTruthy();
+    await rerender(rated('positive'));
+    expect(screen.getByRole('button', { name: 'Good response', selected: true })).toBeTruthy();
+  });
+
+  it('renders messages through the slots', async () => {
+    const UserMessage = ({ text }: AIConversationUserMessageProps) => <Text>user:{text}</Text>;
+    const AssistantMessage = ({ message, text }: AIConversationAssistantMessageProps) => (
+      <Text>
+        agent:{message.id}:{text}
+      </Text>
+    );
+    await renderConversation(
+      <AIConversation
+        AssistantMessage={AssistantMessage}
+        messages={[user('u1', 'Hi'), reply('a1', 'Hello')]}
+        ReplyActions={() => <Text>actions</Text>}
+        UserMessage={UserMessage}
+      />,
+    );
+    expect(screen.getByText('user:Hi')).toBeTruthy();
+    expect(screen.getByText('agent:a1:Hello')).toBeTruthy();
+    expect(screen.getByText('actions')).toBeTruthy();
+  });
+
+  it('renders again only the messages that changed', async () => {
+    const renders: string[] = [];
+    const AssistantMessage = ({ message, text }: AIConversationAssistantMessageProps) => {
+      renders.push(message.id);
+      return <Text>{text}</Text>;
+    };
+    const first = reply('a1', 'Done.');
+    const conversation = (latest: AIMessage) => (
+      <AIConversation
+        AssistantMessage={AssistantMessage}
+        messages={[user('u1', 'One'), first, user('u2', 'Two'), latest]}
+        ReplyActions={null}
+      />
+    );
+    const { rerender } = await renderConversation(
+      conversation(reply('a2', 'Wri', { isGenerating: true })),
+    );
+    renders.length = 0;
+    await rerender(conversation(reply('a2', 'Writing', { isGenerating: true })));
+    expect(screen.getByText('Writing')).toBeTruthy();
+    expect(renders).toEqual(['a2']);
+  });
+
+  it('shows reasoning, tool calls and approvals of a reply', async () => {
+    let fail = true;
+    const decide = jest.fn(() =>
+      fail ? Promise.reject(new Error('offline')) : new Promise<void>(() => undefined),
+    );
+    const approver: AIToolApprover = { clientId: 'device-1', decide, userId: 'alex' };
+    const parts = parseMessageParts([
+      { duration_ms: 3000, id: 'r1', preview: 'Thinking about the weather.', status: 'completed', type: 'ai_reasoning', v: 1 },
+      {
+        approval: { title: 'Share your location?' },
+        display_title: 'Checking your location',
+        executor: 'client',
+        id: 'call_1',
+        name: 'get_location',
+        status: 'awaiting_approval',
+        target_client_id: 'device-1',
+        target_user_id: 'alex',
+        type: 'ai_tool_call',
+        v: 1,
+      },
+    ]); // prettier-ignore
+    await renderConversation(
+      <AIConversation
+        approver={approver}
+        messages={[user('u1', 'Weather?'), reply('a1', '', { isGenerating: true, parts })]}
+      />,
+    );
+    expect(screen.getByRole('button', { name: /Thought for 3s/ })).toBeTruthy();
+    expect(screen.getByText('Checking your location')).toBeTruthy();
+    expect(screen.getByText('Waiting for approval')).toBeTruthy();
+
+    fireEvent.press(screen.getByRole('button', { name: 'Allow' }));
+    expect(decide).toHaveBeenCalledWith(parts[1].toolCall, true);
+    await act(() => Promise.resolve());
+    expect(screen.getByText("Your answer couldn't be sent. Try again.")).toBeTruthy();
+
+    fail = false;
+    fireEvent.press(screen.getByRole('button', { name: "Don't Allow" }));
+    expect(decide).toHaveBeenLastCalledWith(parts[1].toolCall, false);
+    expect(screen.queryByText("Your answer couldn't be sent. Try again.")).toBeNull();
+    expect(screen.getByRole('button', { name: "Don't Allow" })).toBeDisabled();
+  });
+
+  describe('loading older messages', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    it('loads once the spinner has been in view a moment', async () => {
+      const loadOlderMessages = jest.fn(() => Promise.resolve());
+      const { rerender } = await renderConversation(
+        <AIConversation
+          loadOlderMessages={loadOlderMessages}
+          messages={[user('u1', 'Hi'), reply('a1', 'Hello')]}
+        />,
+      );
+      expect(screen.getByRole('progressbar', { name: 'Loading older messages' })).toBeTruthy();
+      loadOlderMessages.mockClear();
+      scrollToStart();
+      act(() => jest.advanceTimersByTime(299));
+      expect(loadOlderMessages).not.toHaveBeenCalled();
+      act(() => jest.advanceTimersByTime(1));
+      expect(loadOlderMessages).toHaveBeenCalledTimes(1);
+
+      await rerender(
+        <AIConversation
+          messages={[user('u0', 'Earlier'), user('u1', 'Hi'), reply('a1', 'Hello')]}
+        />,
+      );
+      expect(screen.queryByRole('progressbar')).toBeNull();
+    });
+
+    it('asks again after a load that failed, while the spinner stays in view', async () => {
+      const loadOlderMessages = jest
+        .fn<Promise<void>, []>()
+        .mockRejectedValueOnce(new Error('offline'))
+        .mockResolvedValue(undefined);
+      await renderConversation(
+        <AIConversation
+          loadOlderMessages={loadOlderMessages}
+          messages={[user('u1', 'Hi'), reply('a1', 'Hello')]}
+        />,
+      );
+      scrollToStart();
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(300);
+      });
+      expect(loadOlderMessages).toHaveBeenCalledTimes(1);
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(2999);
+      });
+      expect(loadOlderMessages).toHaveBeenCalledTimes(1);
+      await act(async () => {
+        await jest.advanceTimersByTimeAsync(1);
+      });
+      expect(loadOlderMessages).toHaveBeenCalledTimes(2);
+    });
+
+    it('waits for the list to come to rest', async () => {
+      const loadOlderMessages = jest.fn(() => Promise.resolve());
+      await renderConversation(
+        <AIConversation
+          loadOlderMessages={loadOlderMessages}
+          messages={[user('u1', 'Hi'), reply('a1', 'Hello')]}
+        />,
+      );
+      const list = screen.getByTestId('ai-conversation-list');
+      loadOlderMessages.mockClear();
+
+      // A finger holds the list at its start.
+      act(() => {
+        fireEvent(list, 'scrollBeginDrag', atStart);
+      });
+      scrollToStart();
+      act(() => jest.advanceTimersByTime(1000));
+      expect(loadOlderMessages).not.toHaveBeenCalled();
+
+      // It lets go, and the list glides on.
+      act(() => {
+        fireEvent(list, 'scrollEndDrag', atStart);
+        fireEvent(list, 'momentumScrollBegin', atStart);
+      });
+      act(() => jest.advanceTimersByTime(1000));
+      expect(loadOlderMessages).not.toHaveBeenCalled();
+
+      act(() => {
+        fireEvent(list, 'momentumScrollEnd', atStart);
+      });
+      act(() => jest.advanceTimersByTime(300));
+      expect(loadOlderMessages).toHaveBeenCalledTimes(1);
+    });
+  });
+});
+
+describe('fromStreamMessage', () => {
+  it('adapts a reply with its steps and attachments', () => {
+    const reasoningText = jest.fn(() => 'The whole thought');
+    // stream-chat keeps the fields its types don't list under `custom`, such as a step's.
+    const step = {
+      custom: { id: 'r1', status: 'streaming', v: 1 },
+      type: 'ai_reasoning',
+    } as unknown as Attachment;
+    const message = fromStreamMessage(
+      {
+        attachments: [
+          step,
+          { custom: {}, image_url: 'https://cdn.example.com/a.jpg', title: 'a.jpg', type: 'image' },
+          {
+            asset_url: 'https://cdn.example.com/plan.pdf',
+            custom: { file_size: 2400, mime_type: 'application/pdf' },
+            title: 'plan.pdf',
+            type: 'file',
+          },
+          { custom: {}, type: 'connector_authorization' },
+        ],
+        custom: { ai_generated: true, generating: true },
+        id: 'm1',
+        text: 'Working on it',
+      },
+      { reasoningText },
+    );
+    expect(message).toMatchObject({
+      attachments: [
+        { kind: 'image', name: 'a.jpg', url: 'https://cdn.example.com/a.jpg' },
+        {
+          kind: 'file',
+          mimeType: 'application/pdf',
+          name: 'plan.pdf',
+          size: 2400,
+          url: 'https://cdn.example.com/plan.pdf',
+        },
+      ],
+      id: 'm1',
+      isGenerating: true,
+      role: 'assistant',
+      text: 'Working on it',
+    });
+    expect(message.parts?.map((part) => part.id)).toEqual(['r1']);
+    expect(message.reasoningText?.('r1')).toBe('The whole thought');
+    expect(reasoningText).toHaveBeenCalledWith('m1', 'r1');
+  });
+
+  it('adapts the person’s message', () => {
+    expect(fromStreamMessage({ attachments: [], id: 'u1', text: 'Hi' })).toMatchObject({
+      isGenerating: false,
+      parts: [],
+      role: 'user',
+    });
+  });
+
+  it('gives back the same message for the same Stream message, through its cache', () => {
+    const adapt = createFromStreamMessage({ isAssistant: (message) => message.id === 'a1' });
+    const stream = { attachments: [], id: 'a1', text: 'Hi' };
+    const adapted = adapt(stream);
+    expect(adapted.role).toBe('assistant');
+    expect(adapt(stream)).toBe(adapted);
+    expect(adapt({ ...stream, text: 'Hi there' })).not.toBe(adapted);
+  });
+});

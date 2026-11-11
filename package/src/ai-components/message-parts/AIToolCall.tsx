@@ -8,6 +8,7 @@ import { useAITranslation, useTheme } from '../contexts';
 import { useAIIcons } from '../icons';
 import { formatCallDuration } from '../internal/format';
 import { Shimmer } from '../internal/Shimmer';
+import { primitives } from '../internal/tokens';
 
 export type AIToolCallProps = {
   part: AIToolCallPart;
@@ -95,12 +96,22 @@ export const AIToolCall = ({ part }: AIToolCallProps) => {
 
 const styles = StyleSheet.create({
   container: { alignItems: 'flex-start', flexDirection: 'row', gap: 8 },
-  detail: { fontSize: 13, lineHeight: 18 },
-  duration: { fontSize: 13, fontVariant: ['tabular-nums'], lineHeight: 20 },
+  detail: {
+    fontSize: primitives.typographyFontSizeXs,
+    lineHeight: primitives.typographyLineHeightTight,
+  },
+  duration: {
+    fontSize: primitives.typographyFontSizeXs,
+    fontVariant: ['tabular-nums'],
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
   icon: { marginTop: 2 },
   // The platform spinner, sized to the 16 the icons are drawn at.
   spinner: { height: 16, transform: [{ scale: 0.8 }], width: 16 },
   text: { flex: 1, gap: 2, minWidth: 0 },
-  title: { fontSize: 15, lineHeight: 20 },
+  title: {
+    fontSize: primitives.typographyFontSizeSm,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
   titleShimmer: { alignSelf: 'flex-start' },
 });
