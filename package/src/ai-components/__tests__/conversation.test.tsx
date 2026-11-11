@@ -178,6 +178,26 @@ describe('AIConversation', () => {
     expect(entries.filter((entry) => entry.pending)).toHaveLength(0);
   });
 
+  it('takes the copy of a message on its way from a window of the same length', () => {
+    const tracker = new AIPendingMessageTracker();
+    tracker.entries([user('u1', 'Hello'), reply('a1', 'Hi!')]);
+    const pending = { id: 'local-1', text: 'Plan my day' };
+    // A reconnect reloads the latest page: as many messages, the newest one the copy.
+    const entries = tracker.entries(
+      [reply('a1', 'Hi!'), user('stream-u2', 'Plan my day')],
+      pending,
+    );
+    expect(entries.map((entry) => entry.id)).toEqual(['a1', 'local-1']);
+  });
+
+  it('takes no older question for the copy of a message on its way when it mounts with one', () => {
+    const history = [user('u1', 'Hello'), reply('a1', 'Hi!'), user('u2', 'Plan my day')];
+    const pending = { id: 'local-3', text: 'Plan my week' };
+    const entries = new AIPendingMessageTracker().entries(history, pending);
+    expect(entries.map((entry) => entry.id)).toEqual(['u1', 'a1', 'u2', 'local-3']);
+    expect(entries[3].pending).toBe(pending);
+  });
+
   it('shows a pending message with the agent thinking, until its reply starts', async () => {
     const mounts: string[] = [];
     const UserMessage = ({ text }: AIConversationUserMessageProps) => {
