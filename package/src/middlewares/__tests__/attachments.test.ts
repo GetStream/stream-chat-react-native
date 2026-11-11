@@ -81,6 +81,29 @@ describe('setupVideoAttachmentPreviewMiddleware', () => {
     expect(state.attachment.localMetadata.previewUri).toBeUndefined();
   });
 
+  it('sends the picked file duration along as custom.duration', () => {
+    const { next } = runPrepare(
+      localVideoAttachment({
+        custom: { mime_type: 'video/mp4' },
+        localMetadata: {
+          file: { duration: 125000, name: 'clip.mp4', uri: 'file://local/clip.mp4' },
+          id: 'clip',
+          uploadState: 'uploading',
+        },
+      }),
+    );
+
+    const state = next.mock.calls[0][0] as { attachment: LocalAttachment };
+    expect(state.attachment.custom).toEqual({ duration: 125000, mime_type: 'video/mp4' });
+  });
+
+  it('leaves custom untouched when the picked file has no duration', () => {
+    const { next } = runPrepare(localVideoAttachment({ custom: { mime_type: 'video/mp4' } }));
+
+    const state = next.mock.calls[0][0] as { attachment: LocalAttachment };
+    expect(state.attachment.custom).toEqual({ mime_type: 'video/mp4' });
+  });
+
   it('forwards anything that is not a local video', () => {
     const image = runPrepare(
       localVideoAttachment({ image_url: 'file://local/photo.jpg', type: 'image' }),
