@@ -208,6 +208,20 @@ describe('AIReplyActions', () => {
     expect(screen.getByRole('button', { name: 'Copy' })).toBeTruthy();
   });
 
+  it('offers no Copy or Share for a reply without text', () => {
+    const onRegenerate = jest.fn();
+    const { rerender } = renderWithTheme(<AIReplyActions onRegenerate={onRegenerate} text='' />);
+    expect(screen.queryByRole('button', { name: 'Copy' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Share' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Regenerate' })).toBeTruthy();
+    rerender(
+      <StreamTheme>
+        <AIReplyActions text='' />
+      </StreamTheme>,
+    );
+    expect(screen.queryByTestId('ai-reply-actions')).toBeNull();
+  });
+
   it('shares the text through the system share sheet', () => {
     const share = jest
       .spyOn(Share, 'share')

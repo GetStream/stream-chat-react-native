@@ -191,16 +191,18 @@ describe('AIConversation with generated UI', () => {
   it('has the reply’s actions under a finished UI-only reply, not while its UI is written', async () => {
     const ui = makeHost();
     const question = user('u1', 'Plan');
+    const ReplyActions = () => <Text>Rate this plan</Text>;
     const { rerender } = await renderConversation(
       <AIConversation
         messages={[
           question,
           reply('a1', '', { content: 'Ohrid', format: 'a2ui', status: 'streaming' }),
         ]}
+        ReplyActions={ReplyActions}
         ui={ui}
       />,
     );
-    expect(screen.queryByRole('button', { name: /copy/i })).toBeNull();
+    expect(screen.queryByText('Rate this plan')).toBeNull();
 
     await rerender(
       <AIConversation
@@ -208,10 +210,26 @@ describe('AIConversation with generated UI', () => {
           question,
           reply('a1', '', { content: 'Ohrid', format: 'a2ui', status: 'complete' }),
         ]}
+        ReplyActions={ReplyActions}
         ui={ui}
       />,
     );
-    expect(screen.getByRole('button', { name: /copy/i })).toBeTruthy();
+    expect(screen.getByText('Rate this plan')).toBeTruthy();
+  });
+
+  it('offers no Copy or Share under a reply that answers only in UI', async () => {
+    await renderConversation(
+      <AIConversation
+        messages={[
+          user('u1', 'Plan'),
+          reply('a1', '', { content: 'Ohrid', format: 'a2ui', status: 'complete' }),
+        ]}
+        ui={makeHost()}
+      />,
+    );
+    expect(screen.getByTestId('card')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /copy/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /share/i })).toBeNull();
   });
 
   it('keeps the UI views of rows it reuses for other replies', async () => {

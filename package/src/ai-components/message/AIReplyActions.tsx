@@ -71,15 +71,18 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
     setIsCopied(false);
   }
 
+  // A reply that answers only in UI or attachments has no text to copy or share.
+  const hasText = text.trim() !== '';
   const setString = setClipboardString;
-  const copy = setString
-    ? () => {
-        setString(text);
-        setIsCopied(true);
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => setIsCopied(false), COPIED_MS);
-      }
-    : undefined;
+  const copy =
+    setString && hasText
+      ? () => {
+          setString(text);
+          setIsCopied(true);
+          clearTimeout(timer.current);
+          timer.current = setTimeout(() => setIsCopied(false), COPIED_MS);
+        }
+      : undefined;
 
   // The person closing the share sheet resolves too; there's nothing to do either way.
   const share = () => {
@@ -88,6 +91,8 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
 
   const positive = rating === 'positive';
   const negative = rating === 'negative';
+
+  if (!hasText && !onRegenerate && !onRate) return null;
 
   return (
     <View
@@ -103,7 +108,7 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
           onPress={copy}
         />
       ) : null}
-      <Action Icon={icons.Share} label={t('Share')} onPress={share} />
+      {hasText ? <Action Icon={icons.Share} label={t('Share')} onPress={share} /> : null}
       {onRegenerate ? (
         <Action Icon={icons.Regenerate} label={t('Regenerate')} onPress={onRegenerate} />
       ) : null}
