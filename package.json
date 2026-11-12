@@ -8,9 +8,7 @@
     "package/expo-package",
     "examples/SampleApp",
     "examples/E2ETestApp",
-    "examples/ExpoMessaging",
-    "examples/ExpoChatGPTSample",
-    "examples/ExpoCrewAssistant"
+    "examples/ExpoMessaging"
   ],
   "resolutions": {
     "@types/react": "^19.3.0"
@@ -73,7 +71,7 @@
     "lint-fix": "prettier --write . && eslint . --fix --max-warnings 0",
     "prettier": "prettier --list-different .",
     "prettier-fix": "prettier --write .",
-    "typecheck": "yarn workspaces foreach -A --parallel --include 'stream-chat-react-native-core' --include 'stream-chat-react-native' --include 'stream-chat-expo' --include 'sampleapp' --include 'e2etestapp' --include 'ExpoMessaging' --include 'expochatgptsample' --include 'expocrewassistant' run typecheck",
+    "typecheck": "yarn workspaces foreach -A --parallel --include 'stream-chat-react-native-core' --include 'stream-chat-react-native' --include 'stream-chat-expo' --include 'sampleapp' --include 'e2etestapp' --include 'ExpoMessaging' run typecheck",
     "build": "yarn workspace stream-chat-react-native-core build",
     "test:coverage": "yarn workspace stream-chat-react-native-core test:coverage",
     "test:unit": "yarn workspace stream-chat-react-native-core test:unit",

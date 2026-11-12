@@ -6001,7 +6001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:^2.13.0, @shopify/react-native-skia@npm:^2.14.0":
+"@shopify/react-native-skia@npm:^2.13.0":
   version: 2.14.0
   resolution: "@shopify/react-native-skia@npm:2.14.0"
   dependencies:
@@ -6227,21 +6227,6 @@ __metadata:
     use-sync-external-store:
       optional: true
   checksum: 10c0/27179805cb9a042416c741e1759c3324eefae0b27612c50f5fa0e0e13675d71bbe0a324978fcb5fdceaa4df5a99d11c6746eae319761216861b338e8cb7f1928
-  languageName: node
-  linkType: hard
-
-"@stream-io/stream-agents@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "@stream-io/stream-agents@npm:0.4.2"
-  peerDependencies:
-    "@stream-io/video-client": ^1.0.0
-    stream-chat: ^9.0.0 || ^10.0.2
-  peerDependenciesMeta:
-    "@stream-io/video-client":
-      optional: true
-    stream-chat:
-      optional: true
-  checksum: 10c0/58d398425d794c661190afc269de3704c9f7bdf0d95736a3004067049626719e986312d08da865ee30b8efff5909ba26179b73e509422b80bb98074655e549bf
   languageName: node
   linkType: hard
 
@@ -10928,15 +10913,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-speech@npm:~58.0.3":
-  version: 58.0.3
-  resolution: "expo-speech@npm:58.0.3"
-  peerDependencies:
-    expo: "*"
-  checksum: 10c0/552c3a34a96210cd0405ee278f8065500203ae87881e5b43500a9251ca2d58b6956e14e37e922872b6480669eff7a0a1ad8ff5aca500eea912cd7ae6d71bcf4d
-  languageName: node
-  linkType: hard
-
 "expo-splash-screen@npm:~58.0.8":
   version: 58.0.8
   resolution: "expo-splash-screen@npm:58.0.8"
@@ -11026,85 +11002,6 @@ __metadata:
   checksum: 10c0/fefdc15bc988449a9fe0569c953a10d0b3a9d2c5cd5eba1eb7a463212a86ec3d215efd948140566bf15129a8eeae58ea37bac57bc577a2d089f0312f8986799a
   languageName: node
   linkType: hard
-
-"expochatgptsample@workspace:examples/ExpoChatGPTSample":
-  version: 0.0.0-use.local
-  resolution: "expochatgptsample@workspace:examples/ExpoChatGPTSample"
-  dependencies:
-    "@babel/plugin-transform-export-namespace-from": "npm:^7.27.1"
-    "@react-native-community/netinfo": "npm:12.0.1"
-    "@rnx-kit/metro-config": "npm:^2.1.2"
-    "@shopify/react-native-skia": "npm:^2.14.0"
-    "@stream-io/state-store": "npm:^1.2.0"
-    "@stream-io/stream-agents": "npm:^0.4.2"
-    "@stream-io/typescript-config": "workspace:^"
-    "@types/react": "npm:~19.3.0"
-    expo: "npm:^58.0.8"
-    expo-clipboard: "npm:~58.0.3"
-    expo-constants: "npm:~58.0.11"
-    expo-image-manipulator: "npm:~58.0.14"
-    expo-image-picker: "npm:~58.0.10"
-    expo-linking: "npm:~58.0.12"
-    expo-router: "npm:~58.0.18"
-    expo-speech: "npm:~58.0.3"
-    react: "npm:19.3.0"
-    react-native: "npm:0.88.0"
-    react-native-gesture-handler: "npm:~3.4.0"
-    react-native-keyboard-controller: "npm:1.22.9"
-    react-native-reanimated: "npm:4.7.1"
-    react-native-safe-area-context: "npm:~5.10.1"
-    react-native-screens: "npm:~4.29.0"
-    react-native-svg: "npm:15.15.5"
-    react-native-teleport: "npm:^1.2.2"
-    react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.1"
-    stream-chat-expo: "workspace:^"
-    stream-chat-react-native-core: "workspace:^"
-    typescript: "npm:6.0.3"
-    use-sync-external-store: "npm:^1.7.0"
-    victory-native: "npm:^42.0.1"
-  languageName: unknown
-  linkType: soft
-
-"expocrewassistant@workspace:examples/ExpoCrewAssistant":
-  version: 0.0.0-use.local
-  resolution: "expocrewassistant@workspace:examples/ExpoCrewAssistant"
-  dependencies:
-    "@babel/plugin-transform-export-namespace-from": "npm:^7.27.1"
-    "@react-native-community/netinfo": "npm:12.0.1"
-    "@rnx-kit/metro-config": "npm:^2.1.2"
-    "@shopify/react-native-skia": "npm:^2.14.0"
-    "@stream-io/state-store": "npm:^1.2.0"
-    "@stream-io/stream-agents": "npm:^0.4.2"
-    "@stream-io/typescript-config": "workspace:^"
-    "@types/react": "npm:~19.3.0"
-    expo: "npm:^58.0.8"
-    expo-audio: "patch:expo-audio@npm%3A58.0.9#~/.yarn/patches/expo-audio-npm-58.0.9-5c313f7a3f.patch"
-    expo-clipboard: "npm:~58.0.3"
-    expo-constants: "npm:~58.0.11"
-    expo-image-manipulator: "npm:~58.0.14"
-    expo-image-picker: "npm:~58.0.10"
-    expo-linking: "npm:~58.0.12"
-    expo-router: "npm:~58.0.18"
-    expo-speech: "npm:~58.0.3"
-    react: "npm:19.3.0"
-    react-native: "npm:0.88.0"
-    react-native-gesture-handler: "npm:~3.4.0"
-    react-native-keyboard-controller: "npm:1.22.9"
-    react-native-reanimated: "npm:4.7.1"
-    react-native-safe-area-context: "npm:~5.10.1"
-    react-native-screens: "npm:~4.29.0"
-    react-native-svg: "npm:15.15.5"
-    react-native-teleport: "npm:^1.2.2"
-    react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.1"
-    stream-chat-expo: "workspace:^"
-    stream-chat-react-native-core: "workspace:^"
-    typescript: "npm:6.0.3"
-    use-sync-external-store: "npm:^1.7.0"
-    victory-native: "npm:^42.0.1"
-  languageName: unknown
-  linkType: soft
 
 "exponential-backoff@npm:^3.1.1":
   version: 3.1.1
@@ -17897,19 +17794,6 @@ __metadata:
     react-native: "*"
     react-native-reanimated: ">=3.0.0"
   checksum: 10c0/7fe7e8935e59daaaf506ea7543f41fc97fb9862832512c410e9729516a55c1b1327cd2c712f4b81d5868cb7dd483ea8b1ea91cf4cceb22c4bfada6fb747c59ae
-  languageName: node
-  linkType: hard
-
-"react-native-keyboard-controller@npm:1.22.9":
-  version: 1.22.9
-  resolution: "react-native-keyboard-controller@npm:1.22.9"
-  dependencies:
-    react-native-is-edge-to-edge: "npm:^1.2.1"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-    react-native-reanimated: ">=3.0.0"
-  checksum: 10c0/f3bde65bb59404eca3662c374d565bb08c5f1e7f34c6e650e705a77aa9d866f9c89e9dda1a8bc398cd0248ce6fb731b7a7fcf2325b2a0fe03c25cbf547a28053
   languageName: node
   linkType: hard
 
