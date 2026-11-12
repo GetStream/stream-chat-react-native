@@ -1,5 +1,15 @@
 # Change Log
 
+## [10.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v10.0.2...v10.1.0) (2026-11-12)
+
+### Bug Fixes
+
+* **ai-components:** use simple-markdown 0.7.3 to stop npm nesting React 18 under core ([#3988](https://github.com/GetStream/stream-chat-react-native/issues/3988)) ([8924a36](https://github.com/GetStream/stream-chat-react-native/commit/8924a36afdb002965456bb64a1ced6e0a1d8ea46))
+
+### Features
+
+* **ai-components:** bring the AI agent work to V10 ([#3979](https://github.com/GetStream/stream-chat-react-native/issues/3979)) ([bd5d70b](https://github.com/GetStream/stream-chat-react-native/commit/bd5d70bbda3062146e5f318b60ce5462b53065ec)), closes [#3920](https://github.com/GetStream/stream-chat-react-native/issues/3920) [#3921](https://github.com/GetStream/stream-chat-react-native/issues/3921) [#3924](https://github.com/GetStream/stream-chat-react-native/issues/3924) [#3926](https://github.com/GetStream/stream-chat-react-native/issues/3926) [#3928](https://github.com/GetStream/stream-chat-react-native/issues/3928) [#3929](https://github.com/GetStream/stream-chat-react-native/issues/3929) [#3931](https://github.com/GetStream/stream-chat-react-native/issues/3931) [#3933](https://github.com/GetStream/stream-chat-react-native/issues/3933) [#3934](https://github.com/GetStream/stream-chat-react-native/issues/3934) [#3936](https://github.com/GetStream/stream-chat-react-native/issues/3936) [#3944](https://github.com/GetStream/stream-chat-react-native/issues/3944) [#3958](https://github.com/GetStream/stream-chat-react-native/issues/3958) [#3957](https://github.com/GetStream/stream-chat-react-native/issues/3957) [#3960](https://github.com/GetStream/stream-chat-react-native/issues/3960) [#3963](https://github.com/GetStream/stream-chat-react-native/issues/3963) [#3974](https://github.com/GetStream/stream-chat-react-native/issues/3974) [#3975](https://github.com/GetStream/stream-chat-react-native/issues/3975) [#3976](https://github.com/GetStream/stream-chat-react-native/issues/3976) [#3978](https://github.com/GetStream/stream-chat-react-native/issues/3978)
+
 ## [10.0.2](https://github.com/GetStream/stream-chat-react-native/compare/v10.0.1...v10.0.2) (2026-11-12)
 
 ### Bug Fixes
