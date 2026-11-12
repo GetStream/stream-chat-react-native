@@ -90,7 +90,7 @@
     "react-syntax-highlighter": "^16.1.0",
     "stream-chat": "^10.0.1",
     "use-sync-external-store": "^1.7.0",
-    "zod": "^4.1.12"
+    "zod": "^4.6.6"
   },
   "peerDependencies": {
     "@emoji-mart/data": ">=1.1.0",
