@@ -564,7 +564,7 @@ describe('MessageList', () => {
     );
   };
 
-  it('should render the InlineUnreadIndicator after the last read message when own messages sent elsewhere follow it', async () => {
+  it('should render the InlineUnreadIndicator above the first unread message when own messages sent elsewhere follow the last read one', async () => {
     const { getAllByLabelText, getByTestId } = await renderWithUnreadAfterOwn([
       'own',
       'other',
@@ -574,7 +574,7 @@ describe('MessageList', () => {
     await waitFor(() => {
       expect(getAllByLabelText('Inline unread indicator')).toHaveLength(1);
       expect(
-        within(getByTestId('message-list-item-5')).queryByLabelText('Inline unread indicator'),
+        within(getByTestId('message-list-item-6')).queryByLabelText('Inline unread indicator'),
       ).toBeTruthy();
     });
   });
@@ -589,8 +589,61 @@ describe('MessageList', () => {
     await waitFor(() => {
       expect(getAllByLabelText('Inline unread indicator')).toHaveLength(1);
       expect(
-        within(getByTestId('message-list-item-5')).queryByLabelText('Inline unread indicator'),
+        within(getByTestId('message-list-item-6')).queryByLabelText('Inline unread indicator'),
       ).toBeTruthy();
+    });
+  });
+
+  it('should render the InlineUnreadIndicator below the date separator of the first unread message', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser();
+    // Messages 0-5 (read) on one day, 6-9 (unread) on the next, so the first unread row carries a
+    // date separator.
+    const dayOne = new Date('2020-01-01T00:00:00.000Z').getTime();
+    const dayTwo = new Date('2020-01-02T00:00:00.000Z').getTime();
+    const messages = Array.from({ length: 10 }, (_, i) =>
+      generateMessage({
+        id: `${i}`,
+        text: `message-${i}`,
+        timestamp: new Date((i < 6 ? dayOne : dayTwo) + i * 1000),
+        user: user2,
+      }),
+    );
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: user1 }), generateMember({ user: user2 })],
+      messages,
+      read: [
+        {
+          user: user1,
+          last_read: msToNs(dayOne + 5000),
+          last_read_message_id: '5',
+          unread_messages: 4,
+        },
+      ] as unknown as NonNullable<Parameters<typeof generateChannelResponse>[0]>['read'],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: user1.id } as UserResponse);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    const { getAllByLabelText, getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(getAllByLabelText('Inline unread indicator')).toHaveLength(1);
+      expect(
+        within(getByTestId('message-list-item-6'))
+          .queryAllByTestId(/^(date-separator|inline-unread-indicator|message-wrapper)$/)
+          .map((node) => node.props.testID),
+      ).toEqual(['date-separator', 'inline-unread-indicator', 'message-wrapper']);
     });
   });
 

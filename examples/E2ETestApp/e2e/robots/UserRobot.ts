@@ -57,9 +57,10 @@ const tapInContextMenu = async (selector: Detox.NativeMatcher) => {
 };
 
 /**
- * Long-presses a message until its menu opens. iOS runs without Detox's idle sync, so a long press
- * that lands while the list is still settling after a scroll is cancelled by the movement, and the
- * menu never opens. `target` is re-resolved on each attempt, since the frames may have moved.
+ * Long-presses a message until its menu opens. A long press that lands while the list is still
+ * settling after a scroll is cancelled by the movement, and the menu never opens: on iOS, which runs
+ * without Detox's idle sync, and now and then on Android too. `target` is re-resolved on each
+ * attempt, since the frames may have moved.
  */
 const longPressUntilMenuOpens = async (
   target: () => Promise<{ index: number; selector: Detox.NativeMatcher }>,
@@ -68,11 +69,7 @@ const longPressUntilMenuOpens = async (
   for (let attempt = 1; ; attempt++) {
     const { index, selector } = await target();
     await waitToAppearAndLongPress(selector, { index });
-    if (
-      device.getPlatform() !== 'ios' ||
-      attempt >= attempts ||
-      (await waitForExistence(ContextMenu.backdrop, { timeout: 3000 }))
-    ) {
+    if (attempt >= attempts || (await waitForExistence(ContextMenu.backdrop, { timeout: 3000 }))) {
       return;
     }
   }
@@ -353,6 +350,12 @@ export class UserRobot extends Robot {
         .perform(async () => {
           await (await waitToAppearAndClick(CreatePoll.fields, { index: 0 })).replaceText(question);
           for (const [index, option] of options.entries()) {
+            if (device.getPlatform() === 'android') {
+              // The keyboard, often already open from the composer, covers the option field that
+              // appears below the last filled one, so it never counts as visible. A tap outside
+              // the fields hides it (see below).
+              await element(CreatePoll.questionLabel).tap();
+            }
             await (
               await waitToAppearAndClick(CreatePoll.fields, { index: index + 1 })
             ).replaceText(option);

@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!-- gwpAsanMode: Android 14 samples allocations with GWP-ASan in every app, and on the x86_64
+         emulator its stack recorder (android_unsafe_frame_pointer_chase) segfaults on a Hermes
+         free right after launch, which Detox reports as "The app has unexpectedly disconnected". -->
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -15,6 +18,7 @@
       android:theme="@style/AppTheme"
       android:usesCleartextTraffic="${usesCleartextTraffic}"
       android:networkSecurityConfig="@xml/network_security_config"
+      android:gwpAsanMode="never"
       android:supportsRtl="true">
       <activity
         android:name=".MainActivity"

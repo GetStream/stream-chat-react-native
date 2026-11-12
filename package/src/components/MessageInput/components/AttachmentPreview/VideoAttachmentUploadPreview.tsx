@@ -29,7 +29,13 @@ export const VideoAttachmentUploadPreview = ({
   // `localMetadata.file` is `File | FileReference`; only the RN `FileReference` carries a
   // `duration` (and a required `uri` to discriminate on), so read it through a guard.
   const localFile = attachment.localMetadata.file;
-  const duration = localFile && 'uri' in localFile ? localFile.duration : undefined;
+  const { custom } = attachment;
+  const duration =
+    localFile && 'uri' in localFile
+      ? localFile.duration
+      : custom && 'duration' in custom && typeof custom.duration === 'number'
+        ? custom.duration
+        : undefined;
 
   return previewUri ? (
     <>

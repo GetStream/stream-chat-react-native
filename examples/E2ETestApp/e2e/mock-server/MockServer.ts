@@ -1,4 +1,21 @@
+import { createServer } from 'net';
+
 declare const process: { env: Record<string, string | undefined> };
+
+/** A port free on the host's IPv4 and IPv6 loopback: `::` listens on both (dual stack). */
+const freePort = () =>
+  new Promise<number>((resolve, reject) => {
+    const server = createServer();
+    server.once('error', reject);
+    server.listen({ host: '::', port: 0 }, () => {
+      const address = server.address();
+      server.close(() =>
+        address && typeof address === 'object'
+          ? resolve(address.port)
+          : reject(new Error('No free port')),
+      );
+    });
+  });
 
 /**
  * Client for `stream-chat-test-mock-server`. The driver (`driver.rb`) spawns one mock server per
@@ -27,13 +44,32 @@ export class MockServer {
     return this.url.replace('localhost', host);
   }
 
-  /** Never retried: every call to the driver's `/start` spawns a new server on a new port. */
-  async start(testName: string): Promise<void> {
-    const response = await this.execute(
-      `${MockServer.driverUrl}/start/${encodeURIComponent(testName)}?api_version=v2&timestamps=ns`,
-    );
-    this.port = (await response.text()).trim();
-    await this.waitUntilReady();
+  /**
+   * Every call to the driver's `/start` spawns a new server, so a start is only retried after the
+   * server failed to answer, and always on a new port.
+   *
+   * The port is picked here rather than by the driver: on CI the driver's probe twice handed out a
+   * port the server then never answered on (41215, an hour apart, nightly 43138494994). This probe
+   * also checks IPv6, which `localhost` may resolve to.
+   */
+  async start(testName: string, attempts = 3): Promise<void> {
+    for (let attempt = 1; ; attempt++) {
+      const port = await freePort();
+      const response = await this.execute(
+        `${MockServer.driverUrl}/start/${encodeURIComponent(testName)}` +
+          `?api_version=v2&timestamps=ns&port=${port}`,
+      );
+      this.port = (await response.text()).trim();
+      try {
+        await this.waitUntilReady();
+        return;
+      } catch (error) {
+        await this.stop();
+        if (attempt >= attempts) {
+          throw error;
+        }
+      }
+    }
   }
 
   async stop(): Promise<void> {
