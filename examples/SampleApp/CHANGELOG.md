@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v5.0.1...sampleapp@v5.1.0) (2026-11-12)
+
+### Features
+
+* **ai-components:** bring the AI agent work to V10 ([#3979](https://github.com/GetStream/stream-chat-react-native/issues/3979)) ([bd5d70b](https://github.com/GetStream/stream-chat-react-native/commit/bd5d70bbda3062146e5f318b60ce5462b53065ec)), closes [#3920](https://github.com/GetStream/stream-chat-react-native/issues/3920) [#3921](https://github.com/GetStream/stream-chat-react-native/issues/3921) [#3924](https://github.com/GetStream/stream-chat-react-native/issues/3924) [#3926](https://github.com/GetStream/stream-chat-react-native/issues/3926) [#3928](https://github.com/GetStream/stream-chat-react-native/issues/3928) [#3929](https://github.com/GetStream/stream-chat-react-native/issues/3929) [#3931](https://github.com/GetStream/stream-chat-react-native/issues/3931) [#3933](https://github.com/GetStream/stream-chat-react-native/issues/3933) [#3934](https://github.com/GetStream/stream-chat-react-native/issues/3934) [#3936](https://github.com/GetStream/stream-chat-react-native/issues/3936) [#3944](https://github.com/GetStream/stream-chat-react-native/issues/3944) [#3958](https://github.com/GetStream/stream-chat-react-native/issues/3958) [#3957](https://github.com/GetStream/stream-chat-react-native/issues/3957) [#3960](https://github.com/GetStream/stream-chat-react-native/issues/3960) [#3963](https://github.com/GetStream/stream-chat-react-native/issues/3963) [#3974](https://github.com/GetStream/stream-chat-react-native/issues/3974) [#3975](https://github.com/GetStream/stream-chat-react-native/issues/3975) [#3976](https://github.com/GetStream/stream-chat-react-native/issues/3976) [#3978](https://github.com/GetStream/stream-chat-react-native/issues/3978)
+
 ## [5.0.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v5.0.0...sampleapp@v5.0.1) (2026-11-10)
 
 ### Bug Fixes
