@@ -88,7 +88,6 @@ test names and expectations. Where the SDK disagrees with the native expectation
 grouped channel lists, channel/message/member search, reminders, push notifications (app-level in RN), Android's
 `BackendTests` (real backend), hard delete from the message menu, iOS read counts and the iOS scroll performance tests.
 Tests that cut the network run only on Android (`itOnAndroid`): the iOS simulator shares the Mac's connection.
-Tests that take the Android CI emulator down run only on iOS (`itOnIOS`), with a comment linking the ticket.
 
 ## Impact analysis
 

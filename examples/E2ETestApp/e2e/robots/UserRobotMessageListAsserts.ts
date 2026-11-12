@@ -199,10 +199,16 @@ UserRobot.prototype.assertMessageDeliveryStatus = function (status, count) {
       case MessageDeliveryStatus.FAILED:
         return assertFailedIcon(true, count);
       case MessageDeliveryStatus.NIL:
-        await assertVisibility(Message.deliveryStatusIsRead, false);
-        await assertVisibility(Message.deliveryStatusIsDelivered, false);
-        await assertVisibility(Message.deliveryStatusIsPending, false);
-        await assertVisibility(Message.deliveryStatusIsSent, false);
+        // Only the list's message cells: a thread's parent message sits above the replies outside
+        // any cell (ThreadFooterComponent) and shows its own status.
+        for (const status of [
+          Message.deliveryStatusIsRead,
+          Message.deliveryStatusIsDelivered,
+          Message.deliveryStatusIsPending,
+          Message.deliveryStatusIsSent,
+        ]) {
+          await assertVisibility(status.withAncestor(MessageList.messages), false);
+        }
         return;
       default:
         throw new Error(`Unsupported delivery status: ${status}`);
