@@ -1,8 +1,10 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { Markdown, mergeThemes, StreamTheme } from '../index';
+import { primitives } from '../internal/tokens';
 
 const mockSetString = jest.fn();
 jest.mock(
@@ -99,6 +101,17 @@ describe('ai-components Markdown', () => {
 
     renderMarkdown('```json\n{ "hello": "world" }\n```');
     expect(screen.getByText('json')).toBeTruthy();
+  });
+
+  it('sizes text from the design tokens, leaving headings and inline code their own size', () => {
+    renderMarkdown('## Heading\n\nbody with `code`');
+
+    const fontSizeOf = (text: string) =>
+      StyleSheet.flatten(screen.getByText(text).props.style).fontSize;
+    expect(fontSizeOf('body with ')).toBe(primitives.typographyFontSizeMd);
+    // The size comes from the heading or inline code around the text.
+    expect(fontSizeOf('Heading')).toBeUndefined();
+    expect(fontSizeOf('code')).toBeUndefined();
   });
 
   it('applies theme overrides', () => {

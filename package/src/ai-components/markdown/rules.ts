@@ -8,8 +8,8 @@ import type {
   Parser,
   ReactOutputRule,
   SingleASTNode,
-} from '@khanacademy/simple-markdown';
-import SimpleMarkdown from '@khanacademy/simple-markdown';
+} from 'simple-markdown';
+import SimpleMarkdown from 'simple-markdown';
 
 import {
   renderAutolink,

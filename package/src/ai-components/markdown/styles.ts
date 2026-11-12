@@ -1,6 +1,17 @@
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 
+import { primitives } from '../internal/tokens';
 import type { Theme } from '../theme';
+
+// The answer's text, from the design tokens: 17 on iOS and 16 on Android.
+const BODY_SIZE = primitives.typographyFontSizeMd;
+
+// A heading, scaled from the body, in semibold.
+const heading = (scale: number) => ({
+  fontSize: Math.round(BODY_SIZE * scale),
+  fontWeight: '600' as const,
+  lineHeight: Math.round(BODY_SIZE * scale * 1.25),
+});
 
 export const getLocalStyles = ({ theme }: { theme: Theme }) => {
   const colors = theme.colors;
@@ -36,11 +47,12 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
     },
     codeBlock: {
       backgroundColor: colors.code_block,
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
       fontWeight: '500',
       color: colors.black,
       paddingLeft: 8,
-      lineHeight: 14,
+      fontSize: primitives.typographyFontSizeXs,
+      lineHeight: primitives.typographyLineHeightTight,
     },
     codeBlockWrapper: {
       backgroundColor: colors.code_block,
@@ -56,10 +68,10 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
       color: colors.black,
     },
     codeBlockLineNumberCell: {
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
       color: colors.grey,
-      paddingVertical: 1, // (codeBlock.lineHeight - fontSize) / 2
-      fontSize: 12,
+      fontSize: primitives.typographyFontSizeXs,
+      lineHeight: primitives.typographyLineHeightTight,
     },
     codeBlockHeaderContainer: {
       flexDirection: 'row',
@@ -67,9 +79,9 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
       marginBottom: 8,
     },
     codeBlockHeaderTitle: {
-      fontSize: 12,
+      fontSize: primitives.typographyFontSizeXs,
       color: colors.grey,
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     },
     del: {
       textDecorationLine: 'line-through',
@@ -78,27 +90,13 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
     em: {
       fontStyle: 'italic',
     },
-    heading: {
-      fontWeight: '200',
-    },
-    heading1: {
-      fontSize: 32,
-    },
-    heading2: {
-      fontSize: 24,
-    },
-    heading3: {
-      fontSize: 18,
-    },
-    heading4: {
-      fontSize: 16,
-    },
-    heading5: {
-      fontSize: 13,
-    },
-    heading6: {
-      fontSize: 11,
-    },
+    heading: heading(1),
+    heading1: heading(2),
+    heading2: heading(1.5),
+    heading3: heading(1.17),
+    heading4: heading(1),
+    heading5: heading(0.83),
+    heading6: heading(0.67),
     hr: {
       backgroundColor: colors.grey_gainsboro,
       height: 1,
@@ -119,9 +117,9 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
       borderRadius: 3,
       borderWidth: 1,
       color: colors.accent_red,
-      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+      fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
       fontWeight: '500',
-      fontSize: 13,
+      fontSize: primitives.typographyFontSizeSm,
       padding: 3,
       paddingHorizontal: 5,
     },
@@ -134,10 +132,12 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
     },
     listItemBullet: {
       fontSize: 20,
-      lineHeight: 20,
+      lineHeight: primitives.typographyLineHeightRelaxed,
     },
     listItemNumber: {
+      fontSize: BODY_SIZE,
       fontWeight: '500',
+      lineHeight: primitives.typographyLineHeightRelaxed,
     },
     listItemText: {
       flex: 0,
@@ -218,6 +218,8 @@ export const getLocalStyles = ({ theme }: { theme: Theme }) => {
     },
     text: {
       color: colors.black,
+      fontSize: BODY_SIZE,
+      lineHeight: primitives.typographyLineHeightRelaxed,
     },
     textRow: {
       flexDirection: 'row',

@@ -83,7 +83,7 @@ class PerfTextViewManager : SimpleViewManager<PerfTextView>() {
   ): Long {
     val view = PerfTextView(context)
 
-    // Apply props that influence size (text, fontSize, lineHeight)
+    // Apply props that influence size (text, fontSize, fontFamily, lineHeight)
     props?.let { p ->
       if (p.hasKey("fontSize") && !p.isNull("fontSize")) {
         val fs = p.getDouble("fontSize")
@@ -92,9 +92,13 @@ class PerfTextViewManager : SimpleViewManager<PerfTextView>() {
         }
       }
 
-      if (p.hasKey("fontFamily") && !p.isNull("fontFamily")) {
-        view.setFontFamilyCompat(p.getString("fontFamily"))
-      }
+      view.setFontFamilyCompat(
+        if (p.hasKey("fontFamily") && !p.isNull("fontFamily")) {
+          p.getString("fontFamily")?.takeIf { it.isNotEmpty() }
+        } else {
+          null
+        },
+      )
 
       if (p.hasKey("lineHeight") && !p.isNull("lineHeight")) {
         val lh = p.getDouble("lineHeight")
@@ -137,7 +141,7 @@ class PerfTextViewManager : SimpleViewManager<PerfTextView>() {
     val measuredWidthDp = ceil(PixelUtil.toDIPFromPixel(view.measuredWidth.toFloat()))
     val measuredHeightDp = ceil(PixelUtil.toDIPFromPixel(view.measuredHeight.toFloat()))
 
-    return YogaMeasureOutput.make(measuredWidthDp * 1.6f, measuredHeightDp * 1.0f)
+    return YogaMeasureOutput.make(measuredWidthDp, measuredHeightDp)
   }
 }
 

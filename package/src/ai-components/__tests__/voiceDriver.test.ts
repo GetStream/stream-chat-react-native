@@ -21,9 +21,6 @@ import {
 } from '../voice-visualization/driver';
 import type { Hsv, VoiceAgentState } from '../voice-visualization/types';
 
-// Ported from stream-chat-android's VoiceVisualizationDriverTest and VoiceVisualizationBounceTest,
-// so the platforms keep moving alike.
-
 const blue: Hsv = { hue: 218 / 360, saturation: 1, value: 1 };
 const red: Hsv = { hue: 0, saturation: 1, value: 1 };
 const FRAME = 1 / 60;

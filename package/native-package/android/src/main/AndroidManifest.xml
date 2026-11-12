@@ -1,4 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.streamchatreactnative">
 
+  <!-- Lets the agent components' sign-ins see which browser has Custom Tabs and Auth Tabs on
+       Android 11 and later. No permission. -->
+  <queries>
+    <intent>
+      <action android:name="android.support.customtabs.action.CustomTabsService" />
+    </intent>
+  </queries>
+
 </manifest>

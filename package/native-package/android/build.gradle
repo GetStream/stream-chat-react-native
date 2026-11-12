@@ -49,6 +49,26 @@ def hasNativeSources = { File dir ->
   dir.exists() && !fileTree(dir).matching { include "**/*.kt"; include "**/*.java" }.files.isEmpty()
 }
 
+// The agent components' sign-ins open in the browser's Auth Tab, which needs androidx.browser
+// 1.9.0, and that needs the app to build with compileSdk 36 and AGP 8.9.1. An app below either
+// gets 1.8.0 and opens them in a Custom Tab instead, so the SDK asks neither of anyone.
+def versionAtLeast = { String version, List<Integer> wanted ->
+  def parts = version.tokenize('.-').collect { it.replaceAll(/\D.*$/, '') }.findAll { it }.collect { it.toInteger() }
+  for (int i = 0; i < wanted.size(); i++) {
+    def part = i < parts.size() ? parts[i] : 0
+    if (part != wanted[i]) return part > wanted[i]
+  }
+  return true
+}
+def agentSignInWithAuthTab =
+  getExtOrIntegerDefault("compileSdkVersion").toString().toInteger() >= 36 &&
+    versionAtLeast(com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION, [8, 9, 1])
+def agentSignInVariant = agentSignInWithAuthTab ? "authtab" : "customtabs"
+def sharedAgentSignInDir = new File(canonicalProjectDir, "../../shared-native/android-${agentSignInVariant}")
+def agentSignInDir = hasNativeSources(sharedAgentSignInDir)
+  ? sharedAgentSignInDir
+  : new File(projectDir, "src/agent-sign-in/${agentSignInVariant}")
+
 android {
   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
   def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
@@ -92,6 +112,7 @@ android {
         java.srcDirs += [
           "src/newarch",
           "src/main/java/com/streamchatreactnative/shared",
+          agentSignInDir,
           // This is needed to build Kotlin project with NewArch enabled
           "${project.buildDir}/generated/source/codegen/java"
         ]
@@ -158,6 +179,9 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "androidx.exifinterface:exifinterface:1.3.2"
+  // The agent components' tool-call sign-ins: an Auth Tab where the app's build allows 1.9.0,
+  // else a Custom Tab (see `agentSignInWithAuthTab`).
+  implementation "androidx.browser:browser:${agentSignInWithAuthTab ? '1.9.0' : '1.8.0'}"
 }
 
 if (isNewArchitectureEnabled()) {

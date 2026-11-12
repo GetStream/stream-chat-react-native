@@ -6,7 +6,9 @@ import { Area, Bar, CartesianChart, Line, Pie, PolarChart, Scatter } from 'victo
 
 import { PieLegend } from './PieLegend';
 
+import { primitives } from '../../internal/tokens';
 import type { ChartSpec } from '../types';
+import { formatTimeLabel } from '../utils/format-time-label';
 
 const font = matchFont({
   fontFamily: Platform.select({
@@ -14,7 +16,7 @@ const font = matchFont({
     android: 'sans-serif',
     default: 'serif',
   }),
-  fontSize: 12,
+  fontSize: primitives.typographyFontSizeXxs,
   fontWeight: 'normal',
   fontStyle: 'normal',
 });
@@ -82,8 +84,13 @@ export const VictoryChart = (props: VictoryChartProps) => {
         ),
       );
 
+  // A time axis is labelled short (`29 Oct`, `13:45`), so it is never turned on its side.
   const hasLongLabels =
-    (visibleBars > 4 ? maxTickCharCount > 1 : maxTickCharCount > 5) && !spec.isNumericDim;
+    (visibleBars > 4 ? maxTickCharCount > 1 : maxTickCharCount > 5) &&
+    !spec.isNumericDim &&
+    !spec.isTemporalDim;
+  const times = spec.isTemporalDim ? table.map((entry) => new Date(entry.x).getTime()) : [];
+  const timeSpan = times.length > 1 ? Math.max(...times) - Math.min(...times) : 0;
 
   const lowestValue = minY < 0 ? minY - 20 : 0;
 
@@ -102,6 +109,7 @@ export const VictoryChart = (props: VictoryChartProps) => {
         xAxis={{
           font,
           formatXLabel: (label: number | string) => {
+            if (spec.isTemporalDim) return formatTimeLabel(label, timeSpan);
             const parsedLabel = (typeof label === 'number' ? String(label) : label) ?? '';
             if (hasLongLabels && parsedLabel.length > 4) {
               return `${parsedLabel.slice(0, 3)}...`;

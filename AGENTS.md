@@ -20,7 +20,7 @@ Targets iOS and Android.
 - **Languages:** TypeScript + React Native
 - **Runtime:** Node 24 (`.nvmrc` is `v24`; root `engines.node` is `>=22.13.0`; CI runs `24.x`)
 - **Package manager:** Yarn 4.15.0 (Berry). The binary lives at `.yarn/releases/yarn-4.15.0.cjs` and is activated via `yarnPath` in `.yarnrc.yml`. Any globally installed `yarn` (even the Homebrew classic 1.x) acts only as a launcher — no Corepack required.
-- **Workspaces:** single root `yarn.lock`; workspaces are `configs/typescript-config`, `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/E2ETestApp`, `examples/ExpoMessaging`, `examples/ExpoChatGPTSample`. **No Lerna.**
+- **Workspaces:** single root `yarn.lock`; workspaces are `configs/typescript-config`, `package`, `package/native-package`, `package/expo-package`, `examples/SampleApp`, `examples/E2ETestApp`, `examples/ExpoMessaging`. **No Lerna.**
 - **Testing:** Jest with the `@react-native/jest-preset` + `@testing-library/react-native`.
 - **Build:** `react-native-builder-bob` → CommonJS (`lib/commonjs`), ESM (`lib/module`), types (`lib/typescript`)
 - **Lint/format:** ESLint 9 flat config + Prettier, strict (`--max-warnings 0`)
@@ -41,7 +41,7 @@ Respect repo-specific rules. Do not suppress lint rules broadly; justify and sco
   - `native-package/` — bare RN wrapper (`stream-chat-react-native`)
   - `expo-package/` — Expo wrapper (`stream-chat-expo`)
   - `shared-native/{ios,android}` — native source shared by both wrappers; synced into them, never edited in place
-- `examples/` — `SampleApp` (full-featured), `E2ETestApp` (minimal app for the Detox e2e suite), `ExpoMessaging`, `ExpoChatGPTSample` (AI components)
+- `examples/` — `SampleApp` (full-featured), `E2ETestApp` (minimal app for the Detox e2e suite), `ExpoMessaging`. The AI components samples live in Vision-Agents (`examples/voice_agents/react_native_assistant`, `examples/voice_agents/crew_assistant/app`)
 - `configs/typescript-config/` — shared `tsconfig` presets
 - `ai-docs/` — agent-facing deep dives (see [References](#references))
 - `perf/` — on-device performance toolkit (see [Accessibility, RTL & performance](#accessibility-rtl--performance))
@@ -218,6 +218,8 @@ Native code shared by both wrappers lives in `package/shared-native/{ios,android
 
 - the main entry points must never reach `src/ai-components` or the AI-only packages (`react-syntax-highlighter`, `@khanacademy/simple-markdown`, `zod`, `victory-native`, Skia). `@stream-io/state-store` and `lodash` are shared: the main entry imports them too (the stores in `state-store/`, the Poll contexts);
 - the AI entry points may only reach `src/ai-components` plus an explicit allowlist (`src/native.ts`, the native shimmer). The wrappers' `ai-components/index.js` registers the native pieces the AI code needs itself and must never import the wrappers' `src/index.js`.
+
+`AIConversation` and its list sit behind a third entry point, `ai-components/conversation` (`package/ai-components/conversation/`, `package/{native,expo}-package/ai-components/conversation/`), because `@legendapp/list/keyboard` requires `react-native-keyboard-controller` unguarded. The isolation check keeps the `ai-components` and `a2ui` entry points from reaching `src/ai-components/conversation` or `@legendapp/list/keyboard`, and lets them load keyboard-controller only through the guarded `src/ai-components/internal/keyboard.tsx`. The conversation's state layer (`AIConversationController`, its types, `useAIConversationState`) lives in `src/ai-components/conversation-state` and stays in the plain entry.
 
 Do not add AI slots to `DEFAULT_COMPONENTS`; core `require`s the defaults, which would break isolation. Skia and `victory-native` are optional peers (native libraries must be owned by the app); the JS-only AI dependencies are regular dependencies.
 

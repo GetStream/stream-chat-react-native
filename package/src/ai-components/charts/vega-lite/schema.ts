@@ -38,7 +38,7 @@ const BaseVL = z.object({
     values: z.array(z.record(z.string(), z.unknown())),
   }),
   mark: z.union([MarkName, MarkDef, z.string()]).optional(),
-  layer: z.array(z.looseObject({ mark: MarkDef })).optional(),
+  layer: z.array(z.looseObject({ mark: z.union([MarkDef, z.string()]) })).optional(),
   marks: z.array(MarkDef).optional(),
   markName: MarkName,
 });
@@ -76,13 +76,30 @@ const deriveMarkName = (o: any): string | undefined => {
   return Array.isArray(o?.marks) && o.marks.length > 0 ? normalizeMarkName(o.marks[0]) : undefined;
 };
 
+const DRAWN_MARKS = new Set<string>(MarkName.options);
+
+// A layered chart keeps its encoding, and often its data, in its layers: it is drawn as the first
+// layer that draws data the way this renders, with the chart's data when the layer has none.
+// Other layers, such as a rule marking a threshold or text labels, are left out.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON input, validated by the zod schema below
+const withPrimaryLayer = (o: any) => {
+  if (o?.encoding || !Array.isArray(o?.layer)) return o;
+  const layer = o.layer.find(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- an untyped layer of the input
+    (each: any) => each?.encoding && DRAWN_MARKS.has(normalizeMarkName(each.mark) ?? ''),
+  );
+  return layer
+    ? { ...o, data: layer.data ?? o.data, encoding: layer.encoding, mark: layer.mark }
+    : o;
+};
+
 export const VegaLiteCore = z.discriminatedUnion('type', [VL_XY, VL_PIE]);
 
 // Injects `type` (`pie` for an `arc` mark or a `theta` encoding, else `xy`), `archetype` and
 // `markName`, then validates against the discriminated union.
 export const VegaLiteSchema = z.preprocess((raw) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped JSON input, validated by the zod schema below
-  const o: any = raw ?? {};
+  const o: any = withPrimaryLayer(raw ?? {});
   const markName = deriveMarkName(o);
   const hasTheta = !!o?.encoding?.theta;
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { ChatOptionsList } from './ChatOptions';
 import type { BottomSheetOption, ComposerViewProps } from './ComposerView';
 
 import { withCloseSheet } from './utils/withCloseSheet';
@@ -8,13 +9,18 @@ import { withCloseSheet } from './utils/withCloseSheet';
 import { useMessageComposerContext, useTheme } from '../contexts';
 import { Camera } from '../internal/icons/Camera';
 import { Picture } from '../internal/icons/Picture';
-import { sheetStoreApi } from '../store';
+import { primitives } from '../internal/tokens';
+import { sheetStoreApi, useComposerChatOption } from '../store';
 
-type BottomSheetContentProps = Pick<ComposerViewProps, 'bottomSheetOptions' | 'bottomSheetInsets'>;
+type BottomSheetContentProps = Pick<
+  ComposerViewProps,
+  'bottomSheetOptions' | 'bottomSheetInsets' | 'chatOptions'
+>;
 
 export const BottomSheetContent = ({
   bottomSheetOptions,
   bottomSheetInsets,
+  chatOptions,
 }: BottomSheetContentProps) => {
   const {
     theme: {
@@ -23,7 +29,9 @@ export const BottomSheetContent = ({
   } = useTheme();
   const styles = useStyles();
 
-  const { mediaPickerService } = useMessageComposerContext();
+  const { mediaPickerService, setChatOption } = useMessageComposerContext();
+  const { chatOption } = useComposerChatOption();
+  const selectedId = chatOption?.id ?? null;
 
   const onContentSizeChange = useCallback(
     (_: unknown, height: number) => sheetStoreApi.setHeight(height),
@@ -53,6 +61,20 @@ export const BottomSheetContent = ({
           onPress={withCloseSheet(() => mediaPickerService?.pickMedia({}))}
         />
       </View>
+
+      {chatOptions && chatOptions.length > 0 ? (
+        <>
+          <View style={[styles.divider, divider]} />
+          <ChatOptionsList
+            // Picking the option already picked removes it.
+            onSelect={withCloseSheet((option) =>
+              setChatOption(option.id === selectedId ? null : option),
+            )}
+            options={chatOptions}
+            selectedId={selectedId}
+          />
+        </>
+      ) : null}
 
       {bottomSheetOptions && bottomSheetOptions.length > 0 ? (
         <>
@@ -159,7 +181,7 @@ const useStyles = () => {
         opacity: 0.7,
       },
       quickActionLabel: {
-        fontSize: 13,
+        fontSize: primitives.typographyFontSizeXs,
         fontWeight: '500',
         color: colors.black,
         marginTop: 4,
@@ -186,13 +208,13 @@ const useStyles = () => {
         flex: 1,
       },
       listTitle: {
-        fontSize: 15,
+        fontSize: primitives.typographyFontSizeSm,
         fontWeight: '500',
         color: colors.black,
       },
       listSubtitle: {
         marginTop: 2,
-        fontSize: 13,
+        fontSize: primitives.typographyFontSizeXs,
         color: colors.grey_dark,
       },
       divider: {
