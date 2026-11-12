@@ -104,6 +104,31 @@ declare module './UserRobot' {
   }
 }
 
+/**
+ * Waits until `selector` has been hidden for `stableMs` in a row. A single check can land before an
+ * element briefly shows: on iOS 17 the scroll-to-bottom button flashes while the list catches up
+ * with a message that just arrived, so "hidden" read once was a coin toss (nightly 43138494994).
+ */
+const waitUntilStaysHidden = async (
+  selector: Detox.NativeMatcher,
+  timeout: number,
+  stableMs = 1000,
+) => {
+  const deadline = Date.now() + timeout;
+  let hiddenSince: number | undefined;
+  while (Date.now() < deadline) {
+    if (await isDisplayed(selector, 0)) {
+      hiddenSince = undefined;
+    } else {
+      hiddenSince ??= Date.now();
+      if (Date.now() - hiddenSince >= stableMs) {
+        return;
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+};
+
 export const assertVisibility = async (
   selector: Detox.NativeMatcher,
   shouldBeDisplayed: boolean,
@@ -123,6 +148,7 @@ export const assertVisibility = async (
     }
   } else {
     await waitToDisappear(selector, { index: 0, timeout });
+    await waitUntilStaysHidden(selector, timeout);
     jestExpect(await isDisplayed(selector, 0)).toBe(false);
   }
 };

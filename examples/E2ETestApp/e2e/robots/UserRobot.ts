@@ -350,6 +350,12 @@ export class UserRobot extends Robot {
         .perform(async () => {
           await (await waitToAppearAndClick(CreatePoll.fields, { index: 0 })).replaceText(question);
           for (const [index, option] of options.entries()) {
+            if (device.getPlatform() === 'android') {
+              // The keyboard, often already open from the composer, covers the option field that
+              // appears below the last filled one, so it never counts as visible. A tap outside
+              // the fields hides it (see below).
+              await element(CreatePoll.questionLabel).tap();
+            }
             await (
               await waitToAppearAndClick(CreatePoll.fields, { index: index + 1 })
             ).replaceText(option);
