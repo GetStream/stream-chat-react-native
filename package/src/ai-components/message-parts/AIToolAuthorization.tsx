@@ -1,0 +1,310 @@
+import React, { type ReactNode, useEffect } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { callStateOf, setCallState, useCallState } from './callStates';
+import { isAuthorizationExpired, isAwaitingAuthorization } from './parseMessageParts';
+import type { AIToolAuthorizationData, AIToolCallPart } from './types';
+
+import { useAITranslation, useTheme } from '../contexts';
+import { useNow } from '../internal/format';
+import { primitives } from '../internal/tokens';
+import {
+  type AIToolApprover,
+  type AIToolAuthorizer,
+  useAIToolApprover,
+} from '../tool-calls/AIToolApprover';
+
+/** Where the person's answer to a sign-in is. */
+export type AIToolAuthorizationState = {
+  /** The sign-in couldn't be opened, and the person can try again. */
+  connectFailed: boolean;
+  /** Their "not now" couldn't be sent, and the person can answer again. */
+  declineFailed: boolean;
+  /** The sign-in is open, or done and the call's step hasn't changed yet. */
+  isConnecting: boolean;
+  /** Their "not now" is on its way, or arrived and the call's step hasn't changed yet. */
+  isDeclining: boolean;
+};
+
+const idle: AIToolAuthorizationState = {
+  connectFailed: false,
+  declineFailed: false,
+  isConnecting: false,
+  isDeclining: false,
+};
+
+export type AIToolAuthorizationCardProps = {
+  authorization: AIToolAuthorizationData;
+  onConnect: () => void;
+  onDecline: () => void;
+  state?: AIToolAuthorizationState;
+};
+
+/**
+ * Asks the person to sign in at a provider a tool call needs, such as "Connect Linear", with a
+ * Connect and a Not now button. Once the sign-in is over it says how it ended (connected,
+ * declined, expired or failed), and a sign-in past its expiry can no longer be opened.
+ */
+export const AIToolAuthorizationCard = ({
+  authorization,
+  onConnect,
+  onDecline,
+  state = idle,
+}: AIToolAuthorizationCardProps) => {
+  const { t } = useAITranslation();
+  const {
+    theme: { colors, messageParts },
+  } = useTheme();
+  const card = messageParts?.authorizationCard;
+  const open = authorization.status === undefined;
+  // Re-checked every few seconds while it is open, so it turns expired on its own.
+  const now = useNow(open && authorization.expiresAt !== undefined, 5000);
+  const expired = isAuthorizationExpired(authorization, now);
+  const provider = authorization.providerName ?? authorization.provider;
+  const busy = state.isConnecting || state.isDeclining;
+
+  const outcome = (() => {
+    if (expired)
+      return t('aiComponents.toolAuthorization.signInExpired.text', 'This sign-in has expired.');
+    switch (authorization.status) {
+      case undefined:
+        return undefined;
+      case 'connected':
+        return t('aiComponents.toolAuthorization.connectedTo.text', 'Connected to {{ provider }}', {
+          provider,
+        });
+      case 'declined':
+        return t('aiComponents.toolAuthorization.notConnected.text', 'Not connected');
+      default:
+        return t(
+          'aiComponents.toolAuthorization.signInDidntComplete.text',
+          "The sign-in didn't complete.",
+        );
+    }
+  })();
+
+  const failure = (() => {
+    if (state.connectFailed)
+      return t(
+        'aiComponents.toolAuthorization.signInCouldntOpen.text',
+        "The sign-in couldn't be opened. Try again.",
+      );
+    if (state.declineFailed)
+      return t(
+        'aiComponents.toolAuthorization.answerNotSent.text',
+        "Your answer couldn't be sent. Try again.",
+      );
+    return undefined;
+  })();
+
+  return (
+    <View
+      accessibilityState={{ busy }}
+      style={[
+        styles.container,
+        { backgroundColor: colors.white, borderColor: colors.grey_gainsboro },
+        card?.container,
+      ]}
+      testID='ai-tool-authorization-card'
+    >
+      <View style={styles.text}>
+        <Text style={[styles.title, { color: colors.black }, card?.title]}>
+          {authorization.title}
+        </Text>
+        {authorization.message ? (
+          <Text style={[styles.message, { color: colors.grey }, card?.message]}>
+            {authorization.message}
+          </Text>
+        ) : null}
+      </View>
+      {outcome ? (
+        <Text style={[styles.message, { color: colors.grey }, card?.outcome]}>{outcome}</Text>
+      ) : null}
+      {open ? (
+        <View style={styles.actions}>
+          {!expired ? (
+            <Pressable
+              accessibilityRole='button'
+              accessibilityState={{ disabled: busy }}
+              disabled={busy}
+              onPress={onConnect}
+              style={({ pressed }) => [
+                styles.button,
+                { backgroundColor: colors.accent_blue, opacity: pressed ? 0.7 : 1 },
+                card?.connectButton,
+              ]}
+            >
+              <Text style={[styles.buttonText, { color: colors.white }, card?.connectButtonText]}>
+                {state.isConnecting
+                  ? t('aiComponents.toolAuthorization.connecting.label', 'Connecting...')
+                  : t('aiComponents.toolAuthorization.connect.label', 'Connect')}
+              </Text>
+            </Pressable>
+          ) : null}
+          {/* Left enabled while the sign-in is open, so one that never comes back leaves a way out. */}
+          <Pressable
+            accessibilityRole='button'
+            accessibilityState={{ disabled: state.isDeclining }}
+            disabled={state.isDeclining}
+            onPress={onDecline}
+            style={({ pressed }) => [
+              styles.button,
+              styles.declineButton,
+              { borderColor: colors.grey_gainsboro, opacity: pressed ? 0.7 : 1 },
+              card?.declineButton,
+            ]}
+          >
+            <Text style={[styles.buttonText, { color: colors.black }, card?.declineButtonText]}>
+              {t('aiComponents.toolAuthorization.notNow.label', 'Not now')}
+            </Text>
+          </Pressable>
+          {busy ? <ActivityIndicator color={colors.grey} size='small' /> : null}
+        </View>
+      ) : null}
+      {failure ? (
+        <Text
+          accessibilityRole='alert'
+          style={[styles.failure, { color: colors.accent_red }, card?.failure]}
+        >
+          {failure}
+        </Text>
+      ) : null}
+    </View>
+  );
+};
+
+// How long a sign-in that came back connected reads as connecting before Connect is offered
+// again, when the agent never moves the call on.
+const CONNECTED_SETTLE_MS = 30_000;
+
+// The latest sign-in opened for each call, so a late answer to an earlier one changes nothing.
+const attempts = new Map<string, number>();
+
+/**
+ * The sign-in this person is asked for on `call` here: one the call waits for them to finish,
+ * of a kind this device opens, and only when they can sign in on it.
+ */
+export const signInFor = (call: AIToolCallPart, approver: AIToolApprover | undefined) => {
+  if (!approver?.authorizer || !isAwaitingAuthorization(call, approver.userId)) return;
+  return call.authorization?.type === 'oauth' ? call.authorization : undefined;
+};
+
+export type AIToolAuthorizationProps = {
+  part: AIToolCallPart;
+  /** Who answers on this device, with the `authorizer` the sign-in needs. Defaults to the one of the nearest `AIToolApproverProvider`. */
+  approver?: AIToolApprover;
+  /** Renders the sign-in, instead of `AIToolAuthorizationCard`. */
+  children?: (
+    authorization: AIToolAuthorizationData,
+    state: AIToolAuthorizationState,
+    actions: { connect: () => void; decline: () => void },
+  ) => ReactNode;
+};
+
+/**
+ * Asks for the sign-in of a tool call that waits for this person, and runs it with
+ * `approver.authorizer`. Renders nothing for a call that does not wait for them, or without an
+ * authorizer.
+ */
+export const AIToolAuthorization = ({
+  approver: approverProp,
+  children,
+  part,
+}: AIToolAuthorizationProps) => {
+  const approver = useAIToolApprover(approverProp);
+  // Kept by call, not by view: a list that reuses or remounts the row keeps the sign-in going.
+  const key = `authorization:${part.id}`;
+  const state = useCallState(key, idle);
+  const authorization = signInFor(part, approver);
+  const authorizer = approver?.authorizer;
+  const isWaiting = !!authorization && !!authorizer;
+  // Once the call's step changes, there is nothing left to keep.
+  useEffect(() => {
+    if (!isWaiting) setCallState(key, idle, idle);
+  }, [isWaiting, key]);
+
+  if (!authorization || !authorizer) return null;
+
+  const update = (next: AIToolAuthorizationState) => setCallState(key, next, idle);
+
+  const sendDecline = (signIn: AIToolAuthorizer) => {
+    update({ ...idle, isDeclining: true });
+    signIn.decline(part).catch(() => update({ ...idle, declineFailed: true }));
+  };
+
+  const connect = (signIn: AIToolAuthorizer) => {
+    // Read where it stands now: a second tap in the same frame must not open it twice.
+    const now = callStateOf(key, idle);
+    if (now.isConnecting || now.isDeclining) return;
+    update({ ...idle, isConnecting: true });
+    const attempt = (attempts.get(key) ?? 0) + 1;
+    attempts.set(key, attempt);
+    signIn.connect(part).then(
+      // Your backend has the provider's answer before the sign-in comes back, and its change to
+      // the step hides this. Until then it says it is connecting, unless the provider did not
+      // connect them, or the step never changes. A sign-in the person closed can't be opened
+      // again, so it declines.
+      (connected) => {
+        if (connected === 'closed') sendDecline(signIn);
+        else if (!connected) update(idle);
+        else {
+          setTimeout(() => {
+            if (attempts.get(key) === attempt && callStateOf(key, idle).isConnecting) update(idle);
+          }, CONNECTED_SETTLE_MS);
+        }
+      },
+      () => update({ ...idle, connectFailed: true }),
+    );
+  };
+
+  const decline = (signIn: AIToolAuthorizer) => {
+    if (callStateOf(key, idle).isDeclining) return;
+    sendDecline(signIn);
+  };
+
+  const actions = {
+    connect: () => connect(authorizer),
+    decline: () => decline(authorizer),
+  };
+
+  return (
+    <>
+      {children ? (
+        children(authorization, state, actions)
+      ) : (
+        <AIToolAuthorizationCard
+          authorization={authorization}
+          onConnect={actions.connect}
+          onDecline={actions.decline}
+          state={state}
+        />
+      )}
+    </>
+  );
+};
+
+const styles = StyleSheet.create({
+  actions: { alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  button: {
+    alignItems: 'center',
+    borderRadius: 9999,
+    justifyContent: 'center',
+    minHeight: 36,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  buttonText: { fontSize: primitives.typographyFontSizeSm, fontWeight: '600' },
+  container: { borderRadius: 16, borderWidth: 1, gap: 12, padding: 12 },
+  declineButton: { borderWidth: 1 },
+  failure: { fontSize: primitives.typographyFontSizeXs },
+  message: {
+    fontSize: primitives.typographyFontSizeXs,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+  text: { gap: 4 },
+  title: {
+    fontSize: primitives.typographyFontSizeSm,
+    fontWeight: '600',
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+});

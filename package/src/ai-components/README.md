@@ -6,6 +6,7 @@
 - `ComposerView` - a prompt composer with attachments and speech input
 - `SpeechToTextButton` - records voice input and streams the recognized transcript into your UI
 - `AITypingIndicatorView` - displays the state of the LLM (thinking, checking external sources, etc.)
+- Generated UI - draws the UI an agent writes for its replies, such as A2UI, with your own components
 
 The components live in their own entry point. Apps that never import `stream-chat-react-native/ai-components` do not bundle any of it, and apps that only use the AI components do not bundle the rest of the chat SDK.
 
@@ -34,6 +35,14 @@ yarn add victory-native @shopify/react-native-skia
 ```
 
 `react-native-reanimated`, `react-native-gesture-handler` and `react-native-svg` are already required by the chat SDK.
+
+`AIConversation` comes from its own entry point, `stream-chat-react-native/ai-components/conversation` (or `stream-chat-expo/ai-components/conversation`), and needs [`react-native-keyboard-controller`](https://kirillzyusko.github.io/react-native-keyboard-controller/) with its `KeyboardProvider` above it:
+
+```bash
+yarn add react-native-keyboard-controller
+```
+
+The rest of the AI components work without it. With it installed and a `KeyboardProvider` above them, `ComposerView` rides the keyboard up; without it, the composer doesn't move with the keyboard.
 
 The `zod` dependency ships `export * as` syntax, which the React Native Babel preset does not transform, so add the `export-namespace-from` plugin to your `babel.config.js`:
 
@@ -143,8 +152,8 @@ Under the hood, it implements a letter-by-letter typewriter animation with a cha
 | `paragraphNumberOfLines` | `number`                               | no       | The `numberOfLines` applied to markdown `Paragraph` and `Text` components. Particularly useful if we want to display the same message, but in a "cut" fashion (for example when replying to someone).                                                                                                                                                                         |
 | `rules`                  | [`MarkdownRules`](./markdown/types.ts) | no       | An object of `MarkdownRules` that is then going to be deeply merged with our default rules, based on the [`SimpleMarkdown` parsing engine](https://github.com/Khan/perseus/tree/main/packages/simple-markdown#adding-a-simple-extension). Can be used to add custom rules or change existing rules. You can disable a rule by passing `{ [ruleName]: { match: () => null }}`. |
 | `onLink`                 | `(url: string) => void`                | no       | A function that is going to be invoked whenever a link is pressed within markdown parsed text.                                                                                                                                                                                                                                                                                |
-| `letterInterval`         | `number`                               | no       | A number signifying the interval at which the typewriter animation is going to render characters. Defaults to `0`                                                                                                                                                                                                                                                             |
-| `renderingLetterCount`   | `number`                               | no       | A number signifying the number of letters that are going to be rendered per tick of the interval during the typewriter animation. Defaults to `2`                                                                                                                                                                                                                             |
+| `letterInterval`         | `number`                               | no       | The milliseconds between steps, for a fixed pace. Without it and `renderingLetterCount`, the text keeps up with what arrives: each new part is typed out within about 0.4 seconds.                                                                                                                                                                                            |
+| `renderingLetterCount`   | `number`                               | no       | The letters typed each step, for a fixed pace. Defaults to `2` when `letterInterval` is given.                                                                                                                                                                                                                                                                                |
 
 #### Example
 
@@ -229,7 +238,7 @@ It takes a single property named `options` that has the following keys:
 
 | Name               | Type      | Required | Description                                                                                                                                                                        |
 | ------------------ | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `language`         | `string`  | no       | The language we want to transcribe from. It will default to `en-US`.                                                                                                               |
+| `language`         | `string`  | no       | The language we want to transcribe from. Defaults to the device's language.                                                                                                        |
 | `interimResults`   | `boolean` | no       | A boolean signifying whether we want to receive the intermediate results from the transcription or just the final result when the transcription is deemed done. Defaults to `true` |
 | `silenceTimeoutMs` | `number`  | no       | A number signifying the number of milliseconds of silence until transcription is deemed finished. Defaults to `2500`.                                                              |
 
@@ -246,7 +255,7 @@ The `SpeechToTextButton` is already integrated within the `ComposerView`, howeve
 
 ### `VoiceGlow` and `VoiceWave`
 
-Two visualizations of a voice agent, alike on iOS, Android, the web and React Native:
+Two visualizations of a voice agent:
 
 - `VoiceGlow`: a soft, airy globe whose color masses orbit inside it and swell with speech. It is drawn by a Skia shader, every pixel on the GPU.
 - `VoiceWave`: a single string carrying a wave packet that erupts with speech, its colors flowing along it.
@@ -288,9 +297,106 @@ The motion runs entirely on the UI thread with Reanimated and Skia, so the visua
 
 **Theming.** The theme's `voiceVisualization.colors` are the default palette (the accent color unless you set them). The visualizations draw for a light or a dark background following `voiceVisualization.backdropColor` when you set it, and the system color scheme otherwise.
 
-**Accessibility.** Each is an image named "Voice agent" with its state as the value ("Ready", "Connecting", "Listening", "Thinking", "Speaking"), as on iOS and Android. Pass `stateLabels` to translate the state values, `accessibilityLabel` to change the label, or `accessibilityValue` to replace the value outright. Under the system's Reduce Motion (animations off on Android), they barely move and ignore taps.
+**Accessibility.** Each is an image named "Voice agent" with its state as the value ("Ready", "Connecting", "Listening", "Thinking", "Speaking"). Pass `stateLabels` to translate the state values, `accessibilityLabel` to change the label, or `accessibilityValue` to replace the value outright. Under the system's Reduce Motion (animations off on Android), they barely move and ignore taps.
 
-**Differences from the native SDKs.** The glow has no `rendering` option: the shader runs on every Android version through Skia, so there is no Canvas fallback, and it does not switch to a cheaper look in battery saver as on Android. A visualization keeps animating while it is mounted, even when scrolled off screen; it pauses only while the app is in the background.
+**Rendering.** The glow's shader runs through Skia on every Android version, so there is no fallback rendering, and it does not switch to a cheaper look in battery saver. A visualization keeps animating while it is mounted, even when scrolled off screen; it pauses only while the app is in the background.
+
+### Conversation state
+
+`AIConversationController` holds a conversation's messages and where the latest exchange with the agent is, and sends what the person asks through an `AIConversationTransport` you write for your agent. Give it to `AIConversation` and `ComposerView` as `conversation`.
+
+Create it in the effect that disposes it, not in `useState`: React's StrictMode runs an effect's cleanup and then the effect again, which would leave the views with a disposed controller.
+
+```tsx
+import { AIConversationController, ComposerView } from 'stream-chat-react-native/ai-components';
+import { AIConversation } from 'stream-chat-react-native/ai-components/conversation';
+
+const Conversation = ({ transport }) => {
+  const [conversation, setConversation] = useState<AIConversationController>();
+  useEffect(() => {
+    const created = new AIConversationController({ transport });
+    setConversation(created);
+    return () => {
+      created.dispose();
+      setConversation(undefined);
+    };
+  }, [transport]);
+
+  if (!conversation) return null;
+
+  return (
+    <>
+      <AIConversation conversation={conversation} />
+      <ComposerView conversation={conversation} />
+    </>
+  );
+};
+```
+
+**Transport.** `connect(feed)` tells the controller the conversation's messages as they change, `send(request)` sends what the person asks, and `stop()` stops the reply being written. A request's `kind` is `message`, `regenerate` or `edit`, and its `custom` carries what the app sent besides the text. What the person did in a reply's [generated UI](#generated-ui) travels there as `custom.uiAction`, the action's JSON from `aiUIActionJSON`, for the transport to hand to the agent:
+
+```ts
+// Sending the action
+conversation.send({ custom: { uiAction: aiUIActionJSON(action) }, text: action.label });
+
+// In the transport
+send: request =>
+  session.responses.create(request.text, { uiAction: request.custom?.uiAction }),
+```
+
+**Actions.** The views offer editing the person's latest message, and regenerating and rating replies. Turn off what your agent can't do with `actions`: an agent that keeps the conversation on its side and can't rewind it, such as one behind Stream's agents router, takes `actions: { edit: false, regenerate: false }`.
+
+### Generated UI
+
+An agent can answer with UI instead of text: a form, a list of options, a card with buttons. The backend splits the model's UI block out of the reply into the message's `ai_ui` field, and the app draws it with a renderer for the format the agent writes. Today that is [A2UI](https://a2ui.org) v1.0, from its own entry point, so apps that don't use it don't bundle it:
+
+```tsx
+import { createA2UIRenderer } from 'stream-chat-react-native/a2ui'; // or 'stream-chat-expo/a2ui'
+import { AIUIHost, aiUIActionJSON } from 'stream-chat-react-native/ai-components';
+import { AIConversation } from 'stream-chat-react-native/ai-components/conversation';
+
+const Conversation = ({ messages, session }) => {
+  // One host per conversation, kept for as long as it shows, so what a reply's UI holds (a
+  // half-filled form) survives scrolling it away and back.
+  const [ui] = useState(
+    () =>
+      new AIUIHost({
+        renderers: [createA2UIRenderer()],
+        // What the person did goes to the agent as their next message.
+        send: action => session.responses.create(action.label, { uiAction: aiUIActionJSON(action) }),
+      }),
+  );
+
+  return <AIConversation messages={messages} ui={ui} />;
+};
+```
+
+The label of the message an action sends is the text of the control the person tapped, never text the agent wrote. Values typed into obscured text fields never leave the device. A reply's UI shows a placeholder until its first surface arrives, and a finished reply whose UI draws nothing shows its text instead.
+
+`createA2UIRenderer` draws all 18 components of A2UI's basic catalog natively, and takes:
+
+| Name           | Description                                                                                                          |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `components`   | Your own views for basic components, by type, such as `{ Card: MyCard }`. Each gets the node and its resolved props. |
+| `icons`        | Your own icons for the names `Icon` takes, over the Material icons drawn by default.                                 |
+| `removing`     | Basic components or functions to leave out, such as `['Video']`. The agent's instructions leave them out too.        |
+| `locale`       | The locale numbers and dates are formatted in. The device's by default.                                              |
+| `mediaUrl`     | Decides what an `Image`, `Video` or `AudioPlayer` loads for a link. Public web links only by default.                |
+| `instructions` | What you tell the model before A2UI's own instructions, such as which answers to write as UI.                        |
+| `catalogId`    | The id of the catalog with your own components.                                                                      |
+| `onError`      | Called with what was wrong in a reply's A2UI. The rest of the reply still shows. Logged by default.                  |
+
+**Your own components.** Define a component with `defineAIUIComponent(definition, View)` and pass it to the host's `components`. The definition is portable JSON (name, description, parameters, events), so the same `UIComponents.json` can describe it to the agent and to your apps on other platforms. A component calls `context.emit(name, label, payload)` to send an action.
+
+**Tools.** The host's `tools` are functions of yours that a reply's UI can call, such as reading something on the device. They are the same `AIClientTool`s an `AIClientToolRunner` takes, so a tool is defined once. A tool runs by itself as a reply shows only when its definition says it is read-only (`annotations: { readOnlyHint: true }`); any other runs only from something the person did, such as a tap. Output that isn't JSON is refused, and what the person typed into a password field never reaches a tool.
+
+**Instructions for the model.** `await ui.capabilities()` returns what the backend needs to tell the model: each renderer's format and instructions, your components and your tools. To write them yourself, use `a2uiInstructions({ components, removing, tools, examples })`, which refuses examples that wouldn't render. `a2uiProblems(text)` checks a reply's A2UI the same way.
+
+**Links.** Only web and email links open by default, since the agent writes them. Pass the host an `open` function to allow others.
+
+**Theming.** The theme's `a2ui` key styles the basic components: `colors` (`accent`, `onAccent`, `text`, `secondaryText`, `surface`, `subtleSurface`, `border`, `error`) and one style per part (`surfaces`, `card`, `button`, `buttonText`, `input`, `label`, `chip`, `chipText`, `tab`, `tabText`, `divider`, `caption`, `image`).
+
+**Media.** `Image`, `Video` and `AudioPlayer` load only public web links by default, never addresses on the person's network such as `192.168.1.1` or `localhost`, since the agent writes the links. Pass `mediaUrl` to decide otherwise. `Video` and `AudioPlayer` play in place with the player you registered for the chat SDK's own video and voice messages. Without one they show a link that opens where the device plays it.
 
 ### Theming
 

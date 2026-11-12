@@ -21,6 +21,51 @@ describe('ai-components streaming', () => {
   });
 
   describe('useStreamingMessage', () => {
+    it('keeps up with what arrives when no pace is given', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) => useStreamingMessage({ text }),
+        { initialProps: { text: '' } },
+      );
+      const chunk = 'x'.repeat(250);
+      rerender({ text: chunk });
+      act(() => {
+        jest.advanceTimersByTime(16);
+      });
+      // 250 letters in 0.4 seconds: 10 a frame.
+      expect(result.current.streamedMessageText).toHaveLength(10);
+      expect(result.current.isWriting).toBe(true);
+
+      act(() => {
+        jest.advanceTimersByTime(420);
+      });
+      expect(result.current.streamedMessageText).toBe(chunk);
+      expect(result.current.isWriting).toBe(false);
+    });
+
+    it('types at least a letter a frame when little arrives', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) => useStreamingMessage({ text }),
+        { initialProps: { text: 'Hi' } },
+      );
+      rerender({ text: 'Hi there' });
+      act(() => {
+        jest.advanceTimersByTime(16);
+      });
+      expect(result.current.streamedMessageText).toBe('Hi ');
+    });
+
+    it('shows the whole text at once when the animation is skipped', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) =>
+          useStreamingMessage({ letterInterval: 50, renderingLetterCount: 1, text }),
+        { initialProps: { text: '' } },
+      );
+      rerender({ text: 'A long answer' });
+      act(() => result.current.skipAnimation());
+      expect(result.current.streamedMessageText).toBe('A long answer');
+      expect(result.current.isWriting).toBe(false);
+    });
+
     it('renders the initial text immediately and animates text appended later', () => {
       const { result, rerender } = renderHook(
         ({ text }: { text: string }) =>
@@ -41,6 +86,53 @@ describe('ai-components streaming', () => {
       expect(result.current.streamedMessageText).toBe('Hello world');
     });
 
+    it('shows another text at once rather than typing it out', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) =>
+          useStreamingMessage({ letterInterval: 10, renderingLetterCount: 2, text }),
+        { initialProps: { text: 'Hi' } },
+      );
+
+      // As when a list reuses the view for another, longer message.
+      rerender({ text: 'Goodbye, and thanks for all the fish' });
+      expect(result.current.streamedMessageText).toBe('Goodbye, and thanks for all the fish');
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+      expect(result.current.streamedMessageText).toBe('Goodbye, and thanks for all the fish');
+
+      // And one shorter than what was shown.
+      rerender({ text: 'Bye' });
+      expect(result.current.streamedMessageText).toBe('Bye');
+
+      // Text added to the end of it is still typed out.
+      rerender({ text: 'Bye now' });
+      act(() => {
+        jest.advanceTimersByTime(10);
+      });
+      expect(result.current.streamedMessageText).toBe('Bye n');
+    });
+
+    it('says whether text is still being typed out', () => {
+      const { result, rerender } = renderHook(
+        ({ text }: { text: string }) =>
+          useStreamingMessage({ letterInterval: 10, renderingLetterCount: 2, text }),
+        { initialProps: { text: 'Hello' } },
+      );
+      expect(result.current.isWriting).toBe(false);
+
+      rerender({ text: 'Hello world' });
+      expect(result.current.isWriting).toBe(true);
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+      expect(result.current.isWriting).toBe(false);
+
+      // Another text shows at once, so nothing is being typed.
+      rerender({ text: 'Bye' });
+      expect(result.current.isWriting).toBe(false);
+    });
+
     it('optimistically closes a code fence while it is being streamed', () => {
       const { result, rerender } = renderHook(
         ({ text }: { text: string }) =>
@@ -57,6 +149,28 @@ describe('ai-components streaming', () => {
   });
 
   describe('StreamingMessageView', () => {
+    it('reports when it starts and stops typing', () => {
+      const onWritingChange = jest.fn();
+      const { rerender } = render(
+        <StreamTheme>
+          <StreamingMessageView letterInterval={10} onWritingChange={onWritingChange} text='Hi' />
+        </StreamTheme>,
+      );
+      rerender(
+        <StreamTheme>
+          <StreamingMessageView
+            letterInterval={10}
+            onWritingChange={onWritingChange}
+            text='Hi there, friend'
+          />
+        </StreamTheme>,
+      );
+      act(() => {
+        jest.advanceTimersByTime(200);
+      });
+      expect(onWritingChange.mock.calls.map(([writing]) => writing)).toEqual([false, true, false]);
+    });
+
     it('renders markdown and handles links with the provided callback', () => {
       const onLink = jest.fn();
       render(

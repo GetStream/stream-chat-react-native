@@ -1,11 +1,15 @@
 import { useMemo } from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import type { MarkdownComponentProps, RuleRenderFunction } from '../types';
 
 export const TextUI = ({ children, styles, state }: MarkdownComponentProps) => {
+  // Text in a heading or inline code takes that one's size rather than the body's.
+  const usesBodySize = !state.withinHeading && !state.withinInlineCode;
   const textStyle = useMemo(() => {
-    const style = [styles.text, state.style];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- left out to inherit the wrapper's size
+    const { fontSize, lineHeight, ...unsized } = StyleSheet.flatten(styles.text) ?? {};
+    const style = [usesBodySize ? styles.text : unsized, state.style];
 
     if (state.withinQuote) {
       style.push(styles.blockQuoteText);
@@ -17,6 +21,7 @@ export const TextUI = ({ children, styles, state }: MarkdownComponentProps) => {
 
     return style;
   }, [
+    usesBodySize,
     state.style,
     state.withinLink,
     state.withinQuote,

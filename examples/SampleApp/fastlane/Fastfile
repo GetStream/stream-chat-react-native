@@ -542,10 +542,12 @@ lane :frameworks_sizes do
     sh('yarn build')
     sh('yarn minify-bundle')
     sh('yarn minify-ai-components-bundle')
+    sh('yarn minify-a2ui-bundle')
 
     {
       js_bundle_size: file_size(path: 'package/lib/module/bundle.min.js'),
-      ai_components_size: file_size(path: 'package/lib/ai-components.min.js')
+      ai_components_size: file_size(path: 'package/lib/ai-components.min.js'),
+      a2ui_size: file_size(path: 'package/lib/a2ui.min.js')
     }
   end
 end

@@ -22,6 +22,7 @@
     "react-native.config.js",
     "package.json",
     "ai-components",
+    "a2ui",
     "app.plugin.js",
     "plugin"
   ],
@@ -47,6 +48,7 @@
     "expo-sharing": "*",
     "expo-video": "*",
     "react-native": ">=0.79.0",
+    "react-native-keyboard-controller": ">=1.21.7",
     "victory-native": ">=41.0.0"
   },
   "peerDependenciesMeta": {
@@ -86,6 +88,9 @@
     "expo-video": {
       "optional": true
     },
+    "react-native-keyboard-controller": {
+      "optional": true
+    },
     "victory-native": {
       "optional": true
     }
@@ -111,6 +116,7 @@
     },
     "ios": {
       "modulesProvider": {
+        "AIAgent": "AIAgent",
         "StreamMultipartUploader": "StreamMultipartUploader",
         "StreamVideoThumbnail": "StreamVideoThumbnail"
       },

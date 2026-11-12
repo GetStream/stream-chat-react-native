@@ -42,9 +42,12 @@ Pod::Spec.new do |s|
       false
     end
 
+  # `AIAgent` (the agent components' install id and tool-call sign-ins) opens sign-ins in
+  # `ASWebAuthenticationSession`, which needs no usage description, so it is always compiled.
   if dictation_enabled
-    s.frameworks = "Speech"
+    s.frameworks = ["AuthenticationServices", "Speech"]
   else
+    s.frameworks = "AuthenticationServices"
     s.exclude_files = ["ios/shared/AIDictation.h", "ios/shared/AIDictation.mm", "ios/shared/AIDictationModule.swift"]
   end
 

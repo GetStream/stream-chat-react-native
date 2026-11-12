@@ -3,3 +3,4 @@ export * from './ActionButton';
 export * from './AttachmentButton';
 export * from './MediaPreviewList';
 export * from './SpeechToTextButton';
+export * from './ChatOptions';

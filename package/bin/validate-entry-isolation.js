@@ -9,7 +9,13 @@
  *    the AI components or their dependencies. Apps that don't use AI must not bundle any of it.
  * 2. The AI entry points (core `src/ai-components/index.ts` and the wrappers'
  *    `ai-components/index.js`) may only reach the AI sources plus an explicit allowlist of other
- *    files. Apps that only use the AI components must not bundle the chat SDK.
+ *    files. Apps that only use the AI components must not bundle the chat SDK. Nor the A2UI
+ *    renderer: the `a2ui` entry points (core `src/a2ui/index.ts` and the wrappers'
+ *    `a2ui/index.js`) reach it and `@a2ui/web_core`, besides what the AI entry points reach. Nor
+ *    the conversation, which needs react-native-keyboard-controller: the `ai-components/conversation`
+ *    entry points (core `src/ai-components/conversation/index.ts` and the wrappers'
+ *    `ai-components/conversation/index.js`) reach it, and the other AI entry points load
+ *    react-native-keyboard-controller only through a guarded `require`.
  * 3. The codegen spec copies the wrappers need (codegen only reads a package's own `jsSrcsDir`) stay
  *    byte-identical to the core source of truth.
  *
@@ -23,22 +29,50 @@ const ts = require('typescript');
 const PACKAGE_DIR = path.resolve(__dirname, '..');
 const CORE_SRC = path.join(PACKAGE_DIR, 'src');
 const AI_SRC = path.join(CORE_SRC, 'ai-components');
+const A2UI_SRC = path.join(CORE_SRC, 'a2ui');
+const CONVERSATION_SRC = path.join(AI_SRC, 'conversation');
 const WRAPPERS = ['native-package', 'expo-package'].map((name) => path.join(PACKAGE_DIR, name));
 
 // Third-party packages only the AI components may use. (`lodash` and `@stream-io/state-store` are
 // not among them: the main entry point imports both too.)
 const AI_ONLY_PACKAGES = [
   '@khanacademy/simple-markdown',
+  '@legendapp/list',
   '@shopify/react-native-skia',
+  'react-native-keyboard-controller',
   'react-syntax-highlighter',
   'victory-native',
   'zod',
 ];
 
+// Third-party packages only the A2UI renderer may use: its own entry point keeps them out of apps
+// that use the AI components without it.
+const A2UI_ONLY_PACKAGES = ['@a2ui/web_core'];
+
+// Optional peers the AI components load with a guarded `require`, each from one file only, so apps
+// that don't install them still bundle.
+const GUARDED_PACKAGES = {
+  'react-native-keyboard-controller': path.join(AI_SRC, 'internal/keyboard.tsx'),
+};
+
+// Dependencies only the conversation entry points may reach: they require
+// react-native-keyboard-controller unguarded.
+const CONVERSATION_ONLY_SPECIFIERS = ['@legendapp/list/keyboard'];
+
 // Files outside `src/ai-components` that the AI entry points are allowed to reach.
 const AI_ALLOWED_FILES = [
   path.join(CORE_SRC, 'native.ts'),
   path.join(CORE_SRC, 'components/UIComponents/NativeShimmerView.tsx'),
+  // The chat SDK's translation context, which the AI components translate with (not Streami18n).
+  path.join(CORE_SRC, 'contexts/translationContext/TranslationContext.tsx'),
+  path.join(CORE_SRC, 'contexts/translationContext/types.ts'),
+  path.join(CORE_SRC, 'contexts/utils/isTestEnvironment.ts'),
+  path.join(CORE_SRC, 'i18n/utils.ts'),
+  // The design tokens (plain data, no imports), which the AI components size their text with. Metro
+  // picks the platform's file; this check resolves the fallback, which re-exports the web one.
+  ...['', '.ios', '.android', '.web'].map((platform) =>
+    path.join(CORE_SRC, `theme/generated/light/StreamTokens${platform}.ts`),
+  ),
   ...WRAPPERS.flatMap((wrapper) => [
     path.join(wrapper, 'ai-components/index.js'),
     path.join(wrapper, 'src/optionalDependencies/NativeShimmerView.ts'),
@@ -78,6 +112,12 @@ const resolveSpecifier = (specifier, fromFile) => {
   }
   if (specifier === 'stream-chat-react-native-core/ai-components') {
     return { file: path.join(AI_SRC, 'index.ts') };
+  }
+  if (specifier === 'stream-chat-react-native-core/ai-components/conversation') {
+    return { file: path.join(CONVERSATION_SRC, 'index.ts') };
+  }
+  if (specifier === 'stream-chat-react-native-core/a2ui') {
+    return { file: path.join(A2UI_SRC, 'index.ts') };
   }
   return { pkg: packageNameOf(specifier), specifier };
 };
@@ -155,6 +195,32 @@ const errors = [];
 const report = (message, chain) =>
   errors.push(`${message}\n    via: ${chain.map(relative).join('\n      -> ')}`);
 
+/** Checks that an entry point outside the conversation reaches neither it nor what it needs. */
+const checkWithoutConversation = (entry, { files, packages }) => {
+  for (const [file, chain] of files) {
+    if (file.startsWith(CONVERSATION_SRC + path.sep)) {
+      report(`${relative(entry)} reaches the AI conversation (${relative(file)})`, chain);
+    }
+    for (const specifier of runtimeSpecifiers(file)) {
+      const guardedFile = GUARDED_PACKAGES[packageNameOf(specifier)];
+      if (guardedFile && file !== guardedFile) {
+        report(
+          `${relative(file)} imports the optional "${specifier}"; load it through ${relative(guardedFile)}`,
+          chain,
+        );
+      }
+    }
+  }
+  for (const [specifier, chain] of packages) {
+    if (CONVERSATION_ONLY_SPECIFIERS.includes(specifier)) {
+      report(
+        `${relative(entry)} reaches "${specifier}", which only the AI conversation may`,
+        chain,
+      );
+    }
+  }
+};
+
 // 1. Main entry points must not reach the AI components.
 for (const entry of [
   path.join(CORE_SRC, 'index.ts'),
@@ -164,13 +230,15 @@ for (const entry of [
   for (const [file, chain] of files) {
     if (
       file.startsWith(AI_SRC + path.sep) ||
-      file.includes(`${path.sep}ai-components${path.sep}`)
+      file.startsWith(A2UI_SRC + path.sep) ||
+      file.includes(`${path.sep}ai-components${path.sep}`) ||
+      file.includes(`${path.sep}a2ui${path.sep}`)
     ) {
       report(`${relative(entry)} reaches the AI components (${relative(file)})`, chain);
     }
   }
   for (const [specifier, chain] of packages) {
-    if (AI_ONLY_PACKAGES.includes(packageNameOf(specifier))) {
+    if ([...AI_ONLY_PACKAGES, ...A2UI_ONLY_PACKAGES].includes(packageNameOf(specifier))) {
       report(`${relative(entry)} reaches the AI-only dependency "${specifier}"`, chain);
     }
   }
@@ -181,9 +249,40 @@ for (const entry of [
   path.join(AI_SRC, 'index.ts'),
   ...WRAPPERS.map((w) => path.join(w, 'ai-components/index.js')),
 ]) {
-  const { files, packages } = walk(entry);
+  const reached = walk(entry);
+  const { files, packages } = reached;
+  checkWithoutConversation(entry, reached);
   for (const [file, chain] of files) {
     if (!file.startsWith(AI_SRC + path.sep) && !AI_ALLOWED_FILES.includes(file)) {
+      report(
+        `${relative(entry)} reaches ${relative(file)}, which is not in the AI allowlist`,
+        chain,
+      );
+    }
+  }
+  for (const [specifier, chain] of packages) {
+    if (AI_FORBIDDEN_PACKAGES.includes(specifier)) {
+      report(`${relative(entry)} reaches "${specifier}"`, chain);
+    }
+    if (A2UI_ONLY_PACKAGES.includes(packageNameOf(specifier))) {
+      report(`${relative(entry)} reaches the A2UI-only dependency "${specifier}"`, chain);
+    }
+  }
+}
+
+// 2b. The A2UI entry points reach the AI components and the A2UI renderer only.
+const A2UI_WRAPPER_ENTRIES = WRAPPERS.map((w) => path.join(w, 'a2ui/index.js'));
+for (const entry of [path.join(A2UI_SRC, 'index.ts'), ...A2UI_WRAPPER_ENTRIES]) {
+  const reached = walk(entry);
+  const { files, packages } = reached;
+  checkWithoutConversation(entry, reached);
+  for (const [file, chain] of files) {
+    if (
+      !file.startsWith(AI_SRC + path.sep) &&
+      !file.startsWith(A2UI_SRC + path.sep) &&
+      !AI_ALLOWED_FILES.includes(file) &&
+      !A2UI_WRAPPER_ENTRIES.includes(file)
+    ) {
       report(
         `${relative(entry)} reaches ${relative(file)}, which is not in the AI allowlist`,
         chain,
@@ -197,11 +296,43 @@ for (const entry of [
   }
 }
 
+// 2c. The conversation entry points reach the AI components only.
+const CONVERSATION_WRAPPER_ENTRIES = WRAPPERS.map((w) =>
+  path.join(w, 'ai-components/conversation/index.js'),
+);
+for (const entry of [path.join(CONVERSATION_SRC, 'index.ts'), ...CONVERSATION_WRAPPER_ENTRIES]) {
+  const { files, packages } = walk(entry);
+  for (const [file, chain] of files) {
+    if (
+      !file.startsWith(AI_SRC + path.sep) &&
+      !AI_ALLOWED_FILES.includes(file) &&
+      !CONVERSATION_WRAPPER_ENTRIES.includes(file)
+    ) {
+      report(
+        `${relative(entry)} reaches ${relative(file)}, which is not in the AI allowlist`,
+        chain,
+      );
+    }
+  }
+  for (const [specifier, chain] of packages) {
+    if (AI_FORBIDDEN_PACKAGES.includes(specifier)) {
+      report(`${relative(entry)} reaches "${specifier}"`, chain);
+    }
+    if (A2UI_ONLY_PACKAGES.includes(packageNameOf(specifier))) {
+      report(`${relative(entry)} reaches the A2UI-only dependency "${specifier}"`, chain);
+    }
+  }
+}
+
 // 3. Codegen spec copies must not drift.
 const copies = [
   [
     path.join(AI_SRC, 'native-specs/NativeAIDictation.ts'),
     ...WRAPPERS.map((w) => path.join(w, 'src/native/NativeAIDictation.ts')),
+  ],
+  [
+    path.join(AI_SRC, 'native-specs/NativeAIAgent.ts'),
+    ...WRAPPERS.map((w) => path.join(w, 'src/native/NativeAIAgent.ts')),
   ],
   WRAPPERS.map((w) => path.join(w, 'src/native/PerfTextNativeComponent.ts')),
 ];

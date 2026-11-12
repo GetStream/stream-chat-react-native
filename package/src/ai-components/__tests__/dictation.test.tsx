@@ -80,7 +80,6 @@ describe('ai-components dictation', () => {
       });
       expect(nativeModule.start).toHaveBeenCalledWith({
         interimResults: true,
-        language: 'en-US',
         silenceTimeoutMs: 2500,
       });
 

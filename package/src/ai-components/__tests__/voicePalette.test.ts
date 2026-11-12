@@ -84,7 +84,7 @@ describe('voice visualization inputs', () => {
 
 describe('voice visualization noise', () => {
   it('matches the shader’s simplex noise as a GPU computes it', () => {
-    // Read back from the shader's own snoise on a GPU (stream-chat-react's fixtures).
+    // Read back from the shader's own snoise on a GPU.
     const gpu: Array<[number, number, number, number]> = [
       [0.3, 21, 0, 0.7696],
       [1.7, 5, 0, 0.208],

@@ -22,7 +22,7 @@ export type ColorRange = {
 };
 
 export const SyntaxHighlighter = ({
-  fontFamily = Platform.OS === 'ios' ? 'Courier' : 'Monospace',
+  fontFamily = Platform.OS === 'ios' ? 'Courier' : 'monospace',
   fontSize = DEFAULT_FONT_SIZE,
   children,
   highlighter = 'highlightjs',

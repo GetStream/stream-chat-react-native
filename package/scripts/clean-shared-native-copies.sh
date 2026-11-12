@@ -11,8 +11,9 @@ clean_package() {
   local package_name="$1"
   local android_dir="$ROOT_DIR/$package_name/android/src/main/java/com/streamchatreactnative/shared"
   local ios_dir="$ROOT_DIR/$package_name/ios/shared"
+  local agent_sign_in_dir="$ROOT_DIR/$package_name/android/src/agent-sign-in"
 
-  rm -rf "$android_dir" "$ios_dir"
+  rm -rf "$android_dir" "$ios_dir" "$agent_sign_in_dir"
   rm -f \
     "$STATE_DIR/${package_name}_android.manifest" \
     "$STATE_DIR/${package_name}_ios.manifest"

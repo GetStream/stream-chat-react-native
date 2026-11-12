@@ -17,6 +17,7 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
   private static final String STREAM_MULTIPART_UPLOADER_MODULE = "StreamMultipartUploader";
   private static final String STREAM_VIDEO_THUMBNAIL_MODULE = "StreamVideoThumbnail";
   private static final String AI_DICTATION_MODULE = "AIDictation";
+  private static final String AI_AGENT_MODULE = "AIAgent";
 
   @Nullable
   @Override
@@ -36,6 +37,11 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
     } else if (name.equals(AI_DICTATION_MODULE)) {
         return createNewArchModule(
                 "com.streamchatreactnative.AIDictationModule",
+                reactContext
+        );
+    } else if (name.equals(AI_AGENT_MODULE)) {
+        return createNewArchModule(
+                "com.streamchatreactnative.AIAgentModule",
                 reactContext
         );
     } else {
@@ -92,6 +98,17 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
                       false, // isCxxModule
                       true // isTurboModule
       ));
+      moduleInfos.put(
+              AI_AGENT_MODULE,
+              new ReactModuleInfo(
+                      AI_AGENT_MODULE,
+                      AI_AGENT_MODULE,
+                      false, // canOverrideExistingModule
+                      false, // needsEagerInit
+                      false, // hasConstants
+                      false, // isCxxModule
+                      true // isTurboModule
+              ));
       return moduleInfos;
     };
   }

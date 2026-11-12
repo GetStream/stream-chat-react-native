@@ -10,6 +10,7 @@ import {
   DefaultThreadData,
   DefaultUserData,
 } from 'stream-chat-expo';
+import type { AIUIActionJSON, AIUIDocumentJSON } from 'stream-chat-expo/ai-components';
 
 declare module 'stream-chat' {
   // Module augmentation: the empty interfaces are how the default data types are applied.
@@ -27,6 +28,12 @@ declare module 'stream-chat' {
 
   interface CustomMessageData extends DefaultMessageData {
     ai_generated?: boolean;
+    /** Set by the router while the agent is still writing a reply. */
+    generating?: boolean;
+    /** The UI the agent wrote for a reply, which the router moves out of its text. */
+    ai_ui?: AIUIDocumentJSON;
+    /** What the person did in a reply's UI, on their message that says so. */
+    ai_ui_action?: AIUIActionJSON;
   }
 
   interface CustomPollOptionData extends DefaultPollOptionData {}

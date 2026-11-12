@@ -7,6 +7,9 @@ TARGET="${1:-all}"
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 SHARED_ANDROID_DIR="$ROOT_DIR/shared-native/android"
 SHARED_IOS_DIR="$ROOT_DIR/shared-native/ios"
+# The agent sign-in's two Android builds: with Auth Tab (androidx.browser 1.9.0) and without.
+# Each package's build.gradle compiles the one the app's build allows.
+AGENT_SIGN_IN_VARIANTS=(authtab customtabs)
 
 sync_dir_contents() {
   local src_dir="$1"
@@ -32,6 +35,13 @@ copy_to_package() {
   else
     echo "Skipping Android sync: missing $SHARED_ANDROID_DIR"
   fi
+
+  for variant in "${AGENT_SIGN_IN_VARIANTS[@]}"; do
+    local variant_src="$ROOT_DIR/shared-native/android-$variant"
+    if [ -d "$variant_src" ]; then
+      sync_dir_contents "$variant_src" "$ROOT_DIR/$package_name/android/src/agent-sign-in/$variant"
+    fi
+  done
 
   if [ -d "$SHARED_IOS_DIR" ]; then
     sync_dir_contents "$SHARED_IOS_DIR" "$ios_dst_dir"

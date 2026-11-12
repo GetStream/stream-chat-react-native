@@ -1,5 +1,6 @@
 import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
 
+import type { AIIcons } from './icons';
 import type { MarkdownStyle } from './markdown';
 
 export const colors = {
@@ -29,6 +30,8 @@ export type Theme = {
     inputPillContainer: ViewStyle;
     inputPill: ViewStyle;
     textInput: TextStyle;
+    /** What `ComposerView`'s `trailing` sits in, after the message box. */
+    trailing: ViewStyle;
     roundButton: ViewStyle;
     attachIcon: TextStyle;
     mediaPreviewStyle: ViewStyle;
@@ -69,7 +72,229 @@ export type Theme = {
      */
     backdropColor?: string;
   };
+  /**
+   * The steps of an agent's reply: reasoning, tool calls and their questions. Optional, so a
+   * hand-built `Theme` without it keeps type-checking.
+   */
+  messageParts?: {
+    /** The colour of a completed tool call's check. */
+    successColor?: string;
+    container?: ViewStyle;
+    reasoning?: {
+      container?: ViewStyle;
+      rule?: ViewStyle;
+      header?: ViewStyle;
+      title?: TextStyle;
+      summary?: TextStyle;
+      panel?: ViewStyle;
+    };
+    toolCall?: {
+      container?: ViewStyle;
+      title?: TextStyle;
+      detail?: TextStyle;
+      duration?: TextStyle;
+    };
+    approvalCard?: {
+      container?: ViewStyle;
+      title?: TextStyle;
+      message?: TextStyle;
+      allowButton?: ViewStyle;
+      allowButtonText?: TextStyle;
+      declineButton?: ViewStyle;
+      declineButtonText?: TextStyle;
+      failure?: TextStyle;
+      arguments?: ViewStyle;
+      argumentsLabel?: TextStyle;
+      argumentsCode?: TextStyle;
+    };
+    authorizationCard?: {
+      container?: ViewStyle;
+      title?: TextStyle;
+      message?: TextStyle;
+      outcome?: TextStyle;
+      connectButton?: ViewStyle;
+      connectButtonText?: TextStyle;
+      declineButton?: ViewStyle;
+      declineButtonText?: TextStyle;
+      failure?: TextStyle;
+    };
+    unsupported?: {
+      container?: ViewStyle;
+      text?: TextStyle;
+    };
+  };
+  /**
+   * `AIConversation`: the list of turns, the spinner while older messages load, and the button back
+   * to the latest message. Optional, so a hand-built `Theme` without it keeps type-checking.
+   */
+  conversation?: {
+    /** The spinner while older messages load. */
+    loadingIndicator?: string;
+    /** The button back to the latest message. */
+    scrollButtonBackground?: string;
+    scrollButtonBorder?: string;
+    scrollButtonIcon?: string;
+    container?: ViewStyle;
+    /** The list's content: the turns, with the room around them. */
+    content?: ViewStyle;
+    /** What shows while there are no messages. */
+    empty?: ViewStyle;
+    loadingOlder?: ViewStyle;
+    scrollButton?: ViewStyle;
+    /** The view around each message, and around what ends the latest turn. */
+    row?: ViewStyle;
+  };
+  /**
+   * Icons of your own for the agent replies' views, by name, over `defaultAIIcons`. Kept as they
+   * are when themes merge.
+   */
+  icons?: Partial<AIIcons>;
+  /**
+   * The person's and the agent's messages, what they carry, and the actions under a reply.
+   * Optional, so a hand-built `Theme` without it keeps type-checking.
+   */
+  message?: {
+    /** The person's bubble. */
+    userMessageBackground?: string;
+    userMessageText?: string;
+    /** The icons of the actions under a reply. */
+    messageAction?: string;
+    /** A file's card, and the tile with its type's icon. */
+    attachmentBackground?: string;
+    attachmentBorder?: string;
+    attachmentIcon?: string;
+    attachmentIconBackground?: string;
+    attachmentName?: string;
+    attachmentDetails?: string;
+    /** What an image shows while it loads, or when it can't. */
+    attachmentImagePlaceholder?: string;
+    userMessage?: {
+      container?: ViewStyle;
+      attachments?: ViewStyle;
+      bubble?: ViewStyle;
+      text?: TextStyle;
+      editButton?: ViewStyle;
+      /** The menu a long press on the message opens, and its items. */
+      menu?: ViewStyle;
+      menuItem?: ViewStyle;
+      menuItemText?: TextStyle;
+    };
+    assistantMessage?: {
+      container?: ViewStyle;
+      attachments?: ViewStyle;
+    };
+    attachment?: {
+      image?: ImageStyle;
+      file?: ViewStyle;
+      fileIcon?: ViewStyle;
+      fileName?: TextStyle;
+      fileDetails?: TextStyle;
+    };
+    replyActions?: {
+      container?: ViewStyle;
+      button?: ViewStyle;
+    };
+  };
+  /**
+   * The composer's chat options: the menu in its sheet, and the chip of the one picked. Optional,
+   * so a hand-built `Theme` without it keeps type-checking.
+   */
+  chatOptions?: {
+    /** The picked option's chip. */
+    chipBackground?: string;
+    chipText?: string;
+    /** An option's description in the menu. */
+    descriptionText?: string;
+    /** An option's title in the menu. */
+    titleText?: string;
+    list?: ViewStyle;
+    item?: ViewStyle;
+    itemIcon?: ViewStyle;
+    itemTitle?: TextStyle;
+    itemDescription?: TextStyle;
+    chip?: ViewStyle;
+    chipIcon?: ViewStyle;
+    chipTitle?: TextStyle;
+    chipRemoveButton?: ViewStyle;
+  };
+  /** `AISuggestions`: the starters of an empty conversation. Optional, as above. */
+  suggestions?: {
+    background?: string;
+    text?: string;
+    container?: ViewStyle;
+    content?: ViewStyle;
+    item?: ViewStyle;
+    itemText?: TextStyle;
+  };
+  /** The UI the agent generates for a reply, in place of its text. Optional, as above. */
+  generatedUI?: {
+    /** What a reply's generated UI sits in, as wide as the reply. */
+    container?: ViewStyle;
+  };
+  /**
+   * A2UI's basic catalog, from the `a2ui` entry point: its colors, over ones from the theme's own,
+   * and the look of its parts. Optional, as above.
+   */
+  a2ui?: {
+    colors?: {
+      /** Primary buttons, chosen chips and tabs, links and the slider. */
+      accent?: string;
+      /** Text on the accent. */
+      onAccent?: string;
+      text?: string;
+      secondaryText?: string;
+      /** Inputs and chips. */
+      surface?: string;
+      /** Cards, default buttons and placeholders. */
+      subtleSurface?: string;
+      border?: string;
+      /** What a check found, and the border of the input it found it in. */
+      error?: string;
+    };
+    /** What a reply's surfaces sit in, one under another. */
+    surfaces?: ViewStyle;
+    card?: ViewStyle;
+    button?: ViewStyle;
+    buttonText?: TextStyle;
+    input?: TextStyle;
+    label?: TextStyle;
+    chip?: ViewStyle;
+    chipText?: TextStyle;
+    tab?: ViewStyle;
+    tabText?: TextStyle;
+    divider?: ViewStyle;
+    caption?: TextStyle;
+    image?: ImageStyle;
+  };
 };
+
+/**
+ * The colors of the conversation's parts that the design sets, each with the palette color it is
+ * drawn as. A style that changes that palette color, such as for dark mode, changes the part too,
+ * unless it sets the part's own.
+ */
+export const PALETTE_COLORED_PARTS = [
+  ['conversation', 'loadingIndicator', 'grey_dark'],
+  ['conversation', 'scrollButtonBackground', 'white'],
+  ['conversation', 'scrollButtonBorder', 'grey_gainsboro'],
+  ['conversation', 'scrollButtonIcon', 'black'],
+  ['message', 'userMessageBackground', 'grey_whisper'],
+  ['message', 'userMessageText', 'black'],
+  ['message', 'messageAction', 'grey_dark'],
+  ['message', 'attachmentBackground', 'white'],
+  ['message', 'attachmentBorder', 'grey_gainsboro'],
+  ['message', 'attachmentIcon', 'white'],
+  ['message', 'attachmentIconBackground', 'accent_blue'],
+  ['message', 'attachmentName', 'black'],
+  ['message', 'attachmentDetails', 'grey_dark'],
+  ['message', 'attachmentImagePlaceholder', 'white_smoke'],
+  ['chatOptions', 'chipBackground', 'white'],
+  ['chatOptions', 'chipText', 'accent_blue'],
+  ['chatOptions', 'descriptionText', 'grey_dark'],
+  ['chatOptions', 'titleText', 'black'],
+  ['suggestions', 'background', 'grey_whisper'],
+  ['suggestions', 'text', 'black'],
+] as const satisfies readonly (readonly [keyof Theme, string, keyof typeof colors])[];
 
 export const defaultTheme: Theme = {
   colors,
@@ -121,6 +346,7 @@ export const defaultTheme: Theme = {
     inputPillContainer: {},
     inputPill: {},
     textInput: {},
+    trailing: {},
     roundButton: {},
     attachIcon: {},
     mediaPreviewStyle: {},
@@ -150,5 +376,119 @@ export const defaultTheme: Theme = {
   },
   voiceVisualization: {
     colors: [colors.accent_blue],
+  },
+  messageParts: {
+    successColor: '#20E070',
+    container: {},
+    reasoning: { container: {}, rule: {}, header: {}, title: {}, summary: {}, panel: {} },
+    toolCall: { container: {}, title: {}, detail: {}, duration: {} },
+    approvalCard: {
+      container: {},
+      title: {},
+      message: {},
+      allowButton: {},
+      allowButtonText: {},
+      declineButton: {},
+      declineButtonText: {},
+      failure: {},
+      arguments: {},
+      argumentsLabel: {},
+      argumentsCode: {},
+    },
+    authorizationCard: {
+      container: {},
+      title: {},
+      message: {},
+      outcome: {},
+      connectButton: {},
+      connectButtonText: {},
+      declineButton: {},
+      declineButtonText: {},
+      failure: {},
+    },
+    unsupported: { container: {}, text: {} },
+  },
+  conversation: {
+    // From the shared design tokens.
+    loadingIndicator: '#414552',
+    scrollButtonBackground: '#FFFFFF',
+    scrollButtonBorder: '#D5DBE1',
+    scrollButtonIcon: '#1A1B25',
+    container: {},
+    content: {},
+    empty: {},
+    loadingOlder: {},
+    scrollButton: {},
+    row: {},
+  },
+  message: {
+    // From the shared design tokens.
+    userMessageBackground: '#EBEEF1',
+    userMessageText: '#1A1B25',
+    messageAction: '#414552',
+    attachmentBackground: '#FFFFFF',
+    attachmentBorder: '#D5DBE1',
+    attachmentIcon: '#FFFFFF',
+    attachmentIconBackground: '#005FFF',
+    attachmentName: '#1A1B25',
+    attachmentDetails: '#414552',
+    attachmentImagePlaceholder: '#F6F8FA',
+    userMessage: {
+      container: {},
+      attachments: {},
+      bubble: {},
+      text: {},
+      editButton: {},
+      menu: {},
+      menuItem: {},
+      menuItemText: {},
+    },
+    assistantMessage: { container: {}, attachments: {} },
+    attachment: { image: {}, file: {}, fileIcon: {}, fileName: {}, fileDetails: {} },
+    replyActions: { container: {}, button: {} },
+  },
+  chatOptions: {
+    // From the shared design tokens.
+    chipBackground: '#FFFFFF',
+    chipText: '#005FFF',
+    descriptionText: '#414552',
+    titleText: '#1A1B25',
+    list: {},
+    item: {},
+    itemIcon: {},
+    itemTitle: {},
+    itemDescription: {},
+    chip: {},
+    chipIcon: {},
+    chipTitle: {},
+    chipRemoveButton: {},
+  },
+  suggestions: {
+    // From the shared design tokens.
+    background: '#EBEEF1',
+    text: '#1A1B25',
+    container: {},
+    content: {},
+    item: {},
+    itemText: {},
+  },
+  generatedUI: {
+    container: {},
+  },
+  a2ui: {
+    colors: {},
+    surfaces: {},
+    card: {},
+    button: {},
+    buttonText: {},
+    input: {},
+    label: {},
+    chip: {},
+    chipText: {},
+    tab: {},
+    tabText: {},
+    divider: {},
+    caption: {},
+    image: {},
   },
 };
