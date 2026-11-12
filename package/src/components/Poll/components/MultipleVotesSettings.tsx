@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { I18nManager, Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import Animated, { LinearTransition, StretchInY, StretchOutY } from 'react-native-reanimated';
 
@@ -238,14 +238,15 @@ const useStyles = () => {
       row: {
         alignItems: 'center',
         flexDirection: 'row',
-        gap: primitives.spacingXxs,
+        gap: primitives.spacingXs,
       },
       input: {
         color: semantics.textPrimary,
         fontSize: primitives.typographyFontSizeMd,
-        paddingHorizontal: primitives.spacingSm,
+        minWidth: 32,
+        paddingHorizontal: 0,
         paddingVertical: primitives.spacingMd,
-        textAlign: I18nManager.isRTL ? 'right' : 'left',
+        textAlign: 'center',
       },
       buttonEnabled: {
         borderColor: semantics.borderCoreOnSurface,
