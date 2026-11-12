@@ -1,4 +1,4 @@
-import { Tools } from '@stream-io/calypso';
+import { Tools } from '@stream-io/stream-agents';
 
 import {
   type AIClientTool,
@@ -51,16 +51,14 @@ class Reports {
     else this.reported.set(callId, result);
   }
 
-  wait(callId: string, signal: AbortSignal) {
-    return new Promise<AIClientToolResult>((resolve, reject) => {
+  // A call that was cancelled stops being waited on by the session's tools, which leave its
+  // result unread.
+  wait(callId: string) {
+    return new Promise<AIClientToolResult>((resolve) => {
       const reported = this.reported.get(callId);
       this.reported.delete(callId);
       if (reported) return resolve(reported);
       this.waiting.set(callId, resolve);
-      signal.addEventListener('abort', () => {
-        this.waiting.delete(callId);
-        reject(signal.reason);
-      });
     });
   }
 }
@@ -107,9 +105,9 @@ export const createDeviceTools = ({ clientId, userId }: { clientId: string; user
           executor: 'client',
           name,
           parameters,
-          run: async (input, signal, call) => {
+          run: async (input, call) => {
             const { failure, output } = deviceTools.addressed
-              ? await reports.wait(call.id, signal)
+              ? await reports.wait(call.id)
               : await runUnaddressed(name, {
                   arguments: input,
                   executor: 'client',

@@ -30,7 +30,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { Attachment, LocalMessage, MessagePaginatorState } from 'stream-chat';
+import type { Attachment, LocalMessage } from 'stream-chat';
 import { AudioAttachment, AudioPlayerProvider, useStateStore } from 'stream-chat-expo';
 
 import { createA2UIRenderer } from 'stream-chat-expo/a2ui';
@@ -56,10 +56,8 @@ import {
 import { AgentNotices } from './AgentNotices';
 import { VoiceMemoBar, VoiceMemoButton } from './VoiceMemo';
 
-import type { AgentChat, AgentChatState } from '../agent/agentChat';
 import { crewBackend } from '../agent/agents';
-import type { AgentRequestCustom } from '../agent/agentTransport';
-import { useAgentChatLoaded, useAgentMessages } from '../agent/useAgentMessages';
+import { type Chat, type ChatState, chatStore, keyOf } from '../agent/conversation';
 import { VoiceMode } from '../components/VoiceMode';
 import { useAppContext } from '../contexts/AppContext';
 import { type Flow, FLOWS } from '../flows';
@@ -75,7 +73,7 @@ const ComposerArea = ({
   conversation,
   failure,
 }: {
-  chat: AgentChat;
+  chat: Chat;
   conversation: AIConversationController;
   failure: string | undefined;
 }) => {
@@ -154,17 +152,17 @@ const Flows = ({ conversation }: { conversation: AIConversationController }) => 
   );
 };
 
-const awaitingSelector = ({ awaitingAgent }: AgentChatState) => ({ awaitingAgent });
+const emptySelector = ({ isLoaded }: ChatState) => ({ isLoaded });
 
 const EmptyContent = ({
   chat,
   conversation,
 }: {
-  chat: AgentChat;
+  chat: Chat;
   conversation: AIConversationController;
 }) => {
-  const { awaitingAgent } = useStateStore(chat.state, awaitingSelector);
-  const { isLoaded } = useAgentChatLoaded(chat);
+  const { awaitingAgent } = useAppContext();
+  const { isLoaded } = useStateStore(chatStore(chat), emptySelector);
   if (awaitingAgent) {
     return (
       <View>
@@ -183,19 +181,19 @@ const sourcesOf = (message: LocalMessage | undefined): Source[] =>
   message?.custom?.support_message?.sources ?? NO_SOURCES;
 
 /** The chat the open conversation is kept in, for the views of its messages. */
-const ConversationChatContext = createContext<AgentChat | undefined>(undefined);
+const ConversationChatContext = createContext<Chat | undefined>(undefined);
 
 /** The message of the conversation with `messageId`, following only that message. */
 const useChatMessage = (messageId: string | undefined) => {
   const chat = useContext(ConversationChatContext);
   const selector = useMemo(
     () =>
-      ({ items }: MessagePaginatorState) => ({
-        message: items?.find(({ id }) => id === messageId),
+      ({ messages }: ChatState) => ({
+        message: messages.find(({ id }) => id === messageId),
       }),
     [messageId],
   );
-  return useAgentMessages(chat, selector)?.message;
+  return useStateStore(chat ? chatStore(chat) : undefined, selector)?.message;
 };
 
 const SOURCES_OPEN = { duration: 300, easing: Easing.out(Easing.ease) };
@@ -438,7 +436,7 @@ const Conversation = ({
   chat,
   conversation,
 }: {
-  chat: AgentChat;
+  chat: Chat;
   conversation: AIConversationController;
 }) => {
   const { agentState } = useAppContext();
@@ -466,7 +464,7 @@ const Conversation = ({
               throw error;
             }
           }
-          const custom: AgentRequestCustom = { uiAction: aiUIActionJSON(sent) };
+          const custom = { uiAction: aiUIActionJSON(sent) };
           conversation.send({ custom, text: sent.label });
         },
       }),
@@ -509,7 +507,7 @@ export const ChatContent = () => {
 
   return (
     <Animated.View
-      key={chat.key}
+      key={keyOf(chat)}
       style={[styles.wrapper, { paddingBottom: bottom }]}
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(200)}

@@ -1,7 +1,4 @@
-/**
- * What an `AIAgentError` says when the agent said nothing of its own, a translation key: show it
- * with `t(error.message)`.
- */
+/** What an `AIAgentError` says when the agent said nothing of its own. */
 export const AI_AGENT_ERROR_MESSAGE = "The agent couldn't answer. Try again.";
 
 /**

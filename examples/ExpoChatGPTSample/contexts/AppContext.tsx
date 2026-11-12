@@ -1,23 +1,35 @@
 import type { PropsWithChildren } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { type ConversationSnapshot, type Session, type UIAction } from '@stream-io/calypso';
-import type { MessagePaginatorState, StreamChat } from 'stream-chat';
+import { type ConversationSnapshot, type Session } from '@stream-io/stream-agents';
+import {
+  AgentChat,
+  agentChatTransport,
+  type OpenAgentSession,
+} from '@stream-io/stream-agents/chat';
+import type { LocalMessage, StreamChat } from 'stream-chat';
 import { useStableCallback, useStateStore } from 'stream-chat-expo';
 import {
   AIClientIdentity,
   AIConversationController,
   type AIToolApprover,
   createAuthSessionAuthorizer,
+  fromStreamMessage,
   parseMessageParts,
 } from 'stream-chat-expo/ai-components';
 
-import { AgentChat, type AgentChatState, isAgentReply, type OpenSession } from '../agent/agentChat';
 import { agents, agentSessions, streamToken } from '../agent/agents';
-import { createAgentTransport } from '../agent/agentTransport';
 import { AgentConfig } from '../agent/config';
+import {
+  type Chat,
+  type ChatState,
+  chatStore,
+  isAgentReply,
+  whenUsed,
+} from '../agent/conversation';
 import { createDeviceTools } from '../agent/deviceTools';
-import { useAgentMessages } from '../agent/useAgentMessages';
+import { imagesOf } from '../agent/photos';
+import { THINK_HARDER } from '../chatOptions';
 
 const IDLE: ConversationSnapshot = { kind: 'idle', skills: [] };
 
@@ -32,7 +44,7 @@ const deviceTools = createDeviceTools({ clientId, userId: AgentConfig.user.id })
 const SIGN_IN_SCHEME = 'io.getstream.expochatgptsample';
 const SIGN_IN_RETURN_URL = `${SIGN_IN_SCHEME}://sign-in`;
 
-// The person's answer to a call that asks first. calypso's `decide` answers only a call this
+// The person's answer to a call that asks first. stream-agents' `decide` answers only a call this
 // session was asked on its own socket, and leaves any other alone, so a question shown from the
 // channel, as after reopening the conversation or reloading the app, would wait forever. Such a
 // call is answered with the frames `decide` sends, which the router matches by the call's id: an
@@ -55,26 +67,9 @@ const answerApproval = (session: Session, toolCallId: string, allowed: boolean) 
   }
 };
 
-// Asks, with calypso's `responses.create`, which takes photos, a reasoning effort and what the
-// person did in a reply's UI. The router's `respond`, which addresses a client tool's call to the
-// install a question came from, is only for an app's backend, and this is a phone: the calls reach
-// the device's tools without an install, and the phone runs them itself.
-const respond = async (
-  session: Session,
-  text: string,
-  options: { images: { url: string }[]; reasoningEffort?: string; uiAction?: UIAction },
-) => {
-  deviceTools.addressed = false;
-  await session.responses.create(text, {
-    ...(options.images.length > 0 ? { images: options.images } : {}),
-    ...(options.reasoningEffort ? { reasoningEffort: options.reasoningEffort } : {}),
-    ...(options.uiAction ? { uiAction: options.uiAction } : {}),
-  });
-};
-
 // Answers go over the session's socket, which opens for them in a conversation that was only
 // read so far. Each throws when it can't send, so the card lets the person answer again.
-const approverFor = (chat: AgentChat): AIToolApprover => ({
+const approverFor = (chat: Chat): AIToolApprover => ({
   authorizer: createAuthSessionAuthorizer({
     callbackScheme: SIGN_IN_SCHEME,
     decline: async (call) => (await chat.session()).declineLogin(call.id),
@@ -88,7 +83,7 @@ export type AppContextValue = {
   /** What the agent is doing in the open conversation, from the session's socket. */
   agentState: ConversationSnapshot;
   /** The open conversation's messages and live reasoning. */
-  chat: AgentChat | undefined;
+  chat: Chat | undefined;
   /** The open conversation's state, and what the person does in it. */
   conversation: AIConversationController | undefined;
   /** Bumped when the drawer's list of conversations may have changed. */
@@ -121,14 +116,13 @@ const messageOf = (error: unknown) => (error instanceof Error ? error.message : 
 
 // What the provider follows of the messages: the latest reply, whose calls this phone runs, and
 // the session, once one is open.
-const sessionSelector = ({ session }: AgentChatState) => ({ session });
-
-const lastReplySelector = ({ items }: MessagePaginatorState) => ({
-  lastReply: [...(items ?? [])].reverse().find(isAgentReply),
+const selector = ({ messages, session }: ChatState) => ({
+  lastReply: [...messages].reverse().find(isAgentReply),
+  session,
 });
 
 // Carries a conversation on, or creates one, with the phone's tools declared on it.
-const openSession: OpenSession = (sessionId) =>
+const openSession: OpenAgentSession = (sessionId) =>
   sessionId
     ? agentSessions().resume(sessionId, { tools: deviceTools.sessionTools() })
     : agentSessions().create({
@@ -137,10 +131,31 @@ const openSession: OpenSession = (sessionId) =>
         tools: deviceTools.sessionTools(),
       });
 
-let chats = 0;
-const newChat = (sessionId?: string) => new AgentChat(`chat-${++chats}`, sessionId, openSession);
+const newChat = (sessionId?: string): Chat =>
+  new AgentChat<LocalMessage>({ open: openSession, sessionId });
 
-type Opened = { chat: AgentChat; conversation: AIConversationController };
+// The conversation's state over the chat. Asking goes through the session, which records the
+// question in the channel and answers it there; the router takes photos as data URIs, and
+// thinking harder as a high reasoning effort.
+const conversationOf = (chat: Chat) =>
+  new AIConversationController({
+    // The agents router keeps the conversation in Stream Chat and can't rewind it, so a reply
+    // can't be written again or a message edited: either would only be asked again as new.
+    actions: { edit: false, regenerate: false },
+    approver: approverFor(chat),
+    transport: agentChatTransport(chat, {
+      adapt: (message, reasoningText) => fromStreamMessage(message, { reasoningText }),
+      images: imagesOf,
+      reasoningEffort: (option) => (option?.id === THINK_HARDER.id ? 'high' : undefined),
+    }),
+  });
+
+type Opened = {
+  chat: Chat;
+  conversation: AIConversationController;
+  /** Stops waiting for a new conversation to be used. */
+  stopWaiting: () => void;
+};
 
 export const AppProvider = ({ client, children }: PropsWithChildren<{ client: StreamChat }>) => {
   const [opened, setOpened] = useState<Opened>();
@@ -150,10 +165,11 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   const current = useRef<Opened | undefined>(undefined);
   const chat = opened?.chat;
 
-  const session = useStateStore(chat?.state, sessionSelector)?.session;
+  const followed = useStateStore(chat ? chatStore(chat) : undefined, selector);
+  const session = followed?.session;
 
   // Runs the calls of the latest reply that wait for this phone, each once.
-  const lastReply = useAgentMessages(chat, lastReplySelector)?.lastReply;
+  const lastReply = followed?.lastReply;
   useEffect(() => {
     if (!lastReply) return;
     deviceTools.runner.run(parseMessageParts(lastReply.attachments), (call, result) =>
@@ -162,21 +178,17 @@ export const AppProvider = ({ client, children }: PropsWithChildren<{ client: St
   }, [lastReply]);
 
   // Shows a conversation in place of the one before it, at once, and lets the one before go.
-  const show = (next: AgentChat) => {
+  const show = (next: Chat) => {
     const previous = current.current;
-    const conversation = new AIConversationController({
-      // The agents router keeps the conversation in Stream Chat and can't rewind it, so a reply
-      // can't be written again or a message edited: either would only be asked again as new.
-      actions: { edit: false, regenerate: false },
-      approver: approverFor(next),
-      transport: createAgentTransport(next, {
-        onCreated: () => setConversationsVersion((version) => version + 1),
-        respond,
-      }),
-    });
-    current.current = { chat: next, conversation };
+    current.current = {
+      chat: next,
+      conversation: conversationOf(next),
+      // The router lists a new conversation once its first question created it.
+      stopWaiting: whenUsed(next, () => setConversationsVersion((version) => version + 1)),
+    };
     setFailure(undefined);
     setOpened(current.current);
+    previous?.stopWaiting();
     previous?.conversation.dispose();
     void previous?.chat.close().catch(() => {});
   };

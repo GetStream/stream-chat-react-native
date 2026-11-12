@@ -10,18 +10,18 @@ Ported from the `ExpoChatGPTSample` of the deprecated `@stream-io/chat-react-nat
 ## How it works
 
 The agent runs on a [Vision-Agents](https://github.com/GetStream/Vision-Agents) router, which the app talks to through
-[`@stream-io/calypso`](https://www.npmjs.com/package/@stream-io/calypso) (`agent/`).
+[`@stream-io/stream-agents`](https://www.npmjs.com/package/@stream-io/stream-agents) (`agent/`).
 
 - Each conversation is a router session, kept in an `agent` channel. The drawer lists the user's `agent` channels. `+`
   starts a new session, and one that is never asked anything is deleted when you leave it.
-- The conversation is `AIConversation`, fed from `agent/agentChat.ts`: a small store that watches the channel, copies
-  its messages on every `message.*` event, loads older pages, and keeps each reply's full reasoning from its live
-  updates. There's no `<Channel>`, so the store also watches the channel again after `connection.recovered`, to pick up
-  what was written while the connection was down.
+- The conversation is `AIConversation`, over an `AIConversationController` that `contexts/AppContext.tsx` builds from
+  the SDK's `AgentChat` and `agentChatTransport` (`@stream-io/stream-agents/chat`). `AgentChat` watches the channel,
+  loads older pages, keeps each reply's full reasoning from its live updates, and follows what the agent is doing on
+  the session's socket. The controller offers no edit or regenerate: the router can't rewind a conversation.
 - Asking goes through the session, not the chat composer. The router writes the question and the streamed reply into
   the channel, the reply's steps as `ai_reasoning` and `ai_tool_call` attachments, and titles the conversation itself.
-  A plain question goes to `respond` with this install's id, so the agent can call the phone's tools
-  (`agent/deviceTools.ts`). A question with photos or "Think harder" goes to `responses.create`, which takes neither.
+  Photos go as data URIs, and "Think harder" as a high reasoning effort. The phone's tools (`agent/deviceTools.ts`) are
+  declared on the session, which runs them.
 - The keyboard is handled by the AI components through `react-native-keyboard-controller`; the app only wraps itself
   in `KeyboardProvider`. The starters and the voice button sit in the composer's `header`, so they ride the keyboard.
 

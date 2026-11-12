@@ -3,7 +3,7 @@ import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import type { Schemas } from '@stream-io/calypso';
+import type { Schemas } from '@stream-io/stream-agents';
 import { router } from 'expo-router';
 import { type DrawerContentComponentProps, useDrawerStatus } from 'expo-router/drawer';
 

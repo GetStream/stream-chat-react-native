@@ -79,7 +79,7 @@ The agent runs on Stream's hosted Agents.
   `request_shift_swap`, `create_support_ticket` and `book_check_in`, which ask first with the AI
   components' approval card, then call the backend. The router asks for a yes only on a tool the
   phone declares, so those stay here; the restaurant's other tools run on the backend.
-  `DISPLAY_TITLES` titles every tool's step, the backend's too (`agent/agentTransport.ts`).
+  `DISPLAY_TITLES` titles every tool's step, the backend's too (`agent/conversation.ts`).
 - `agent/agents.ts` signs in with the backend and asks it with the user's Stream token
   (`crewBackend`).
 - The handbook is the agent's knowledge base on the router, filled from `crew_assistant/knowledge/`:

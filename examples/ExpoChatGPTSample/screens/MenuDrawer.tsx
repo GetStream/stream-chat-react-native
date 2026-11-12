@@ -3,7 +3,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import type { Schemas } from '@stream-io/calypso';
+import type { Schemas } from '@stream-io/stream-agents';
 import type { DrawerContentComponentProps } from 'expo-router/drawer';
 
 import { Plus, useStableCallback } from 'stream-chat-expo';

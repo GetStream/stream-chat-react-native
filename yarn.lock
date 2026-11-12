@@ -6191,21 +6191,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stream-io/calypso@npm:^0.3.0":
-  version: 0.3.1
-  resolution: "@stream-io/calypso@npm:0.3.1"
-  peerDependencies:
-    "@stream-io/video-client": ^1.0.0
-    stream-chat: ^9.0.0 || ^10.0.0-0
-  peerDependenciesMeta:
-    "@stream-io/video-client":
-      optional: true
-    stream-chat:
-      optional: true
-  checksum: 10c0/cab7b0b5e9387fb6f1493dec9fc2a7145138c5d46dd6b7fd5498883c1a61af85f8cd83877907f35e1d719c377abe284279c47251e99b141610cff9649195eeff
-  languageName: node
-  linkType: hard
-
 "@stream-io/i18n@npm:^1.1.0":
   version: 1.1.0
   resolution: "@stream-io/i18n@npm:1.1.0"
@@ -6242,6 +6227,21 @@ __metadata:
     use-sync-external-store:
       optional: true
   checksum: 10c0/27179805cb9a042416c741e1759c3324eefae0b27612c50f5fa0e0e13675d71bbe0a324978fcb5fdceaa4df5a99d11c6746eae319761216861b338e8cb7f1928
+  languageName: node
+  linkType: hard
+
+"@stream-io/stream-agents@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@stream-io/stream-agents@npm:0.4.2"
+  peerDependencies:
+    "@stream-io/video-client": ^1.0.0
+    stream-chat: ^9.0.0 || ^10.0.2
+  peerDependenciesMeta:
+    "@stream-io/video-client":
+      optional: true
+    stream-chat:
+      optional: true
+  checksum: 10c0/58d398425d794c661190afc269de3704c9f7bdf0d95736a3004067049626719e986312d08da865ee30b8efff5909ba26179b73e509422b80bb98074655e549bf
   languageName: node
   linkType: hard
 
@@ -11035,8 +11035,8 @@ __metadata:
     "@react-native-community/netinfo": "npm:12.0.1"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@shopify/react-native-skia": "npm:^2.14.0"
-    "@stream-io/calypso": "npm:^0.3.0"
     "@stream-io/state-store": "npm:^1.2.0"
+    "@stream-io/stream-agents": "npm:^0.4.2"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.3.0"
     expo: "npm:^58.0.8"
@@ -11074,8 +11074,8 @@ __metadata:
     "@react-native-community/netinfo": "npm:12.0.1"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@shopify/react-native-skia": "npm:^2.14.0"
-    "@stream-io/calypso": "npm:^0.3.0"
     "@stream-io/state-store": "npm:^1.2.0"
+    "@stream-io/stream-agents": "npm:^0.4.2"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.3.0"
     expo: "npm:^58.0.8"
