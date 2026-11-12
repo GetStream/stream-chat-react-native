@@ -72,7 +72,6 @@
   "dependencies": {
     "@a2ui/web_core": "~0.15.0",
     "@gorhom/bottom-sheet": "^5.2.14",
-    "@khanacademy/simple-markdown": "^2.1.0",
     "@legendapp/list": "^3.7.1",
     "@stream-io/i18n": "^1.1.0",
     "@stream-io/state-store": "^1.2.0",
@@ -88,6 +87,7 @@
     "react-native-markdown-package": "1.8.2",
     "react-native-url-polyfill": "^2.0.0",
     "react-syntax-highlighter": "^16.1.0",
+    "simple-markdown": "^0.7.3",
     "stream-chat": "^10.0.1",
     "use-sync-external-store": "^1.7.0",
     "zod": "^4.1.12"

@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import { Text, type TextProps, View, type ViewProps } from 'react-native';
 
-import type { SingleASTNode } from '@khanacademy/simple-markdown';
+import type { SingleASTNode } from 'simple-markdown';
 
 import type { BulletProps, MarkdownComponentProps, RuleRenderFunction } from '../types';
 

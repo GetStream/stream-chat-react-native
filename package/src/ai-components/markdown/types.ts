@@ -9,14 +9,9 @@ import type {
   ViewStyle,
 } from 'react-native';
 
-import type SimpleMarkdown from '@khanacademy/simple-markdown';
-import type { Output } from '@khanacademy/simple-markdown';
-import type {
-  ParserRule,
-  ReactOutputRule,
-  SingleASTNode,
-  State,
-} from '@khanacademy/simple-markdown';
+import type SimpleMarkdown from 'simple-markdown';
+import type { Output } from 'simple-markdown';
+import type { ParserRule, ReactOutputRule, SingleASTNode, State } from 'simple-markdown';
 
 import type { DeepPartial } from '../contexts';
 
