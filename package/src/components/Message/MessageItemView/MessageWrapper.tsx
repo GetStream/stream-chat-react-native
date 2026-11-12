@@ -61,30 +61,25 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
   const previousMessageCreatedAt = previousMessage?.created_at ?? undefined;
   const isThreadList = !!messagePaginator.parentMessageId;
 
-  // The unread separator goes on the first unread row, below its date separator and above the
-  // message, with the last read message as its older neighbor. It is located per message inside the
-  // selector, so the flag stays `false` for every other row and a mark-read only re-renders the
-  // boundary rows whose flag flips, not the whole list.
+  // The unread separator sits on the first unread row, between its date separator and the message.
+  // Resolved per row in the selector, so only the boundary rows re-render when it moves.
   const showUnreadSeparatorSelector = useCallback(
     (snapshot: UnreadSnapshotState) => {
       let showUnreadSeparator: boolean;
       if (isThreadList || !previousMessageId) {
         showUnreadSeparator = false;
       } else if (snapshot.firstUnreadMessageId) {
-        // Frozen boundary (channel open or mark-unread): anchor to the known first unread ID.
+        // Channel open and mark-unread freeze the boundary at a known first unread ID.
         showUnreadSeparator = messageId === snapshot.firstUnreadMessageId;
       } else if (snapshot.unreadCount) {
-        // Live boundary: the separator goes on the first unread from another user whose older
-        // neighbor is read (created at or before `lastReadAt`). Requiring that neighbor to be read
-        // keeps it to one separator when own messages are interleaved among the unreads, as an own
-        // message sent after the boundary is not read.
+        // The live boundary is the first unread from another user whose previous message is read.
+        // Own messages among the unreads are not read, so this matches only once.
         const lastReadAt = snapshot.lastReadAt ?? 0;
         const thisIsUnread =
           typeof createdAtTimestamp === 'number' && createdAtTimestamp > lastReadAt;
         const previousIsRead =
           previousMessageCreatedAt !== undefined && previousMessageCreatedAt <= lastReadAt;
-        // Own messages sent elsewhere after the boundary leave no read row above the first unread
-        // from another user, so the rule above never fires. Anchor on the last read message then.
+        // When own messages follow the last read one, anchor on the last read message instead.
         const isOwnUnreadAfterLastRead =
           isOwnMessage && previousMessageId === snapshot.lastReadMessageId;
         showUnreadSeparator =
@@ -95,9 +90,7 @@ export const MessageWrapper = React.memo(function MessageWrapper(props: MessageW
 
       return {
         showUnreadSeparator,
-        // Only the boundary row needs the unread count (for its inline indicator). Gating it on
-        // `showUnreadSeparator` keeps it `undefined` elsewhere, so a changing channel-wide count
-        // does not re-render the whole list.
+        // Only the boundary row reads the count, so count changes don't re-render the other rows.
         unreadCount: showUnreadSeparator ? snapshot.unreadCount : undefined,
       };
     },
