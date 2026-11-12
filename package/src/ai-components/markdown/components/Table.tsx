@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Text, View } from 'react-native';
 
-import type { SingleASTNode } from '@khanacademy/simple-markdown';
+import type { SingleASTNode } from 'simple-markdown';
 
 import { MarkdownReactiveScrollView } from '../../components';
 import type {

@@ -36,7 +36,6 @@ const WRAPPERS = ['native-package', 'expo-package'].map((name) => path.join(PACK
 // Third-party packages only the AI components may use. (`lodash` is not one of them: the main
 // entry point imports `lodash/*` modules too.)
 const AI_ONLY_PACKAGES = [
-  '@khanacademy/simple-markdown',
   '@legendapp/list',
   '@shopify/react-native-skia',
   '@stream-io/state-store',
