@@ -2,14 +2,14 @@ import React, { type PropsWithChildren, useMemo } from 'react';
 
 import { View } from 'react-native';
 
+import isArray from 'lodash/isArray';
+import isEqual from 'lodash/isEqual';
+import merge from 'lodash/merge';
 import SimpleMarkdown, {
   type OutputRules,
   type ParserRules,
   type ReactOutputRule,
-} from '@khanacademy/simple-markdown';
-import isArray from 'lodash/isArray';
-import isEqual from 'lodash/isEqual';
-import merge from 'lodash/merge';
+} from 'simple-markdown';
 
 import { useTheme } from '../../contexts';
 import { getLocalRules } from '../rules';
