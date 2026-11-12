@@ -28,8 +28,7 @@ import {
 } from 'stream-chat-expo/ai-components';
 import { AIConversation } from 'stream-chat-expo/ai-components/conversation';
 
-import type { AgentChat, AgentChatState } from '../agent/agentChat';
-import type { AgentRequestCustom } from '../agent/agentTransport';
+import { type Chat, type ChatState, chatStore, keyOf } from '../agent/conversation';
 import { chatOptions, STARTERS } from '../chatOptions';
 import { tripComponents } from '../components/TripComponents';
 import { VoiceMode } from '../components/VoiceMode';
@@ -47,7 +46,7 @@ const ComposerArea = ({
   conversation,
   failure,
 }: {
-  chat: AgentChat;
+  chat: Chat;
   conversation: AIConversationController;
   failure: string | undefined;
 }) => {
@@ -90,7 +89,7 @@ const ComposerArea = ({
 const EmptyState = () => <Text style={styles.emptyText}>What can I help with ?</Text>;
 
 // A conversation still loading isn't empty: it shows no starters meanwhile.
-const isEmptySelector = ({ isLoaded, messages }: AgentChatState) => ({
+const isEmptySelector = ({ isLoaded, messages }: ChatState) => ({
   isEmpty: isLoaded && messages.length === 0,
 });
 
@@ -106,10 +105,10 @@ const Starters = ({
   chat,
   conversation,
 }: {
-  chat: AgentChat;
+  chat: Chat;
   conversation: AIConversationController;
 }) => {
-  const { isEmpty } = useStateStore(chat.state, isEmptySelector);
+  const { isEmpty } = useStateStore(chatStore(chat), isEmptySelector);
   const { pendingMessage } = useAIConversationState(conversation, pendingSelector);
   if (!isEmpty || pendingMessage) return null;
   const onSelect = (text: string) => {
@@ -119,18 +118,18 @@ const Starters = ({
   return <AISuggestions onSelect={onSelect} suggestions={STARTERS} />;
 };
 
-const loadedSelector = ({ isLoaded }: AgentChatState) => ({ isLoaded });
+const loadedSelector = ({ isLoaded }: ChatState) => ({ isLoaded });
 
 /** The open conversation, as its controller has it. */
 const Conversation = ({
   chat,
   conversation,
 }: {
-  chat: AgentChat;
+  chat: Chat;
   conversation: AIConversationController;
 }) => {
   const { agentState } = useAppContext();
-  const { isLoaded } = useStateStore(chat.state, loadedSelector);
+  const { isLoaded } = useStateStore(chatStore(chat), loadedSelector);
 
   // The UI the agent writes for its replies, in A2UI, with the trip planner's own components. One
   // host per conversation, for as long as it shows, so what a reply's UI holds survives scrolling.
@@ -144,7 +143,7 @@ const Conversation = ({
           if (isAIConversationAnswering(conversation.state.getLatestValue().status)) {
             throw new Error('The agent is still answering');
           }
-          const custom: AgentRequestCustom = { uiAction: aiUIActionJSON(action) };
+          const custom = { uiAction: aiUIActionJSON(action) };
           conversation.send({ custom, text: action.label });
         },
       }),
@@ -182,7 +181,7 @@ export const ChatContent = () => {
 
   return (
     <Animated.View
-      key={chat.key}
+      key={keyOf(chat)}
       style={[styles.wrapper, { paddingBottom: bottom }]}
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(200)}

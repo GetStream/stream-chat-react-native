@@ -6448,21 +6448,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stream-io/calypso@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "@stream-io/calypso@npm:0.3.0"
-  peerDependencies:
-    "@stream-io/video-client": ">=1.0.0"
-    stream-chat: ">=9.0.0"
-  peerDependenciesMeta:
-    "@stream-io/video-client":
-      optional: true
-    stream-chat:
-      optional: true
-  checksum: 10c0/8a331b8e5c3fc77c672b268fc0db937a5f0b23297d9238096602cf28f09efb41e9cdf35e11535532c92f1e1431f53cc5af427ab546f552f169a001af5059ec20
-  languageName: node
-  linkType: hard
-
 "@stream-io/state-store@npm:^1.1.6":
   version: 1.1.6
   resolution: "@stream-io/state-store@npm:1.1.6"
@@ -6475,6 +6460,21 @@ __metadata:
     use-sync-external-store:
       optional: true
   checksum: 10c0/42927cdb6a5bf6ba5f4ec11bb5e530db0a04edc65abd5348eb423780e40a3e53f57125e328d0318a0dc6b24ca0fcb28e8b91895a14a62ed8d82645f67ebcee5a
+  languageName: node
+  linkType: hard
+
+"@stream-io/stream-agents@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@stream-io/stream-agents@npm:0.4.2"
+  peerDependencies:
+    "@stream-io/video-client": ^1.0.0
+    stream-chat: ^9.0.0 || ^10.0.2
+  peerDependenciesMeta:
+    "@stream-io/video-client":
+      optional: true
+    stream-chat:
+      optional: true
+  checksum: 10c0/58d398425d794c661190afc269de3704c9f7bdf0d95736a3004067049626719e986312d08da865ee30b8efff5909ba26179b73e509422b80bb98074655e549bf
   languageName: node
   linkType: hard
 
@@ -11498,7 +11498,7 @@ __metadata:
     "@react-native-community/netinfo": "npm:12.0.1"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@shopify/react-native-skia": "npm:^2.14.0"
-    "@stream-io/calypso": "npm:^0.3.0"
+    "@stream-io/stream-agents": "npm:^0.4.2"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.3.0"
     expo: "npm:^58.0.8"
@@ -11535,7 +11535,7 @@ __metadata:
     "@react-native-community/netinfo": "npm:12.0.1"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@shopify/react-native-skia": "npm:^2.14.0"
-    "@stream-io/calypso": "npm:^0.3.0"
+    "@stream-io/stream-agents": "npm:^0.4.2"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.3.0"
     expo: "npm:^58.0.8"

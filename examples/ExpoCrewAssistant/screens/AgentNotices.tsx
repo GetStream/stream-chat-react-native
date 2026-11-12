@@ -1,16 +1,16 @@
 import { useSyncExternalStore } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { Session, ToolApprovalRequest } from '@stream-io/calypso';
+import type { Session, ToolApprovalRequest } from '@stream-io/stream-agents';
 import { useStateStore } from 'stream-chat-expo';
 import { AIToolApprovalCard } from 'stream-chat-expo/ai-components';
 
-import type { AgentChat, AgentChatState } from '../agent/agentChat';
+import { type Chat, type ChatState, chatStore } from '../agent/conversation';
 import { useAppContext } from '../contexts/AppContext';
 
 const NONE: readonly ToolApprovalRequest[] = [];
 
-const sessionSelector = ({ session }: AgentChatState) => ({ session });
+const sessionSelector = ({ session }: ChatState) => ({ session });
 
 // What the call would do, in a line, from the arguments the model wrote.
 const detailsOf = ({ arguments: written }: ToolApprovalRequest) => {
@@ -70,8 +70,8 @@ const Requests = ({ session }: { session: Session }) => {
  * phone asks through `responses.create`, so those wait on its session rather than on the reply's
  * step, and the person answers them here.
  */
-export const AgentNotices = ({ chat }: { chat: AgentChat }) => {
-  const { session } = useStateStore(chat.state, sessionSelector);
+export const AgentNotices = ({ chat }: { chat: Chat }) => {
+  const { session } = useStateStore(chatStore(chat), sessionSelector);
   return session ? (
     <>
       <Failure session={session} />

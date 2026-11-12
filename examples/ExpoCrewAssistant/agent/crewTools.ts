@@ -1,4 +1,4 @@
-import type { ToolApproval } from '@stream-io/calypso';
+import type { ToolApproval } from '@stream-io/stream-agents';
 
 import { type AIClientTool, completedToolResult } from 'stream-chat-expo/ai-components';
 
