@@ -6463,9 +6463,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stream-io/stream-agents@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@stream-io/stream-agents@npm:0.4.1"
+"@stream-io/stream-agents@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@stream-io/stream-agents@npm:0.4.2"
   peerDependencies:
     "@stream-io/video-client": ^1.0.0
     stream-chat: ^9.0.0 || ^10.0.2
@@ -6474,7 +6474,7 @@ __metadata:
       optional: true
     stream-chat:
       optional: true
-  checksum: 10c0/f04554aa230702d8e137574e7951a07fa88128d5d67a48ebfa0d2854af1c10ac2192fd4688866b04c5eab1a83e238ebe496331c97365ddb6e53dd2e97dcd8257
+  checksum: 10c0/58d398425d794c661190afc269de3704c9f7bdf0d95736a3004067049626719e986312d08da865ee30b8efff5909ba26179b73e509422b80bb98074655e549bf
   languageName: node
   linkType: hard
 
@@ -11498,7 +11498,7 @@ __metadata:
     "@react-native-community/netinfo": "npm:12.0.1"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@shopify/react-native-skia": "npm:^2.14.0"
-    "@stream-io/stream-agents": "npm:^0.4.1"
+    "@stream-io/stream-agents": "npm:^0.4.2"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.3.0"
     expo: "npm:^58.0.8"
@@ -11535,7 +11535,7 @@ __metadata:
     "@react-native-community/netinfo": "npm:12.0.1"
     "@rnx-kit/metro-config": "npm:^2.1.2"
     "@shopify/react-native-skia": "npm:^2.14.0"
-    "@stream-io/stream-agents": "npm:^0.4.1"
+    "@stream-io/stream-agents": "npm:^0.4.2"
     "@stream-io/typescript-config": "workspace:^"
     "@types/react": "npm:~19.3.0"
     expo: "npm:^58.0.8"
