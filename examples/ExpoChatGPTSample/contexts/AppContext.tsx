@@ -14,7 +14,7 @@ import {
   AIConversationController,
   type AIToolApprover,
   createAuthSessionAuthorizer,
-  createFromStreamMessage,
+  fromStreamMessage,
   parseMessageParts,
 } from 'stream-chat-expo/ai-components';
 
@@ -137,24 +137,18 @@ const newChat = (sessionId?: string): Chat =>
 // The conversation's state over the chat. Asking goes through the session, which records the
 // question in the channel and answers it there; the router takes photos as data URIs, and
 // thinking harder as a high reasoning effort.
-const conversationOf = (chat: Chat) => {
-  // The same message object for each Stream message that didn't change, so only the messages an
-  // update touched render again. The live thinking is read through `chat.reasoning`.
-  const fromStreamMessage = createFromStreamMessage({
-    reasoningText: (messageId, stepId) => chat.reasoning.get(messageId, stepId),
-  });
-  return new AIConversationController({
+const conversationOf = (chat: Chat) =>
+  new AIConversationController({
     // The agents router keeps the conversation in Stream Chat and can't rewind it, so a reply
     // can't be written again or a message edited: either would only be asked again as new.
     actions: { edit: false, regenerate: false },
     approver: approverFor(chat),
     transport: agentChatTransport(chat, {
-      adapt: (message) => fromStreamMessage(message),
+      adapt: (message, reasoningText) => fromStreamMessage(message, { reasoningText }),
       images: imagesOf,
       reasoningEffort: (option) => (option?.id === THINK_HARDER.id ? 'high' : undefined),
     }),
   });
-};
 
 type Opened = {
   chat: Chat;

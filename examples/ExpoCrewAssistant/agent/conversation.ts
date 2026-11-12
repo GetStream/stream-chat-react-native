@@ -1,6 +1,6 @@
 import type { AgentChat, AgentChatState } from '@stream-io/stream-agents/chat';
 import type { LocalMessage, StateStore } from 'stream-chat';
-import type { AIMessage, AIMessagePartData, AIStreamMessage } from 'stream-chat-expo/ai-components';
+import type { AIMessage, AIMessagePartData } from 'stream-chat-expo/ai-components';
 
 import { DISPLAY_TITLES } from './crewTools';
 
@@ -61,34 +61,22 @@ export const showsAgentReply = (message: LocalMessage) =>
 
 /**
  * Titles the steps of the backend's tools, which the router shows without one, from
- * `DISPLAY_TITLES`. The same message gives back the same object, as `adapt` does.
+ * `DISPLAY_TITLES`.
  */
-export const withTitles = (adapt: (message: AIStreamMessage) => AIMessage) => {
-  const titled = new WeakMap<AIMessage, AIMessage>();
-  return (message: AIStreamMessage) => {
-    const adapted = adapt(message);
-    let shown = titled.get(adapted);
-    if (!shown) {
-      const untitled = (part: AIMessagePartData) =>
-        part.toolCall && !part.toolCall.displayTitle && DISPLAY_TITLES[part.toolCall.name];
-      shown = adapted.parts?.some(untitled)
-        ? {
-            ...adapted,
-            parts: adapted.parts.map((part) =>
-              untitled(part) && part.toolCall
-                ? {
-                    ...part,
-                    toolCall: {
-                      ...part.toolCall,
-                      displayTitle: DISPLAY_TITLES[part.toolCall.name],
-                    },
-                  }
-                : part,
-            ),
-          }
-        : adapted;
-      titled.set(adapted, shown);
-    }
-    return shown;
-  };
+export const withTitles = (message: AIMessage): AIMessage => {
+  const untitled = (part: AIMessagePartData) =>
+    part.toolCall && !part.toolCall.displayTitle && DISPLAY_TITLES[part.toolCall.name];
+  return message.parts?.some(untitled)
+    ? {
+        ...message,
+        parts: message.parts.map((part) =>
+          untitled(part) && part.toolCall
+            ? {
+                ...part,
+                toolCall: { ...part.toolCall, displayTitle: DISPLAY_TITLES[part.toolCall.name] },
+              }
+            : part,
+        ),
+      }
+    : message;
 };

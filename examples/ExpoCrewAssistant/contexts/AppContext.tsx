@@ -15,7 +15,7 @@ import {
   AIConversationController,
   type AIToolApprover,
   createAuthSessionAuthorizer,
-  createFromStreamMessage,
+  fromStreamMessage,
   parseMessageParts,
 } from 'stream-chat-expo/ai-components';
 
@@ -210,16 +210,9 @@ const newChat = (sessionId?: string): Chat =>
 // question in the channel and answers it there, with photos as data URIs. `asked` hears each
 // request as it goes out: the question, or `undefined` for a retry of the last one.
 const conversationOf = (chat: Chat, asked: (request: AgentRequest | undefined) => void) => {
-  // The same message object for each Stream message that didn't change, so only the messages an
-  // update touched render again. The live thinking is read through `chat.reasoning`, and every
-  // tool's step is titled, the backend's too.
-  const fromStreamMessage = withTitles(
-    createFromStreamMessage({
-      reasoningText: (messageId, stepId) => chat.reasoning.get(messageId, stepId),
-    }),
-  );
+  // Every tool's step is titled, the backend's too.
   const transport = agentChatTransport(chat, {
-    adapt: (message) => fromStreamMessage(message),
+    adapt: (message, reasoningText) => withTitles(fromStreamMessage(message, { reasoningText })),
     images: imagesOf,
   });
   return new AIConversationController({
