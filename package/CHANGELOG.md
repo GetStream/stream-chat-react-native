@@ -1,5 +1,13 @@
 # Change Log
 
+## [10.0.2](https://github.com/GetStream/stream-chat-react-native/compare/v10.0.1...v10.0.2) (2026-11-12)
+
+### Bug Fixes
+
+* keep the poll max votes stepper buttons in place ([#3982](https://github.com/GetStream/stream-chat-react-native/issues/3982)) ([d66c30b](https://github.com/GetStream/stream-chat-react-native/commit/d66c30b6bec67eec7fecf0a9ce10af3bb730abf2))
+* render the date separator above the unread indicator ([#3980](https://github.com/GetStream/stream-chat-react-native/issues/3980)) ([a932e5d](https://github.com/GetStream/stream-chat-react-native/commit/a932e5d00404c2390b8d9acc991ba1db0ce35e62))
+* show the video duration when editing messages ([#3972](https://github.com/GetStream/stream-chat-react-native/issues/3972)) ([38afef9](https://github.com/GetStream/stream-chat-react-native/commit/38afef995f3925b97fcff5b8c6800fdfdd19e41a))
+
 ## [10.0.1](https://github.com/GetStream/stream-chat-react-native/compare/v10.0.0...v10.0.1) (2026-11-10)
 
 ### Bug Fixes
