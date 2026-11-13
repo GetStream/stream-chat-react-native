@@ -105,5 +105,5 @@ jobs:
         working-directory: examples/SampleApp
         run: bundle exec fastlane android firebase_build_and_upload deploy:${{ env.IS_DEVELOP == 'true' || env.IS_RC == 'true' }} variant:${{ env.IS_RC == 'true' && 'rc' || 'default' }};
         env:
-          ANDROID_FIREBASE_APP_ID: ${{ secrets.ANDROID_FIREBASE_APP_ID }}
+          ANDROID_FIREBASE_APP_ID: ${{ vars.ANDROID_FIREBASE_APP_ID }}
           FIREBASE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_CREDENTIALS_JSON }}
