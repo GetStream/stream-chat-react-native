@@ -1,6 +1,9 @@
 import { LocalAttachment, MessageComposer } from 'stream-chat';
 
-import { createAttachmentsCompositionMiddleware } from '../attachments';
+import {
+  createAttachmentsCompositionMiddleware,
+  createDraftAttachmentsCompositionMiddleware,
+} from '../attachments';
 
 type AttachmentUploadState = 'finished' | 'blocked' | 'pending' | 'uploading' | 'failed';
 
@@ -90,5 +93,48 @@ describe('createAttachmentsCompositionMiddleware', () => {
 
     expect(next).not.toHaveBeenCalled();
     expect(forward).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('createDraftAttachmentsCompositionMiddleware', () => {
+  it('saves only finished uploads and attachments that are not uploads', () => {
+    const composer = {
+      attachmentManager: {
+        attachments: [
+          {
+            image_url: 'https://cdn.example.com/finished.jpg',
+            localMetadata: { id: 'finished', uploadState: 'finished' },
+            title: 'finished',
+            type: 'image',
+          },
+          createLocalImageAttachment('pending', 'pending'),
+          createLocalImageAttachment('uploading', 'uploading'),
+          createLocalImageAttachment('failed', 'failed'),
+          createLocalImageAttachment('blocked', 'blocked'),
+          { localMetadata: { id: 'product' }, title: 'product', type: 'product' },
+        ],
+      },
+    } as unknown as MessageComposer;
+    const middleware = createDraftAttachmentsCompositionMiddleware(composer);
+    const next = jest.fn((value: unknown) => value);
+
+    middleware.handlers.compose({
+      forward: jest.fn(),
+      next,
+      state: { draft: { attachments: [] } },
+    } as unknown as Parameters<typeof middleware.handlers.compose>[0]);
+
+    const composedState = next.mock.calls[0][0] as {
+      draft: { attachments: { image_url?: string; localId?: string; title?: string }[] };
+    };
+
+    expect(composedState.draft.attachments.map(({ title }) => title)).toEqual([
+      'finished',
+      'product',
+    ]);
+    expect(composedState.draft.attachments[0]).toMatchObject({
+      image_url: 'https://cdn.example.com/finished.jpg',
+    });
+    expect(composedState.draft.attachments[0].localId).toBeUndefined();
   });
 });
