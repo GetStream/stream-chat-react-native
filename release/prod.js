@@ -2,12 +2,15 @@ const semanticRelease = require('semantic-release').default;
 
 const configPromise = require('./release.config.js');
 
+const dryRun = process.env.DRY_RUN === 'true';
+
 configPromise.then((config) => {
   const currentPackage = require(`${process.cwd()}/package.json`);
   const isSDK = currentPackage.name === 'stream-chat-react-native-core';
 
   const newConfig = {
     ...config,
+    dryRun,
     branches: ['main'],
   };
 
