@@ -127,8 +127,11 @@ export class ImageGalleryStateStore {
     const { giphyVersion = 'fixed_height' } = this.options;
 
     return attachmentsWithMessage.flatMap(({ message, attachments }) => {
-      return attachments.map((attachment) => {
-        const assetUrl = getUrlOfImageAttachment(attachment, giphyVersion) as string;
+      return attachments.flatMap((attachment) => {
+        const assetUrl = getUrlOfImageAttachment(attachment, giphyVersion);
+        if (!assetUrl) {
+          return [];
+        }
         const assetId = this.getAssetId(message?.id ?? '', assetUrl);
         const giphyURL =
           attachment.giphy?.[giphyVersion]?.url || attachment.thumb_url || attachment.image_url;
