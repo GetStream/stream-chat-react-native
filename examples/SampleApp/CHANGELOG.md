@@ -1,5 +1,7 @@
 # Change Log
 
+## [5.1.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v5.1.0...sampleapp@v5.1.1) (2026-11-16)
+
 ## [5.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v5.0.1...sampleapp@v5.1.0) (2026-11-12)
 
 ### Features
