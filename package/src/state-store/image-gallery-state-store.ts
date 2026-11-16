@@ -129,8 +129,13 @@ export class ImageGalleryStateStore {
     const { giphyVersion = 'fixed_height' } = this.options;
 
     return attachmentsWithMessage.flatMap(({ message, attachments }) => {
-      return attachments.map((attachment) => {
-        const assetUrl = getUrlOfImageAttachment(attachment, giphyVersion) as string;
+      return attachments.flatMap((attachment) => {
+        const assetUrl = getUrlOfImageAttachment(attachment, giphyVersion);
+        // An attachment without a URL, such as a photo sent before its upload finished, has
+        // nothing to show.
+        if (!assetUrl) {
+          return [];
+        }
         const assetId = this.getAssetId(message?.id ?? '', assetUrl);
         const giphyURL =
           attachment.giphy?.[giphyVersion]?.url || attachment.thumb_url || attachment.image_url;
