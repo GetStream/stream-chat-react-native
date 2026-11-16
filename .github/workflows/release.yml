@@ -1,13 +1,9 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-  # v9-release (the v9 maintenance branch) releases on manual runs only: Actions → Release → Run
-  # workflow → branch `v9-release`. GitHub reads this trigger from the default branch, but a run uses
-  # the workflow file of the branch it was started on, so the inputs and steps below are this branch's.
+  # Releases are cut by hand (Actions -> Release -> Run workflow) on main, develop or v9-release. GitHub
+  # reads this trigger from the default branch, but a run uses the workflow file of the branch it was
+  # started on, so the inputs and steps below are this branch's.
   workflow_dispatch:
     inputs:
       dry_run:
@@ -16,14 +12,17 @@ on:
         default: true
 
 permissions:
-  id-token: write # for OIDC / npm provenance if you use it
-  actions: write # if you dispatch other workflows
-  contents: write # commits / tags / merge-back
+  id-token: write # npm trusted publishing (OIDC)
+  contents: write # release commit, tags, GitHub release, merge-back
+  issues: write # @semantic-release/github comments on released issues
+  pull-requests: write # @semantic-release/github comments on released PRs
 
 jobs:
   publish:
-    # main and develop release on push only; a manual run there would cut an out-of-band release.
-    if: github.event_name == 'push' || github.ref == 'refs/heads/v9-release'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/v9-release'
+    # Every run waits for a reviewer's approval, only the release branches may use this environment,
+    # and the npm trusted publisher requires it.
+    environment: npm-release
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -32,7 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          token: ${{ secrets.CI_BOT_GITHUB_TOKEN }}
           fetch-depth: '0'
 
       - name: Fetch tags
@@ -67,6 +65,8 @@ jobs:
         if: github.ref == 'refs/heads/develop'
         run: |
           GITHUB_SHORT_SHA="$(git rev-parse --short $GITHUB_SHA)" yarn release-next
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
 
       - name: Publish Maintenance Release (v9-release)
         if: github.ref == 'refs/heads/v9-release'
@@ -78,10 +78,11 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: yarn release
         env:
-          GH_TOKEN: ${{ secrets.CI_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
 
       - name: Merge back changes (main -> develop)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && !inputs.dry_run
         run: |
           git stash
           git checkout develop
