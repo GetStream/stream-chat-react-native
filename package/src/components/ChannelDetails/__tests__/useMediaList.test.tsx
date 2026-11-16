@@ -45,6 +45,20 @@ describe('useMediaList', () => {
     ]);
   });
 
+  it('skips attachments without a url', () => {
+    const message = messageWithAttachments('m-1', [
+      // A photo sent before its upload finished.
+      { fallback: 'photo.jpg', type: 'image' },
+      generateImageAttachment({ image_url: 'https://example.com/uploaded.jpg' }),
+    ]);
+
+    const { result } = renderHook(() => useMediaList([message]));
+
+    expect(result.current.map((tile) => tile.attachment.image_url)).toEqual([
+      'https://example.com/uploaded.jpg',
+    ]);
+  });
+
   it('skips messages without attachments', () => {
     const message = generateMessage({ id: 'm-1' }) as unknown as MessageResponse;
     const { result } = renderHook(() => useMediaList([message]));

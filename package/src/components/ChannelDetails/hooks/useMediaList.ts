@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { type Attachment, isScrapedContent, type MessageResponse } from 'stream-chat';
 
 import { FileTypes } from '../../../types/types';
+import { getUrlOfImageAttachment } from '../../../utils/getUrlOfImageAttachment';
 
 /**
  * An image or video attachment with its message. A message with several media attachments yields
@@ -13,7 +14,8 @@ export type MediaTile = {
   message: MessageResponse;
 };
 
-// One tile per image or video attachment, excluding scraped link previews.
+// One tile per image or video attachment, excluding scraped link previews and attachments without
+// a URL, which have nothing to show or open.
 const getMediaTiles = (messages: MessageResponse[] | undefined): MediaTile[] => {
   if (!messages) {
     return [];
@@ -26,7 +28,8 @@ const getMediaTiles = (messages: MessageResponse[] | undefined): MediaTile[] => 
     for (const attachment of message.attachments) {
       if (
         (attachment.type === FileTypes.Image || attachment.type === FileTypes.Video) &&
-        !isScrapedContent(attachment)
+        !isScrapedContent(attachment) &&
+        getUrlOfImageAttachment(attachment)
       ) {
         tiles.push({ attachment, message });
       }
@@ -36,8 +39,8 @@ const getMediaTiles = (messages: MessageResponse[] | undefined): MediaTile[] => 
 };
 
 /**
- * Flattens the messages into one tile per image or video attachment. Scraped link previews and
- * other attachment types are excluded.
+ * Flattens the messages into one tile per image or video attachment. Scraped link previews,
+ * attachments without a URL and other attachment types are excluded.
  *
  * @param messages The messages to gather attachments from.
  * @returns The media tiles.
