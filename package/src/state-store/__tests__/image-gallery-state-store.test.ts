@@ -765,6 +765,38 @@ describe('ImageGalleryStateStore', () => {
       unsubscribe();
     });
 
+    it('opens on the tapped photo when the message also has a photo without a url', () => {
+      const store = new ImageGalleryStateStore();
+      store.subscribeToMessages();
+      const unsubscribe = store.subscribeToSelectedAttachmentUrl();
+
+      // A photo restored from a draft saved while its upload was in flight is sent without a url.
+      const photoWithoutUrl = {
+        fallback: 'photo.jpg',
+        file_size: 2339367,
+        mime_type: 'image/jpeg',
+        original_height: 9000,
+        original_width: 6000,
+        type: 'image',
+      } as Attachment;
+
+      store.messages = [
+        generateMessage({
+          attachments: [
+            photoWithoutUrl,
+            generateImageAttachment({ image_url: 'https://example.com/uploaded.jpg' }),
+          ],
+          id: 'msg-1',
+        }),
+      ];
+      store.selectedAttachmentUrl = 'https://example.com/uploaded.jpg';
+
+      expect(store.assets.map((asset) => asset.uri)).toEqual(['https://example.com/uploaded.jpg']);
+      expect(store.state.getLatestValue().currentIndex).toBe(0);
+
+      unsubscribe();
+    });
+
     it('should mirror the matched index into currentIndexShared', () => {
       const store = new ImageGalleryStateStore();
       store.subscribeToMessages();

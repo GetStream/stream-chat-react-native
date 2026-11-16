@@ -2,6 +2,7 @@ import {
   Attachment,
   AttachmentPreUploadMiddleware,
   FileReference,
+  isFinishedUpload,
   isLocalImageAttachment,
   isLocalUploadAttachment,
   isLocalVideoAttachment,
@@ -101,9 +102,11 @@ export const createDraftAttachmentsCompositionMiddleware = (
 
       const attachments = (state.draft.attachments ?? []).concat(
         attachmentManager.attachments
-          // Don't persist blocked attachments (e.g. over the size limit) into
-          // the draft — they are permanent validation failures.
-          .filter((attachment) => attachment.localMetadata.uploadState !== 'blocked')
+          // Only uploads that finished, and attachments that are not uploads. A draft cannot
+          // carry the local file of an unfinished upload, so it would come back without a URL.
+          .filter(
+            (attachment) => !isLocalUploadAttachment(attachment) || isFinishedUpload(attachment),
+          )
           .map(localAttachmentToAttachment),
       );
 
