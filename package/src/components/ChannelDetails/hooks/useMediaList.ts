@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { type Attachment, isScrapedContent, type MessageResponse } from 'stream-chat';
 
 import { FileTypes } from '../../../types/types';
+import { getUrlOfImageAttachment } from '../../../utils/getUrlOfImageAttachment';
 
 /**
  * A single image/video attachment paired with the message it belongs to. The media grid renders
@@ -29,7 +30,9 @@ const getMediaTiles = (messages: MessageResponse[] | undefined): MediaTile[] => 
     for (const attachment of message.attachments) {
       if (
         (attachment.type === FileTypes.Image || attachment.type === FileTypes.Video) &&
-        !isScrapedContent(attachment)
+        !isScrapedContent(attachment) &&
+        // Without a URL there is nothing to show or open.
+        getUrlOfImageAttachment(attachment)
       ) {
         tiles.push({ attachment, message });
       }
@@ -40,8 +43,8 @@ const getMediaTiles = (messages: MessageResponse[] | undefined): MediaTile[] => 
 
 /**
  * Gathers and filters the image/video attachments from a list of messages into a flat list of
- * media tiles, ready to render in the media grid. Scraped/OG link-preview attachments and
- * non-media attachments are excluded.
+ * media tiles, ready to render in the media grid. Scraped/OG link-preview attachments,
+ * attachments without a URL and non-media attachments are excluded.
  */
 export const useMediaList = (messages?: MessageResponse[]): MediaTile[] =>
   useMemo(() => getMediaTiles(messages), [messages]);
