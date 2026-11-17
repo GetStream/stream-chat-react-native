@@ -1,5 +1,11 @@
 # Change Log
 
+## [10.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v10.1.1...v10.1.2) (2026-11-17)
+
+### Bug Fixes
+
+* skip attachments without a url in the image gallery and media list ([#3997](https://github.com/GetStream/stream-chat-react-native/issues/3997)) ([9177faa](https://github.com/GetStream/stream-chat-react-native/commit/9177faa373216ca6d75f098a253c8932da351904))
+
 ## [10.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v10.1.0...v10.1.1) (2026-11-16)
 
 ### Bug Fixes
