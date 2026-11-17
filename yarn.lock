@@ -7410,7 +7410,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-web: "npm:~0.21.4"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.55.0"
+    stream-chat: "npm:^9.56.0"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -10106,7 +10106,7 @@ __metadata:
     react-native-svg: "npm:^15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^9.55.0"
+    stream-chat: "npm:^9.56.0"
     stream-chat-react-native: "workspace:^"
     typescript: "npm:6.0.3"
   languageName: unknown
@@ -11500,7 +11500,7 @@ __metadata:
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.55.0"
+    stream-chat: "npm:^9.56.0"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -11538,7 +11538,7 @@ __metadata:
     react-native-svg: "npm:15.15.5"
     react-native-teleport: "npm:^1.2.2"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^9.55.0"
+    stream-chat: "npm:^9.56.0"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -19509,7 +19509,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^9.55.0"
+    stream-chat: "npm:^9.56.0"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -20336,7 +20336,7 @@ __metadata:
     react-test-renderer: "npm:19.3.0"
     rimraf: "npm:^6.0.1"
     simple-markdown: "npm:^0.7.3"
-    stream-chat: "npm:^9.55.0"
+    stream-chat: "npm:^9.56.0"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.5.0"
     uuid: "npm:^11.1.0"
@@ -20430,9 +20430,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^9.55.0":
-  version: 9.55.0
-  resolution: "stream-chat@npm:9.55.0"
+"stream-chat@npm:^9.56.0":
+  version: 9.56.0
+  resolution: "stream-chat@npm:9.56.0"
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.8"
     "@types/ws": "npm:^8.18.1"
@@ -20448,7 +20448,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/6119f7f31ac2ccfb8d795da81aecaaedd6aa1e8fe36f5ced0a3b7044c26ea358bfc77d9988ebe3a1fc4982d1ee9313502f172b75663930266519b24d25cf855a
+  checksum: 10c0/dcc353bad88ed7ca83aed4c6cd269f7a972626f1b57bb725a2d963a26879403433d2ee848fa1f5d5bb6158e04719d1f434f91107300757f52544a1c1960f96a4
   languageName: node
   linkType: hard
 
