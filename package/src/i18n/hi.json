@@ -515,5 +515,8 @@
   "Thinking": "सोच रहा है",
   "The agent couldn't answer. Try again.": "एजेंट जवाब नहीं दे सका। फिर से कोशिश करें।",
   "Voice agent": "वॉइस एजेंट",
-  "What it sends": "यह क्या भेजेगा"
+  "What it sends": "यह क्या भेजेगा",
+  "Next version": "अगला संस्करण",
+  "Previous version": "पिछला संस्करण",
+  "Version {{ index }} of {{ total }}": "{{ total }} में से संस्करण {{ index }}"
 }

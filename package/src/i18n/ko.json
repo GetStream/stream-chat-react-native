@@ -515,5 +515,8 @@
   "Thinking": "생각 중",
   "The agent couldn't answer. Try again.": "에이전트가 답변하지 못했습니다. 다시 시도하세요.",
   "Voice agent": "음성 에이전트",
-  "What it sends": "보내는 내용"
+  "What it sends": "보내는 내용",
+  "Next version": "다음 버전",
+  "Previous version": "이전 버전",
+  "Version {{ index }} of {{ total }}": "버전 {{ index }}/{{ total }}"
 }

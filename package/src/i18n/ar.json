@@ -515,5 +515,8 @@
   "Thinking": "يفكر",
   "The agent couldn't answer. Try again.": "تعذّر على الوكيل الرد. حاول مرة أخرى.",
   "Voice agent": "الوكيل الصوتي",
-  "What it sends": "ما سيتم إرساله"
+  "What it sends": "ما سيتم إرساله",
+  "Next version": "الإصدار التالي",
+  "Previous version": "الإصدار السابق",
+  "Version {{ index }} of {{ total }}": "الإصدار {{ index }} من {{ total }}"
 }

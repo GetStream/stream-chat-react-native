@@ -515,5 +515,8 @@
   "Thinking": "Думает",
   "The agent couldn't answer. Try again.": "Агенту не удалось ответить. Попробуйте ещё раз.",
   "Voice agent": "Голосовой агент",
-  "What it sends": "Что будет отправлено"
+  "What it sends": "Что будет отправлено",
+  "Next version": "Следующая версия",
+  "Previous version": "Предыдущая версия",
+  "Version {{ index }} of {{ total }}": "Версия {{ index }} из {{ total }}"
 }

@@ -515,5 +515,8 @@
   "Thinking": "חושב",
   "The agent couldn't answer. Try again.": "הסוכן לא הצליח לענות. נסו שוב.",
   "Voice agent": "סוכן קולי",
-  "What it sends": "מה יישלח"
+  "What it sends": "מה יישלח",
+  "Next version": "הגרסה הבאה",
+  "Previous version": "הגרסה הקודמת",
+  "Version {{ index }} of {{ total }}": "גרסה {{ index }} מתוך {{ total }}"
 }

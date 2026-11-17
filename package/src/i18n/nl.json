@@ -515,5 +515,8 @@
   "Thinking": "Denkt na",
   "The agent couldn't answer. Try again.": "De agent kon niet antwoorden. Probeer het opnieuw.",
   "Voice agent": "Spraakagent",
-  "What it sends": "Wat er wordt verstuurd"
+  "What it sends": "Wat er wordt verstuurd",
+  "Next version": "Volgende versie",
+  "Previous version": "Vorige versie",
+  "Version {{ index }} of {{ total }}": "Versie {{ index }} van {{ total }}"
 }

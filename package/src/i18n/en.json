@@ -515,5 +515,8 @@
   "Thinking": "Thinking",
   "The agent couldn't answer. Try again.": "The agent couldn't answer. Try again.",
   "Voice agent": "Voice agent",
-  "What it sends": "What it sends"
+  "What it sends": "What it sends",
+  "Next version": "Next version",
+  "Previous version": "Previous version",
+  "Version {{ index }} of {{ total }}": "Version {{ index }} of {{ total }}"
 }
