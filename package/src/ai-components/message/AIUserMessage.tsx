@@ -1,6 +1,7 @@
 import React, { type ComponentType } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { type AIBranchSwitch, AIBranchSwitcher } from './AIBranchSwitcher';
 import {
   AIMessageAttachment,
   type AIMessageAttachmentData,
@@ -18,16 +19,23 @@ export type AIUserMessageProps = {
   Attachment?: ComponentType<AIMessageAttachmentProps>;
   /** What they sent with it, such as images and files. */
   attachments?: AIMessageAttachmentData[];
+  /**
+   * Which of the question's versions shows, when the person edited it: a ‹ i/n › switcher with
+   * arrows to the others, shown only while `count` is 2 or more.
+   */
+  branch?: AIBranchSwitch;
   /** Edits the message, such as by putting its text back in the composer. Without it, no edit button. */
   onEdit?: () => void;
 };
 
 /**
- * The person's message: its attachments, then its text in a bubble on the trailing side.
+ * The person's message: its attachments, then its text in a bubble on the trailing side, and a
+ * ‹ i/n › switcher under it when it has several versions.
  */
 export const AIUserMessage = ({
   Attachment = AIMessageAttachment,
   attachments = [],
+  branch,
   onEdit,
   text,
 }: AIUserMessageProps) => {
@@ -84,6 +92,7 @@ export const AIUserMessage = ({
           </View>
         </View>
       ) : null}
+      {branch ? <AIBranchSwitcher {...branch} /> : null}
     </View>
   );
 };
