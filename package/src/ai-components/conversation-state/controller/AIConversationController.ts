@@ -289,8 +289,10 @@ export class AIConversationController<Message extends AIMessage = AIMessage> {
   }
 
   /**
-   * Tries again after `error`: sends the request that failed again, with the same message id, or
-   * asks the agent again for the reply it couldn't write.
+   * Tries again after `error`: sends the request that failed again, with the same message id
+   * after the transport rejected it, or under a new one once the agent had it but didn't answer
+   * (`AIConversationRequest.messageId` says why), or asks the agent again for the reply it
+   * couldn't write.
    */
   retry() {
     const { exchange } = this;
