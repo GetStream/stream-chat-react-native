@@ -26,10 +26,16 @@ jobs:
       matrix:
         node-version: [24.x]
     steps:
-      - name: Connect Bot
-        uses: webfactory/ssh-agent@v0.10.0
+      # Short-lived, read-only token for fastlane match to clone ios-certificates.
+      - name: Create certificates token
+        id: certificates-token
+        uses: actions/create-github-app-token@v3
         with:
-          ssh-private-key: ${{ secrets.BOT_SSH_PRIVATE_KEY }}
+          client-id: ${{ vars.JS_CI_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.JS_CI_BOT_PRIVATE_KEY }}
+          owner: GetStream
+          repositories: ios-certificates
+          permission-contents: read
       - uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
@@ -63,6 +69,7 @@ jobs:
         run: bundle exec fastlane ios deploy_to_testflight_qa deploy:${{ github.ref == 'refs/heads/develop' }};
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_TOKEN: ${{ steps.certificates-token.outputs.token }}
           APPSTORE_API_KEY: ${{ secrets.APPSTORE_API_KEY }}
 
   build_and_deploy_android_firebase:
