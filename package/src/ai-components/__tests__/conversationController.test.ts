@@ -1179,6 +1179,25 @@ describe('AIConversationController and what the agent says it is doing', () => {
     expect(stateOf(controller).pendingMessage).toBeUndefined();
   });
 
+  it('keeps the error when the reply the agent couldn’t write arrives empty after it', async () => {
+    const transport = new ConversationTransport([user('u1', 'Lisbon?'), reply('a1')]);
+    const controller = makeController(transport);
+    controller.send({ text: 'Porto?' });
+    transport.update([user('u1', 'Lisbon?'), reply('a1'), user('u2', 'Porto?')]);
+    transport.updateActivity({ state: AIAgentActivityStates.error, text: 'Rate limited' });
+
+    transport.update([user('u1', 'Lisbon?'), reply('a1'), user('u2', 'Porto?'), reply('a2', '')]);
+
+    expect(stateOf(controller).status).toBe('error');
+    expect((stateOf(controller).error as AIAgentError).agentMessage).toBe('Rate limited');
+
+    controller.retry();
+    await settle();
+
+    expect(transport.lastRequest?.kind).toBe('regenerate');
+    expect(transport.lastRequest?.text).toBe('Porto?');
+  });
+
   it('forgets an error while a reply is written once the agent writes on', () => {
     const transport = new ConversationTransport([user('u1'), reply('a1', 'Day one', true)]);
     const controller = makeController(transport);

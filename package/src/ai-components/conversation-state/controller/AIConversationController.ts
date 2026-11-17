@@ -628,6 +628,15 @@ export class AIConversationController<Message extends AIMessage = AIMessage> {
     if (exchange.state === 'stopped') {
       if (reply.isGenerating) this.stopped.add(reply.id);
       this.exchange = undefined;
+    } else if (
+      exchange.hasFailed &&
+      hasEmptyContent(reply) &&
+      !reply.isGenerating &&
+      !reply.uiDocument
+    ) {
+      // The reply the agent couldn't write, closed with nothing in it, as a backend may leave it
+      // after the error: the request is still unanswered, and `retry()` asks again.
+      return;
     } else if (!hasEmptyContent(reply) || !reply.isGenerating) {
       this.exchange = undefined;
       this.clearReplyTimer();
