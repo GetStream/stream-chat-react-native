@@ -1,6 +1,6 @@
 import type { Attachment, LocalMessage, MessageResponse } from 'stream-chat';
 
-import type { AIMessage } from './types';
+import type { AIMessage, AIMessageBranch } from './types';
 
 import { AI_UI_CUSTOM_DATA_KEY, parseAIUIDocument } from '../generative-ui/AIUIDocument';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
@@ -41,11 +41,41 @@ const attachmentOf = (attachment: Attachment): AIMessageAttachmentData | undefin
   return undefined;
 };
 
+/** The custom field the backend marks a message's versions with. */
+export const AI_BRANCH_CUSTOM_DATA_KEY = 'support_branch';
+
+/** The custom field the backend marks a re-sent copy of a message with, holding the original's id. */
+export const AI_RESENT_FROM_CUSTOM_DATA_KEY = 'resent_from';
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isPositiveInteger = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isInteger(value) && value > 0;
+
+// `support_branch: { response_id, of, index, count, ... }`. A mark that doesn't add up (an
+// unknown `of`, an index past the count) is left out: the message then shows as its only version.
+const branchOf = (mark: unknown): AIMessageBranch | undefined => {
+  if (!isObject(mark)) return undefined;
+  const { count, index, of } = mark;
+  if (of !== 'reply' && of !== 'question') return undefined;
+  if (!isPositiveInteger(count) || !isPositiveInteger(index) || index > count) return undefined;
+  return { count, index, of };
+};
+
+const responseIdOf = (mark: unknown) =>
+  isObject(mark) && typeof mark.response_id === 'string' && mark.response_id !== ''
+    ? mark.response_id
+    : undefined;
+
 /**
  * Adapts a Stream message for `AIConversation`: a reply is one with `ai_generated: true`, it is
  * being written while `generating: true`, its steps are its `ai_reasoning` and `ai_tool_call`
  * attachments, its images and files are its other attachments, and the UI the agent wrote for
- * it is its `ai_ui` field. A person's message has no UI, whatever its fields say.
+ * it is its `ai_ui` field. A person's message has no UI, whatever its fields say. Which of its
+ * versions a message is, and its agent response, are its `support_branch` field
+ * (`{ response_id, of, index, count }`), read as `branch` and `responseId`. A copy the backend
+ * re-sent of an earlier message has `resent_from`, read as `resentFrom`.
  */
 export const fromStreamMessage = (
   message: AIStreamMessage,
@@ -54,6 +84,10 @@ export const fromStreamMessage = (
   const attachments = message.attachments ?? [];
   const assistant = isAssistant ? isAssistant(message) : message.ai_generated === true;
   const uiDocument = assistant ? parseAIUIDocument(message[AI_UI_CUSTOM_DATA_KEY]) : undefined;
+  const mark = message[AI_BRANCH_CUSTOM_DATA_KEY];
+  const branch = branchOf(mark);
+  const responseId = responseIdOf(mark);
+  const resentFrom = message[AI_RESENT_FROM_CUSTOM_DATA_KEY];
   return {
     attachments: attachments
       .map(attachmentOf)
@@ -67,6 +101,9 @@ export const fromStreamMessage = (
     role: assistant ? 'assistant' : 'user',
     text: message.text ?? '',
     ...(uiDocument ? { uiDocument } : {}),
+    ...(branch ? { branch } : {}),
+    ...(responseId ? { responseId } : {}),
+    ...(typeof resentFrom === 'string' && resentFrom !== '' ? { resentFrom } : {}),
   };
 };
 

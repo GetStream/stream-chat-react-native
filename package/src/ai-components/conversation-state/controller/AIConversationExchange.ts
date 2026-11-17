@@ -44,6 +44,13 @@ export class AIConversationExchange<Message extends AIMessage> {
   // The messages it replaces, as they were, which the conversation leaves out while it waits:
   // the reply written again, or the message edited, and those after it.
   readonly replaced: Map<string, Message>;
+  // With `ownTurnOnly`, those of `replaced` in the target's own turn, up to the person's next
+  // message: the ones its reply can be written in place of. A later turn's reply that changes is
+  // not its reply. Without it, any of `replaced`.
+  private readonly rewritable: Set<string> | undefined;
+  // With `ownTurnOnly`, for a regenerate or an edit of a message there was, where the target
+  // is: after the message before it, by id, which older messages loaded meanwhile don't move.
+  private readonly target: { before: string | undefined; index: number } | undefined;
   // The person's message on its way.
   readonly pending: AIPendingMessage | undefined;
 
@@ -52,6 +59,9 @@ export class AIConversationExchange<Message extends AIMessage> {
     readonly id: number,
     readonly request: AIConversationRequest<Message>,
     conversation: readonly Message[],
+    // Whether only the target's own turn can hold its reply written in place, as when the
+    // transport switches versions and any message can be answered again.
+    ownTurnOnly = false,
   ) {
     this.known = new Set(conversation.map((message) => message.id));
     const target = request.message
@@ -62,6 +72,18 @@ export class AIConversationExchange<Message extends AIMessage> {
         ? conversation.slice(target).map((message) => [message.id, message])
         : [],
     );
+    const nextQuestion = conversation.findIndex(
+      (message, index) => target >= 0 && index > target && message.role === 'user',
+    );
+    this.target =
+      ownTurnOnly && this.replaced.size > 0
+        ? { before: conversation[target - 1]?.id, index: target }
+        : undefined;
+    this.rewritable = ownTurnOnly
+      ? new Set(
+          [...this.replaced.keys()].slice(0, nextQuestion >= 0 ? nextQuestion - target : undefined),
+        )
+      : undefined;
     if (request.kind === 'regenerate') {
       this.pending = undefined;
     } else {
@@ -85,14 +107,45 @@ export class AIConversationExchange<Message extends AIMessage> {
     return this.state === 'waiting' || this.request.kind === 'message' ? this.pending : undefined;
   }
 
+  // Where the target is in `conversation` now: after the message before it, or where it was
+  // when that one is gone.
+  private targetIndexIn(conversation: readonly Message[]) {
+    if (!this.target) return -1;
+    const { before, index } = this.target;
+    if (before === undefined) return 0;
+    const at = conversation.findIndex((message) => message.id === before);
+    return at >= 0 ? at + 1 : index;
+  }
+
+  // The messages the conversation leaves out while it waits: those it replaces, and, while the
+  // transport switches versions, any from the target's position on, such as the copies of a
+  // version a switch shows, which the transport re-sends as it answers it again.
+  hiddenIn(conversation: readonly Message[]): ReadonlySet<string> {
+    if (!this.target) return new Set(this.replaced.keys());
+    const from = this.targetIndexIn(conversation);
+    return new Set([...this.replaced.keys(), ...conversation.slice(from).map(({ id }) => id)]);
+  }
+
   // The latest message when it is the request's reply: a reply that wasn't there, or one the
-  // request replaces, once it is written again.
+  // request replaces, once it is written again. A copy the transport re-sent (`resentFrom`), as
+  // it brought back a version a switch shows, never is, whenever it arrives.
+  //
+  // For a regenerate or an edit while the transport switches versions, a reply that wasn't there
+  // counts only when it comes at or after the target's position (after it, for an edit), found
+  // by the message before the target, finished or not. A reply written in place of one in the
+  // target's own turn counts as before.
   reply(conversation: readonly Message[]) {
-    const last = conversation[conversation.length - 1];
-    if (!last || last.role === 'user') return undefined;
-    const original = this.replaced.get(last.id);
-    const rewritten = original ? isRewritten(last, original) : false;
-    return !this.known.has(last.id) || rewritten ? last : undefined;
+    const index = conversation.length - 1;
+    const last = conversation[index];
+    if (!last || last.role === 'user' || last.resentFrom !== undefined) return undefined;
+    const original =
+      (this.rewritable?.has(last.id) ?? true) ? this.replaced.get(last.id) : undefined;
+    if (original) return isRewritten(last, original) ? last : undefined;
+    if (this.known.has(last.id)) return undefined;
+    if (!this.target) return last;
+    const target = this.targetIndexIn(conversation);
+    const isAfterTarget = this.request.kind === 'edit' ? index > target : index >= target;
+    return isAfterTarget ? last : undefined;
   }
 
   // Whether its reply has started: it shows something, or it is already finished.
@@ -109,7 +162,9 @@ export class AIConversationExchange<Message extends AIMessage> {
     conversation.forEach((message, index) => {
       if (this.known.has(message.id)) lastKnown = index;
     });
-    return conversation.slice(lastKnown + 1).some((message) => message.role === 'user');
+    return conversation
+      .slice(lastKnown + 1)
+      .some((message) => message.role === 'user' && message.resentFrom === undefined);
   }
 
   // What `retry()` sends:
