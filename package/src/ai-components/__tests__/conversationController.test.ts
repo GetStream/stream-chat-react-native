@@ -1131,9 +1131,9 @@ describe('AIConversationController and what the agent says it is doing', () => {
     controller.retry();
     await settle();
 
-    // Not a1 written again.
+    // Not a1 written again, and under a new id: the agent had the first.
     expect(transport.lastRequest?.kind).toBe('message');
-    expect(transport.lastRequest?.messageId).toBe(sent?.messageId);
+    expect(transport.lastRequest?.messageId).not.toBe(sent?.messageId);
     expect(transport.lastRequest?.text).toBe('Porto?');
   });
 

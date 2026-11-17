@@ -36,7 +36,14 @@ export type AIConversationRequest<Message extends AIMessage = AIMessage> = {
   kind: AIConversationRequestKind;
   /**
    * An id for the person's message. A transport that creates the message with it lets the
-   * conversation find its copy by it. A retry of the request keeps it.
+   * conversation find its copy by it.
+   *
+   * A retry keeps it after the transport's `send` rejected, since the backend may already have
+   * the request. Once the agent had the request but didn't answer it (an `AIAgentError`, or the
+   * reply timeout), a retry sends it under a new id, whatever its kind: a backend that tells
+   * requests apart by id, such as the Stream Agents router, takes a request whose id it already
+   * handled for a duplicate and starts nothing. A message of the person's that already arrived
+   * is answered with a `regenerate` instead, so it isn't added twice.
    */
   messageId: string;
   /** What the person wrote. When a reply is written again, the message it answers says it. */
@@ -133,9 +140,10 @@ export type AIConversationTransport<Message extends AIMessage = AIMessage> = {
   /**
    * Sends what the person asks. Resolve once the agent has the request: its reply arrives
    * through the feed. A rejection shows as the conversation's error, and the person can retry,
-   * which sends the same request again with the same `messageId`: if the first attempt reached
-   * your backend, or you keep a copy of the failed message, use the id so the message isn't added
-   * twice. A rejection with an `AbortError` ends the request without an error.
+   * which sends the same request again with the same `messageId` (see `messageId`): if the
+   * first attempt reached your backend, or you keep a copy of the failed message, use the id so
+   * the message isn't added twice. A rejection with an `AbortError` ends the request without an
+   * error.
    *
    * The controller leaves out the messages a `regenerate` or an `edit` replaces only until the
    * new reply starts. From then on it shows the messages as the feed has them, so update the

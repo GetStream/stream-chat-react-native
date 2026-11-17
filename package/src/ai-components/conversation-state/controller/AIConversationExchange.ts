@@ -112,21 +112,23 @@ export class AIConversationExchange<Message extends AIMessage> {
     return conversation.slice(lastKnown + 1).some((message) => message.role === 'user');
   }
 
-  // What `retry()` sends: the request again, or, when the agent had the person's message but
-  // couldn't answer it, a request for its reply, since sending it again would add it twice.
+  // What `retry()` sends:
+  // - After the transport failed to send it, the request again under the same id, which the
+  //   backend may already have.
+  // - Once the agent had it but didn't answer, the request again under a new id: a backend that
+  //   tells requests apart by id, such as the Stream Agents router, takes the same id for one it
+  //   already handled and starts nothing. When the person's message arrived, a request for its
+  //   reply instead, since sending it again would add it twice.
   retryRequest(conversation: readonly Message[]): AIConversationRequest<Message> {
-    if (
-      this.state !== 'unanswered' ||
-      this.request.kind !== 'message' ||
-      !this.hasMessageArrived(conversation)
-    ) {
-      return this.request;
+    if (this.state !== 'unanswered') return this.request;
+    if (this.request.kind === 'message' && this.hasMessageArrived(conversation)) {
+      return {
+        attachments: [],
+        kind: 'regenerate',
+        messageId: generateUUIDv4(),
+        text: this.request.text,
+      };
     }
-    return {
-      attachments: [],
-      kind: 'regenerate',
-      messageId: generateUUIDv4(),
-      text: this.request.text,
-    };
+    return { ...this.request, messageId: generateUUIDv4() };
   }
 }

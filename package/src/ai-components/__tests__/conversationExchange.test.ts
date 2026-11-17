@@ -140,7 +140,7 @@ describe('AIConversationExchange', () => {
     expect(exchange.hasMessageArrived([...conversation, reply('a3')])).toBe(false);
   });
 
-  it('retries the request, unless the agent couldn’t answer a message it has', () => {
+  it('retries the request, under a new id once the agent didn’t answer it', () => {
     const exchange = exchangeOf({});
     exchange.state = 'failed';
 
@@ -150,14 +150,28 @@ describe('AIConversationExchange', () => {
 
     exchange.state = 'unanswered';
 
-    // Its message never arrived.
+    // Its message never arrived: sent again, under a new id, since the agent had the old one.
     expect(exchange.retryRequest(conversation).kind).toBe('message');
+    expect(exchange.retryRequest(conversation).messageId).not.toBe('m1');
     const again = exchange.retryRequest([...conversation, user('m1')]);
     expect(again.kind).toBe('regenerate');
     expect(again.text).toBe('Hi');
     // A reply to the latest message.
     expect(again.message).toBeUndefined();
     expect(again.messageId).not.toBe('m1');
+  });
+
+  it('retries a regenerate or an edit under the same id after a failure, a new one once unanswered', () => {
+    for (const kind of ['regenerate', 'edit'] as const) {
+      const exchange = exchangeOf({ kind, message: reply('a1') });
+      exchange.state = 'failed';
+      expect(exchange.retryRequest(conversation)).toMatchObject({ kind, messageId: 'm1' });
+
+      exchange.state = 'unanswered';
+      const again = exchange.retryRequest(conversation);
+      expect(again).toMatchObject({ kind, message: { id: 'a1' }, text: 'Hi' });
+      expect(again.messageId).not.toBe('m1');
+    }
   });
 
   it('shows the person’s message until its reply, and afterwards only for a new message', () => {
