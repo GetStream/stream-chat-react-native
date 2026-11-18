@@ -45,6 +45,16 @@ const showsNothing = (message: AIMessage, canShowUI: AIConversationCanShowUI) =>
   !message.attachments?.length &&
   !(message.uiDocument && canShowUI(message.uiDocument));
 
+/**
+ * Whether a finished reply has other versions to switch to. One with nothing in it, as a version
+ * the agent couldn't write, still shows, for its switcher: the only way back to the others.
+ */
+export const hasOtherReplyVersions = (message: AIMessage) =>
+  message.role !== 'user' &&
+  !message.isGenerating &&
+  message.branch?.of === 'reply' &&
+  message.branch.count > 1;
+
 // Whether a step is over: a round of reasoning that stopped streaming, or a call that finished.
 // A step of a kind this SDK doesn't know counts as over, since it can't say otherwise.
 const isStepOver = ({ reasoning, toolCall }: NonNullable<AIMessage['parts']>[number]) =>
@@ -143,7 +153,7 @@ export class AIPendingMessageTracker {
     this.lastNewestFromUser = newestFromUser;
 
     const entries: AIConversationEntry[] = messages
-      .filter((message) => !showsNothing(message, canShowUI))
+      .filter((message) => !showsNothing(message, canShowUI) || hasOtherReplyVersions(message))
       .map((message) => {
         const taken = this.copies.get(message.id);
         return {
