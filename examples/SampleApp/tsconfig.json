@@ -2,5 +2,8 @@
   "extends": ["@react-native/typescript-config", "@stream-io/typescript-config/base.json"],
   "compilerOptions": {
     "types": []
-  }
+  },
+  // index.spm.js is the entry of the Swift Package Manager smoke build, not part of the app. It
+  // imports the SDK's codegen spec source, which does not type-check from this project.
+  "exclude": ["node_modules", "index.spm.js"]
 }
