@@ -515,5 +515,8 @@
   "Thinking": "Pensando",
   "The agent couldn't answer. Try again.": "O agente não conseguiu responder. Tente novamente.",
   "Voice agent": "Agente de voz",
-  "What it sends": "O que será enviado"
+  "What it sends": "O que será enviado",
+  "Next version": "Próxima versão",
+  "Previous version": "Versão anterior",
+  "Version {{ index }} of {{ total }}": "Versão {{ index }} de {{ total }}"
 }

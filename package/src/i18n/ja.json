@@ -515,5 +515,8 @@
   "Thinking": "考え中",
   "The agent couldn't answer. Try again.": "エージェントが応答できませんでした。もう一度お試しください。",
   "Voice agent": "音声エージェント",
-  "What it sends": "送信される内容"
+  "What it sends": "送信される内容",
+  "Next version": "次のバージョン",
+  "Previous version": "前のバージョン",
+  "Version {{ index }} of {{ total }}": "バージョン {{ index }}/{{ total }}"
 }

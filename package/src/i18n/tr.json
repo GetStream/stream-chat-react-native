@@ -515,5 +515,8 @@
   "Thinking": "Düşünüyor",
   "The agent couldn't answer. Try again.": "Ajan yanıt veremedi. Tekrar deneyin.",
   "Voice agent": "Sesli ajan",
-  "What it sends": "Gönderilecekler"
+  "What it sends": "Gönderilecekler",
+  "Next version": "Sonraki sürüm",
+  "Previous version": "Önceki sürüm",
+  "Version {{ index }} of {{ total }}": "Sürüm {{ index }}/{{ total }}"
 }
