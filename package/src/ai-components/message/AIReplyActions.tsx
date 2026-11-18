@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, Share, StyleSheet, View } from 'react-native';
 
+import { type AIBranchSwitch, AIBranchSwitcher } from './AIBranchSwitcher';
+
 import { useAITranslation, useTheme } from '../contexts';
 import { type AIIcon, useAIIcons } from '../icons';
 import { setClipboardString } from '../services/clipboard-service';
@@ -11,6 +13,11 @@ export type AIMessageRating = 'positive' | 'negative';
 export type AIReplyActionsProps = {
   /** The reply's text, which copying and sharing hand on. */
   text: string;
+  /**
+   * Which of the reply's versions shows, when it was written again: a ‹ i/n › switcher with
+   * arrows to the others, shown only while `count` is 2 or more.
+   */
+  branch?: AIBranchSwitch;
   /** Rates the reply, or takes the rating back with `null`. Without it, no rating is offered. */
   onRate?: (rating: AIMessageRating | null) => void;
   /** Asks the agent for a new reply in its place. Without it, no regenerate button. */
@@ -52,10 +59,17 @@ const Action = ({ Icon, label, onPress, selected }: ActionProps) => {
 };
 
 /**
- * The actions under a finished reply: copy (when the app has a clipboard module), share through
- * the system's share sheet, regenerate, and a thumbs up or down rating.
+ * The actions under a finished reply: the switcher between its versions when it has several,
+ * copy (when the app has a clipboard module), share through the system's share sheet,
+ * regenerate, and a thumbs up or down rating.
  */
-export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyActionsProps) => {
+export const AIReplyActions = ({
+  branch,
+  onRate,
+  onRegenerate,
+  rating,
+  text,
+}: AIReplyActionsProps) => {
   const { t } = useAITranslation();
   const {
     theme: { message },
@@ -92,7 +106,9 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
   const positive = rating === 'positive';
   const negative = rating === 'negative';
 
-  if (!hasText && !onRegenerate && !onRate) return null;
+  const hasVersions = !!branch && branch.count > 1;
+
+  if (!hasText && !onRegenerate && !onRate && !hasVersions) return null;
 
   return (
     <View
@@ -104,6 +120,7 @@ export const AIReplyActions = ({ onRate, onRegenerate, rating, text }: AIReplyAc
       style={[defaultStyles.container, message?.replyActions?.container]}
       testID='ai-reply-actions'
     >
+      {branch ? <AIBranchSwitcher {...branch} /> : null}
       {copy ? (
         <Action
           Icon={isCopied ? icons.Copied : icons.Copy}
