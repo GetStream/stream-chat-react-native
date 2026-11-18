@@ -24,7 +24,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}:${{ inputs.mock_server_branch || 'main' }}
   cancel-in-progress: true
 
 env:
@@ -44,7 +44,7 @@ env:
 jobs:
   ios:
     name: Test iOS ${{ matrix.ios }}
-    if: github.event_name == 'schedule' || inputs.ios
+    if: (github.event_name == 'schedule' || inputs.ios) && (inputs.mock_server_branch || 'main') == 'main'
     runs-on: macos-15
     timeout-minutes: 360
     strategy:
@@ -224,14 +224,15 @@ jobs:
   # Built once per flavor and shared by the test jobs, as on pull requests.
   android-build:
     name: Build Android (${{ matrix.coverage && 'coverage' || 'plain' }})
-    if: github.event_name == 'schedule' || inputs.android
+    if: github.event_name == 'schedule' || inputs.android || (inputs.mock_server_branch || 'main') != 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         # The coverage runs need a bundle instrumented with E2E_COVERAGE; the others test the plain app.
-        coverage: [true, false]
+        # Coverage is only collected against the main mock server.
+        coverage: ${{ fromJson((inputs.mock_server_branch || 'main') != 'main' && '[false]' || '[true, false]') }}
     env:
       APK_PATHS: |
         examples/E2ETestApp/android/app/build/outputs/apk/release/app-release.apk
@@ -287,17 +288,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          # Coverage runs every test in its own app process for the map that selects e2e tests on
-          # pull requests. That is too slow for one runner, so its tests are split across batches.
-          # coverage_map's batch_count must match.
-          - { api-level: 36, coverage: true, batch: 0, batch_count: 4 }
-          - { api-level: 36, coverage: true, batch: 1, batch_count: 4 }
-          - { api-level: 36, coverage: true, batch: 2, batch_count: 4 }
-          - { api-level: 36, coverage: true, batch: 3, batch_count: 4 }
-          - { api-level: 34, batch: 0, batch_count: 1 }
-          - { api-level: 31, batch: 0, batch_count: 1 }
-          - { api-level: 28, batch: 0, batch_count: 1 }
+        # Coverage runs every test in its own app process for the map that selects e2e tests on
+        # pull requests. That is too slow for one runner, so its tests are split across batches.
+        # coverage_map's batch_count must match.
+        # Coverage is only collected against the main mock server.
+        include: |-
+          ${{ fromJson(
+            (inputs.mock_server_branch || 'main') != 'main' && '[
+              { "api-level": 36, "batch": 0, "batch_count": 1 }
+            ]'
+            || '[
+              { "api-level": 36, "coverage": true, "batch": 0, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 1, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 2, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 3, "batch_count": 4 },
+              { "api-level": 34, "batch": 0, "batch_count": 1 },
+              { "api-level": 31, "batch": 0, "batch_count": 1 },
+              { "api-level": 28, "batch": 0, "batch_count": 1 }
+            ]'
+          ) }}
     env:
       # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
       # (RN-513).
@@ -420,7 +429,7 @@ jobs:
     name: Build e2e coverage map
     needs: android
     # Failed tests keep their previous coverage; only a batch that never finished blocks the map.
-    if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.android) }}
+    if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.android) && (inputs.mock_server_branch || 'main') == 'main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
