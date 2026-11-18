@@ -296,7 +296,27 @@ jobs:
         # pull requests. That is too slow for one runner, so its tests are split across batches.
         # coverage_map's batch_count must match.
         # Coverage is only collected against the main mock server.
-        include: ${{ fromJson(inputs.mock_check && '[{"api-level":36,"batch":0,"batch_count":1}]' || (inputs.mock_server_branch || 'main') != 'main' && '[{"api-level":36,"batch":0,"batch_count":1},{"api-level":34,"batch":0,"batch_count":1},{"api-level":31,"batch":0,"batch_count":1},{"api-level":28,"batch":0,"batch_count":1}]' || '[{"api-level":36,"coverage":true,"batch":0,"batch_count":4},{"api-level":36,"coverage":true,"batch":1,"batch_count":4},{"api-level":36,"coverage":true,"batch":2,"batch_count":4},{"api-level":36,"coverage":true,"batch":3,"batch_count":4},{"api-level":34,"batch":0,"batch_count":1},{"api-level":31,"batch":0,"batch_count":1},{"api-level":28,"batch":0,"batch_count":1}]') }}
+        include: |-
+          ${{ fromJson(
+            inputs.mock_check && '[
+              { "api-level": 36, "batch": 0, "batch_count": 1 }
+            ]'
+            || (inputs.mock_server_branch || 'main') != 'main' && '[
+              { "api-level": 36, "batch": 0, "batch_count": 1 },
+              { "api-level": 34, "batch": 0, "batch_count": 1 },
+              { "api-level": 31, "batch": 0, "batch_count": 1 },
+              { "api-level": 28, "batch": 0, "batch_count": 1 }
+            ]'
+            || '[
+              { "api-level": 36, "coverage": true, "batch": 0, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 1, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 2, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 3, "batch_count": 4 },
+              { "api-level": 34, "batch": 0, "batch_count": 1 },
+              { "api-level": 31, "batch": 0, "batch_count": 1 },
+              { "api-level": 28, "batch": 0, "batch_count": 1 }
+            ]'
+          ) }}
     env:
       # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
       # (RN-513).
