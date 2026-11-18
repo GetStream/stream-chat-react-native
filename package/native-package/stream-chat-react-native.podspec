@@ -20,7 +20,9 @@ Pod::Spec.new do |s|
     fi
   CMD
   s.source_files = "ios/**/*.{h,m,mm,swift}"
-  s.private_header_files = "ios/**/*.h"
+  # The protocols in `ios/shared/interfaces/include` stay public so the Swift sources can conform to
+  # them. They import only Foundation and UIKit.
+  s.private_header_files = ["ios/*.h", "ios/shared/*.h"]
 
   # Dictation (`ai-components` speech-to-text) references the Speech framework, and App Store Connect
   # requires a speech recognition usage description from every app whose binary does. It is therefore

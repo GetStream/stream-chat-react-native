@@ -1,21 +1,9 @@
 import Foundation
 import Speech
 import AVFoundation
-
-/**
- * A sink for dictation events emitted from the native module.
- *
- * Implemented by the Obj-C++ TurboModule (`AIDictation.mm`), which forwards these
- * calls into React Native’s event system through `RCTEventEmitter`.
- *
- * All payloads are plain `NSDictionary` objects.
- */
-@objc public protocol AIDictationEventSink {
-    func emitOnState(_ value: NSDictionary)
-    func emitOnResult(_ value: NSDictionary)
-    func emitOnError(_ value: NSDictionary)
-    func emitOnLevel(_ value: NSDictionary)
-}
+#if canImport(StreamChatNativeInterfaces)
+import StreamChatNativeInterfaces
+#endif
 
 @objc(AIDictationModule)
 public class AIDictationModule: NSObject {
@@ -106,8 +94,8 @@ public class AIDictationModule: NSObject {
      * the primary `start(_:)` implementation.
      */
     @objc(startWithOptions:eventEmitter:)
-    public func startWithOptions(_ options: NSDictionary?, eventEmitter: NSObject) {
-        start(options)
+    public func startWithOptions(_ options: [AnyHashable: Any]?, eventEmitter: NSObject) {
+        start(options.map { $0 as NSDictionary })
     }
 
     // -------------------------------------------------------------------------
@@ -565,7 +553,7 @@ public class AIDictationModule: NSObject {
      * - `isFinal` (`Bool`): `true` for final results, `false` for interim
      */
     private func emitResult(text: String, isFinal: Bool) {
-        let payload: NSDictionary = [
+        let payload: [String: Any] = [
             "text": text,
             "isFinal": isFinal
         ]
@@ -579,7 +567,7 @@ public class AIDictationModule: NSObject {
      * - `state` (`String`): one of `"idle"`, `"starting"`, `"listening"`, `"stopping"`
      */
     private func emitState(_ state: String) {
-        let payload: NSDictionary = [
+        let payload: [String: Any] = [
             "state": state
         ]
         eventSink?.emitOnState(payload)
@@ -622,10 +610,12 @@ public class AIDictationModule: NSObject {
      * - `message` (`String`): human-readable description for logging / debugging
      */
     private func emitError(_ code: String, message: String) {
-        let payload: NSDictionary = [
+        let payload: [String: Any] = [
             "code": code,
             "message": message
         ]
         eventSink?.emitOnError(payload)
     }
 }
+
+extension AIDictationModule: AIDictationModuleAPI {}

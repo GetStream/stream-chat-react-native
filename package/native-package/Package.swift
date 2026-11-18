@@ -17,7 +17,10 @@ let swiftTargetName = "StreamChatReactNativeSwift"
 let nonSources = ["StreamChatReactNative.xcodeproj"]
 
 // SwiftPM cannot compile Swift and Objective-C++ in one target, so the Swift sources get their own
-// target. The Objective-C++ glue only calls into Swift, so the split has no cycle.
+// target. The Objective-C++ glue reaches the Swift classes through the Objective-C protocols in
+// `ios/shared/interfaces`, which the Swift classes conform to, instead of the generated Swift header.
+// The protocols target has the same name in both wrappers, so the shared Swift sources can import it.
+let interfacesTargetName = "StreamChatNativeInterfaces"
 let swiftSources = [
   "AIAgentModule.swift",
   "AIDictationModule.swift",
@@ -73,7 +76,13 @@ let package = Package(
   ],
   targets: [
     .target(
+      name: interfacesTargetName,
+      path: "ios/shared/interfaces",
+      publicHeadersPath: "include"
+    ),
+    .target(
       name: swiftTargetName,
+      dependencies: [.target(name: interfacesTargetName)],
       path: "ios/shared",
       sources: swiftSources.filter { dictationEnabled || !dictationSwiftSources.contains($0) },
       linkerSettings: [.linkedFramework("AuthenticationServices")]
@@ -82,6 +91,7 @@ let package = Package(
     .target(
       name: packageName,
       dependencies: [
+        .target(name: interfacesTargetName),
         .target(name: swiftTargetName),
         .product(name: "ReactHeaders", package: "ReactNative"),
         .product(name: "ReactNativeHeaders", package: "ReactNative"),
@@ -90,6 +100,7 @@ let package = Package(
       ],
       path: "ios",
       exclude: nonSources
+        + ["shared/interfaces"]
         + swiftSources.map { "shared/\($0)" }
         + (dictationEnabled ? [] : dictationObjCSources),
       // Nothing imports this module (React Native looks the modules and views up by class name), but
@@ -101,13 +112,6 @@ let package = Package(
         // Fabric C++ has to match the NDEBUG state of the prebuilt React framework.
         .define("DEBUG", .when(configuration: .debug)),
         .define("NDEBUG", .when(configuration: .release)),
-        // Xcode compiles Objective-C++ without C++ modules and keeps the Swift target's generated
-        // header off the search path, so the `.mm` files include it by full path. SwiftPM rejects
-        // `$(...)` here, and `${...}` is the same build setting.
-        .define(
-          "STREAM_CHAT_SWIFT_HEADER",
-          to: "\"${GENERATED_MODULEMAP_DIR}/\(swiftTargetName)-Swift.h\""
-        ),
       ],
       linkerSettings: [
         .linkedFramework("UIKit"),
