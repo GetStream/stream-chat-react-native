@@ -12,7 +12,7 @@ import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
 import type { LegendListRenderItemProps } from '@legendapp/list/react-native';
 
-import type { AIConversationEntry } from './entries';
+import { type AIConversationEntry, hasOtherReplyVersions } from './entries';
 import { AIChatList } from './list/AIChatList';
 import { type ConversationRow, type RowPosition, useConversationRows } from './useConversationRows';
 
@@ -328,8 +328,8 @@ const EntryView = ({
   const showsUI = !!uiDocument && generated !== null && generated !== undefined;
   const uiFailed = !!uiDocument && !!ui?.hasFailed(message.id);
   // A finished reply has its actions under it whether it answers in text or in UI, once the
-  // UI is written.
-  const hasAnswer = message.text !== '' || showsUI;
+  // UI is written, and a version with neither for its switcher.
+  const hasAnswer = message.text !== '' || showsUI || hasOtherReplyVersions(message);
   const isWritingUI = showsUI && uiDocument.isStreaming;
   return (
     <View style={styles.reply}>
