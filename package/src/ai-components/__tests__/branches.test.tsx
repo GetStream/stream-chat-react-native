@@ -190,6 +190,28 @@ describe('AIConversation branches', () => {
     expect(onPrevious).toHaveBeenCalledTimes(1);
   });
 
+  it('keeps the switcher under a version with no answer, to switch back from', async () => {
+    const onNext = jest.fn();
+    await renderConversation(
+      <AIConversation
+        messages={[user('u1', 'Hi'), branched(reply('a1', ''), 'reply', 1, 2)]}
+        replyActions={() => ({ branch: { count: 2, index: 1, onNext } })}
+      />,
+    );
+    fireEvent.press(within(screen.getByTestId('ai-reply-actions')).getByLabelText('Next version'));
+    expect(onNext).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows no actions under an empty reply with one version', async () => {
+    await renderConversation(
+      <AIConversation
+        messages={[user('u1', 'Hi'), reply('a1', '')]}
+        replyActions={() => ({ onRegenerate: jest.fn() })}
+      />,
+    );
+    expect(screen.queryByTestId('ai-reply-actions')).toBeNull();
+  });
+
   it('passes userMessageActions’ branch to the default user message', async () => {
     const userMessageActions = jest.fn((message: AIMessage) =>
       message.branch?.of === 'question'
