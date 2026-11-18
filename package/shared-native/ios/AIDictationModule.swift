@@ -1,7 +1,6 @@
 import Foundation
 import Speech
 import AVFoundation
-import React
 
 /**
  * A sink for dictation events emitted from the native module.

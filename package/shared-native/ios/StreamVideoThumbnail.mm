@@ -2,7 +2,11 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 
-#if __has_include(<stream_chat_react_native/stream_chat_react_native-Swift.h>)
+// Swift Package Manager builds set `STREAM_CHAT_SWIFT_HEADER` (see Package.swift) to the generated
+// header of the package's Swift target. CocoaPods builds use the pod's own header below.
+#if defined(STREAM_CHAT_SWIFT_HEADER)
+#import STREAM_CHAT_SWIFT_HEADER
+#elif __has_include(<stream_chat_react_native/stream_chat_react_native-Swift.h>)
 #import <stream_chat_react_native/stream_chat_react_native-Swift.h>
 #elif __has_include(<stream_chat_expo/stream_chat_expo-Swift.h>)
 #import <stream_chat_expo/stream_chat_expo-Swift.h>
