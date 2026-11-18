@@ -17,10 +17,6 @@ on:
         description: "stream-chat-test-mock-server branch"
         type: string
         default: "main"
-      mock_check:
-        description: "Run the e2e tests on Android API 36 only, without coverage or iOS (for mock server changes)"
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -28,7 +24,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.mock_server_branch || 'main' }}-${{ inputs.mock_check && 'mock-check' || 'full' }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.mock_server_branch || 'main' }}
   cancel-in-progress: true
 
 env:
@@ -48,7 +44,7 @@ env:
 jobs:
   ios:
     name: Test iOS ${{ matrix.ios }}
-    if: (github.event_name == 'schedule' || inputs.ios) && !inputs.mock_check
+    if: (github.event_name == 'schedule' || inputs.ios) && (inputs.mock_server_branch || 'main') == 'main'
     runs-on: macos-15
     timeout-minutes: 360
     strategy:
@@ -228,7 +224,7 @@ jobs:
   # Built once per flavor and shared by the test jobs, as on pull requests.
   android-build:
     name: Build Android (${{ matrix.coverage && 'coverage' || 'plain' }})
-    if: github.event_name == 'schedule' || inputs.android || inputs.mock_check
+    if: github.event_name == 'schedule' || inputs.android || (inputs.mock_server_branch || 'main') != 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -236,7 +232,7 @@ jobs:
       matrix:
         # The coverage runs need a bundle instrumented with E2E_COVERAGE; the others test the plain app.
         # Coverage is only collected against the main mock server.
-        coverage: ${{ fromJson((inputs.mock_check || (inputs.mock_server_branch || 'main') != 'main') && '[false]' || '[true, false]') }}
+        coverage: ${{ fromJson((inputs.mock_server_branch || 'main') != 'main' && '[false]' || '[true, false]') }}
     env:
       APK_PATHS: |
         examples/E2ETestApp/android/app/build/outputs/apk/release/app-release.apk
@@ -298,14 +294,8 @@ jobs:
         # Coverage is only collected against the main mock server.
         include: |-
           ${{ fromJson(
-            inputs.mock_check && '[
+            (inputs.mock_server_branch || 'main') != 'main' && '[
               { "api-level": 36, "batch": 0, "batch_count": 1 }
-            ]'
-            || (inputs.mock_server_branch || 'main') != 'main' && '[
-              { "api-level": 36, "batch": 0, "batch_count": 1 },
-              { "api-level": 34, "batch": 0, "batch_count": 1 },
-              { "api-level": 31, "batch": 0, "batch_count": 1 },
-              { "api-level": 28, "batch": 0, "batch_count": 1 }
             ]'
             || '[
               { "api-level": 36, "coverage": true, "batch": 0, "batch_count": 4 },
@@ -439,7 +429,7 @@ jobs:
     name: Build e2e coverage map
     needs: android
     # Failed tests keep their previous coverage; only a batch that never finished blocks the map.
-    if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.android) && !inputs.mock_check && (inputs.mock_server_branch || 'main') == 'main' }}
+    if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.android) && (inputs.mock_server_branch || 'main') == 'main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
