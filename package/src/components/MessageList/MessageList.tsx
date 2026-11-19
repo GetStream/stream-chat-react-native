@@ -518,6 +518,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       // may not be visible yet. Start it now that the message is scrolled into view.
       paginator?.scheduleMessageFocusSignalClear({ token: focusToken });
     }, WAIT_FOR_SCROLL_TIMEOUT);
+    return () => clearTimeout(scrollToDebounceTimeoutRef.current);
   }, [paginator, focusToken, focusedMessageId, processedMessageList]);
 
   const setNativeScrollability = useStableCallback((value: boolean) => {

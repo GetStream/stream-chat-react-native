@@ -912,6 +912,51 @@ describe('MessageList message targeting', () => {
     await waitFor(() => expect(targeted.get(messages[4].id)).toBe(true));
     expect(targeted.get(messages[2].id)).toBe(false);
   });
+
+  // A send right after a jump swaps in the latest messages before the jump's scroll runs. The
+  // scroll must not reach the new list with the index the target had in the old one.
+  it('does not scroll the list that replaced the jumped-to messages before the scroll ran', async () => {
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    const mockedChannel = generateChannelResponse({ messages: [] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    const toMessages = (prefix: string) =>
+      Array.from({ length: 10 }, (_, i) =>
+        channel.state.formatMessage(generateMessage({ id: `${prefix}-${i}` })),
+      ) as LocalMessage[];
+    const olderMessages = toMessages('older');
+    const latestMessages = toMessages('latest');
+    channel.messagePaginator.state.partialNext({ hasMoreHead: false, items: latestMessages });
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+    await waitFor(() => expect(getByTestId('message-flat-list')).toBeTruthy());
+    const scrollToIndex = jest.spyOn(FlatList.prototype, 'scrollToIndex');
+
+    // Neither update lets the scroll's timer run in between.
+    act(() => {
+      channel.messagePaginator.state.partialNext({ hasMoreHead: true, items: olderMessages });
+      channel.messagePaginator.emitMessageFocusSignal({
+        messageId: olderMessages[3].id,
+        reason: 'jump-to-message',
+      });
+    });
+    act(() => {
+      channel.messagePaginator.state.partialNext({ hasMoreHead: false, items: latestMessages });
+    });
+    await act(() => new Promise((resolve) => setTimeout(resolve, 10)));
+
+    expect(scrollToIndex).not.toHaveBeenCalled();
+    scrollToIndex.mockRestore();
+  });
 });
 
 describe('MessageList pagination', () => {

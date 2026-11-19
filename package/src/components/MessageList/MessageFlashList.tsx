@@ -397,9 +397,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       return;
     }
 
-    lastFocusScrollTokenRef.current = focusToken;
     scrollToDebounceTimeoutRef.current = setTimeout(async () => {
       clearTimeout(scrollToDebounceTimeoutRef.current);
+      lastFocusScrollTokenRef.current = focusToken;
 
       const scrollToIndex = async () => {
         const list = flashListRef.current;
@@ -425,6 +425,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       // may not be visible yet. Start it now that the message is scrolled into view.
       paginator?.scheduleMessageFocusSignalClear({ token: focusToken });
     }, WAIT_FOR_SCROLL_TIMEOUT);
+    return () => clearTimeout(scrollToDebounceTimeoutRef.current);
   }, [paginator, focusToken, focusedMessageId, processedMessageList]);
 
   useEffect(() => {

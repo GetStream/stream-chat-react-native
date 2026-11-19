@@ -20,11 +20,12 @@ const mockFlashList: {
   containerHeight: number;
   onViewableItemsChanged?: ViewableItemsChanged;
   scrollToEnd: jest.Mock;
+  scrollToIndex: jest.Mock;
   windowHeight: number;
-} = { containerHeight: 0, scrollToEnd: jest.fn(), windowHeight: 700 };
+} = { containerHeight: 0, scrollToEnd: jest.fn(), scrollToIndex: jest.fn(), windowHeight: 700 };
 
 // Renders nothing but captures the viewability callback; the two sizes drive the "content fits" check,
-// `scrollToEnd` is recorded and every other ref method is a no-op.
+// `scrollToEnd` and `scrollToIndex` are recorded and every other ref method is a no-op.
 jest.mock('@shopify/flash-list', () => {
   const ReactModule = jest.requireActual<typeof React>('react');
   const { View: MockView } = jest.requireActual<typeof import('react-native')>('react-native');
@@ -45,6 +46,7 @@ jest.mock('@shopify/flash-list', () => {
                 }),
                 getWindowSize: () => ({ height: mockFlashList.windowHeight, width: 400 }),
                 scrollToEnd: (...args: unknown[]) => mockFlashList.scrollToEnd(...args),
+                scrollToIndex: (...args: unknown[]) => mockFlashList.scrollToIndex(...args),
               },
               {
                 get: (target, key) =>
@@ -172,5 +174,49 @@ describe('MessageFlashList scroll to bottom button', () => {
     await waitFor(() =>
       expect(mockFlashList.scrollToEnd).toHaveBeenCalledWith({ animated: false }),
     );
+  });
+});
+
+// A send right after a jump swaps in the latest messages before the jump's scroll runs. The scroll
+// must not reach the new list with the index the target had in the old one.
+describe('MessageFlashList message focus', () => {
+  it('does not scroll the list that replaced the jumped-to messages before the scroll ran', async () => {
+    const {
+      channels: [channel],
+      client: chatClient,
+    } = await initiateClientWithChannels();
+    const toMessages = (prefix: string) =>
+      Array.from({ length: 10 }, (_, i) =>
+        channel.state.formatMessage(generateMessage({ id: `${prefix}-${i}` }) as never),
+      );
+    const olderMessages = toMessages('older');
+    const latestMessages = toMessages('latest');
+    channel.messagePaginator.state.partialNext({ hasMoreHead: false, items: latestMessages });
+    render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageFlashList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+    await screen.findByTestId('message-flash-list');
+    mockFlashList.scrollToIndex.mockClear();
+
+    // Neither update lets the scroll's timer run in between.
+    act(() => {
+      channel.messagePaginator.state.partialNext({ hasMoreHead: true, items: olderMessages });
+      channel.messagePaginator.emitMessageFocusSignal({
+        messageId: olderMessages[3].id,
+        reason: 'jump-to-message',
+      });
+    });
+    act(() => {
+      channel.messagePaginator.state.partialNext({ hasMoreHead: false, items: latestMessages });
+    });
+    await act(() => new Promise((resolve) => setTimeout(resolve, 10)));
+
+    expect(mockFlashList.scrollToIndex).not.toHaveBeenCalled();
   });
 });
