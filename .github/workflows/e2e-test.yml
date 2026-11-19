@@ -37,6 +37,15 @@ env:
   GITHUB_EVENT_ACTION: ${{ github.event.action }}
   GITHUB_EVENT_BEFORE: ${{ github.event.before }}
   GITHUB_EVENT_AFTER: ${{ github.event.after }}
+  # The Android emulator. Keep in sync with the android-avd job in e2e-test-cron.yml, which saves
+  # the snapshot the batches boot from.
+  ANDROID_API_LEVEL: "36"
+  ANDROID_TARGET: aosp_atd
+  ANDROID_PROFILE: pixel
+  ANDROID_CORES: "4"
+  # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
+  # (RN-513, also outside GiphyTests).
+  ANDROID_EMULATOR_OPTIONS: -no-window -no-audio -no-boot-anim -no-metrics -gpu swangle_indirect -camera-back none -camera-front none
   # node_modules of the e2e app and the workspaces it depends on (nmHoistingLimits: workspaces
   # keeps them apart); `yarn workspaces focus` installs nothing else.
   NODE_MODULES_PATHS: |
@@ -334,11 +343,6 @@ jobs:
         batch: ${{ fromJson(needs.check.outputs.e2e_batches) }}
       fail-fast: false
     env:
-      # Same as the native Android SDK e2e jobs
-      ANDROID_API_LEVEL: "36"
-      # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
-      # (RN-513, also outside GiphyTests).
-      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swangle_indirect -camera-back none -camera-front none
       DETOX_ADB_NAME: "emulator-5554"
       MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
       LAUNCH_ID: ${{ needs.android-allure-launch.outputs.launch_id }}
@@ -388,15 +392,32 @@ jobs:
           path: examples/E2ETestApp
       # The emulator runner downloads these without retrying; a corrupted download fails the job.
       - uses: ./.github/actions/android-sdk-packages
+        id: sdk
         with:
           api-level: ${{ env.ANDROID_API_LEVEL }}
-      - name: Run e2e tests (Android emulator)
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
-          arch: x86_64
-          profile: pixel
+          target: ${{ env.ANDROID_TARGET }}
+          profile: ${{ env.ANDROID_PROFILE }}
+          cores: ${{ env.ANDROID_CORES }}
           emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
+      # Saved by the nightly run. A miss (e.g. after an emulator update) cold boots as before.
+      - name: Restore the AVD
+        id: avd
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: ${{ steps.sdk.outputs.avd-key }}
+      - name: Run e2e tests (Android emulator)
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
+          target: ${{ env.ANDROID_TARGET }}
+          arch: x86_64
+          profile: ${{ env.ANDROID_PROFILE }}
+          cores: ${{ env.ANDROID_CORES }}
+          force-avd-creation: ${{ steps.avd.outputs.cache-hit != 'true' }}
+          emulator-options: -no-snapshot-save ${{ env.ANDROID_EMULATOR_OPTIONS }}
           disable-animations: true
           working-directory: examples/SampleApp
           # Logcat is written on the runner, so it survives the emulator dying mid-run.
