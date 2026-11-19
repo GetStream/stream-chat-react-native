@@ -254,5 +254,49 @@ describe('SqliteClient encryption', () => {
       expect(SqliteClient.isUnreadableDbError('file is not a database')).toBe(true);
       expect(SqliteClient.isUnreadableDbError(undefined)).toBe(false);
     });
+
+    // op-sqlite 19+ puts SQLite's primary result code on the error as `code`.
+    const sqliteError = (message: string, code: number) =>
+      Object.assign(new Error(message), { code });
+
+    it.each([11, 26])('treats SQLite result code %p as unreadable', (code) => {
+      expect(SqliteClient.isUnreadableDbError(sqliteError('[op-sqlite] query failed', code))).toBe(
+        true,
+      );
+    });
+
+    it.each([5, 6, 7, 8, 10, 14])(
+      'does not treat SQLite result code %p as unreadable, whatever the message',
+      (code) => {
+        expect(SqliteClient.isUnreadableDbError(sqliteError('file is not a database', code))).toBe(
+          false,
+        );
+      },
+    );
+
+    it('reads the result code through a re-wrap', () => {
+      const wrapped = Object.assign(new Error('Queries failed'), {
+        cause: sqliteError('[op-sqlite] query failed', 26),
+      });
+
+      expect(SqliteClient.isUnreadableDbError(wrapped)).toBe(true);
+    });
+
+    it('keeps the code of op-sqlite errors when re-wrapping them', async () => {
+      const opSqliteError = sqliteError('[op-sqlite] file is not a database (code 26)', 26);
+      const previousDb = SqliteClient.db;
+      SqliteClient.db = {
+        executeBatch: jest.fn().mockRejectedValue(opSqliteError),
+      } as unknown as typeof SqliteClient.db;
+
+      try {
+        const thrown = await SqliteClient.executeSqlBatch([['SELECT 1', []]]).catch((e) => e);
+
+        expect(thrown.cause).toBe(opSqliteError);
+        expect(SqliteClient.isUnreadableDbError(thrown)).toBe(true);
+      } finally {
+        SqliteClient.db = previousDb;
+      }
+    });
   });
 });

@@ -20,6 +20,7 @@
     "android/gradle.properties",
     "android/gradle",
     "ios",
+    "Package.swift",
     "*.podspec",
     "react-native.config.js",
     "package.json",
@@ -119,5 +120,8 @@
         "StreamShimmerView": "StreamShimmerViewComponentView"
       }
     }
+  },
+  "swiftpmConfig": {
+    "name": "StreamChatReactNative"
   }
 }

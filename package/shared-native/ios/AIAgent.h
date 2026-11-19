@@ -4,6 +4,10 @@
 #import "StreamChatReactNativeSpec.h"
 #elif __has_include("StreamChatExpoSpec.h")
 #import "StreamChatExpoSpec.h"
+#elif __has_include(<StreamChatReactNativeSpec/StreamChatReactNativeSpec.h>)
+#import <StreamChatReactNativeSpec/StreamChatReactNativeSpec.h>
+#elif __has_include(<StreamChatExpoSpec/StreamChatExpoSpec.h>)
+#import <StreamChatExpoSpec/StreamChatExpoSpec.h>
 #else
 #error "Unable to find generated codegen spec header for AIAgent."
 #endif

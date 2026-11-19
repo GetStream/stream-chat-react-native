@@ -2,17 +2,11 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 
-#if __has_include(<stream_chat_react_native/stream_chat_react_native-Swift.h>)
-#import <stream_chat_react_native/stream_chat_react_native-Swift.h>
-#elif __has_include(<stream_chat_expo/stream_chat_expo-Swift.h>)
-#import <stream_chat_expo/stream_chat_expo-Swift.h>
-#elif __has_include("stream_chat_react_native-Swift.h")
-#import "stream_chat_react_native-Swift.h"
-#elif __has_include("stream_chat_expo-Swift.h")
-#import "stream_chat_expo-Swift.h"
-#else
-#error "Unable to import generated Swift header for AIDictation."
-#endif
+#import "AIDictationAPI.h"
+
+// Implemented in AIDictationModule.swift.
+@interface AIDictationModule : NSObject <AIDictationModuleAPI>
+@end
 
 static NSString *const AIDictationOnStateEventName = @"AIDictationOnState";
 static NSString *const AIDictationOnResultEventName = @"AIDictationOnResult";

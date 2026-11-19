@@ -1,5 +1,8 @@
 import QuartzCore
 import UIKit
+#if canImport(StreamChatNativeInterfaces)
+import StreamChatNativeInterfaces
+#endif
 
 private protocol StreamShimmerAppLifecycleObserving: AnyObject {
   func shimmerAppLifecycleDidChange(isActive: Bool)
@@ -98,6 +101,7 @@ private final class StreamShimmerAppLifecycleCoordinator: NSObject {
 /// It renders a base layer and a moving gradient highlight entirely in native code, so shimmer
 /// animation stays off the JS thread. The view updates its gradient when size or colors change and
 /// stops animation when it is not drawable (backgrounded, detached, hidden, or zero sized).
+@objc(StreamShimmerView)
 @objcMembers
 public final class StreamShimmerView: UIView {
   private static let softHighlightAlpha: CGFloat = 0.24
@@ -418,3 +422,5 @@ extension StreamShimmerView: StreamShimmerAppLifecycleObserving {
     reevaluateForSceneState()
   }
 }
+
+extension StreamShimmerView: StreamShimmerViewAPI {}
