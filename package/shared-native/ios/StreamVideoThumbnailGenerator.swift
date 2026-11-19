@@ -1,6 +1,9 @@
 import AVFoundation
 import Photos
 import UIKit
+#if canImport(StreamChatNativeInterfaces)
+import StreamChatNativeInterfaces
+#endif
 
 private final class StreamPhotoLibraryAssetRequestState: @unchecked Sendable {
   let lock = NSLock()
@@ -19,6 +22,7 @@ public final class StreamVideoThumbnailResult: NSObject {
   }
 }
 
+@objc(StreamVideoThumbnailGenerator)
 @objcMembers
 public final class StreamVideoThumbnailGenerator: NSObject {
   private static let compressionQuality: CGFloat = 0.8
@@ -35,7 +39,7 @@ public final class StreamVideoThumbnailGenerator: NSObject {
   @objc(generateThumbnailsWithUrls:completion:)
   public static func generateThumbnails(
     urls: [String],
-    completion: @escaping ([StreamVideoThumbnailResult]) -> Void
+    completion: @escaping ([StreamVideoThumbnailResultAPI]) -> Void
   ) {
     Task(priority: .userInitiated) {
       completion(await generateThumbnailsAsync(urls: urls))
@@ -385,3 +389,7 @@ public final class StreamVideoThumbnailGenerator: NSObject {
     )
   }
 }
+
+extension StreamVideoThumbnailResult: StreamVideoThumbnailResultAPI {}
+
+extension StreamVideoThumbnailGenerator: StreamVideoThumbnailGeneratorAPI {}

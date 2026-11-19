@@ -1,4 +1,5 @@
 require "json"
+require "pathname"
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
@@ -19,7 +20,9 @@ Pod::Spec.new do |s|
     fi
   CMD
   s.source_files = "ios/**/*.{h,m,mm,swift}"
-  s.private_header_files = "ios/**/*.h"
+  # The protocols in `ios/shared/interfaces/include` stay public so the Swift sources can conform to
+  # them. They import only Foundation and UIKit.
+  s.private_header_files = ["ios/*.h", "ios/shared/*.h"]
 
   # Dictation (`ai-components` speech-to-text) references the Speech framework, and App Store Connect
   # requires a speech recognition usage description from every app whose binary does. It is therefore
@@ -27,7 +30,9 @@ Pod::Spec.new do |s|
   #   - `$StreamChatEnableDictation = true` in the Podfile (before `use_native_modules!`)
   #   - `"stream-chat.enableDictation": "true"` in Podfile.properties.json (set by the Expo plugin)
   #   - the `STREAM_CHAT_ENABLE_DICTATION=1` environment variable during `pod install`
-  dictation_enabled =
+  #   - `"stream-chat": { "enableDictation": true }` in the app's package.json, which Swift Package
+  #     Manager builds read as well (see Package.swift)
+  podfile_dictation_enabled =
     begin
       if defined?($StreamChatEnableDictation) && !$StreamChatEnableDictation.nil?
         $StreamChatEnableDictation.to_s == "true"
@@ -41,6 +46,24 @@ Pod::Spec.new do |s|
     rescue StandardError
       false
     end
+
+  # The app's package.json is the closest one above the Podfile that has a `stream-chat` section.
+  package_json_dictation_enabled =
+    begin
+      directory = Pathname.new(Pod::Config.instance.installation_root.to_s).expand_path
+      config = nil
+      until config || directory.root?
+        package_json = directory + "package.json"
+        config = JSON.parse(package_json.read)["stream-chat"] if package_json.file?
+        config = nil unless config.is_a?(Hash)
+        directory = directory.parent
+      end
+      config ? config["enableDictation"] == true : false
+    rescue StandardError
+      false
+    end
+
+  dictation_enabled = podfile_dictation_enabled || package_json_dictation_enabled
 
   # `AIAgent` (the agent components' install id and tool-call sign-ins) opens sign-ins in
   # `ASWebAuthenticationSession`, which needs no usage description, so it is always compiled.

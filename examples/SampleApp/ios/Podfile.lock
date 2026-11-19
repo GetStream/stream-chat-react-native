@@ -245,7 +245,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - op-sqlite (18.2.5):
+  - op-sqlite (19.0.5):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1606,7 +1606,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-blob-util (0.24.12):
+  - react-native-blob-util (1.1.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1675,7 +1675,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-document-picker (12.0.2):
+  - react-native-document-picker (12.1.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2453,7 +2453,7 @@ PODS:
     - ReactNativeDependencies
     - RNFBApp
     - Yoga
-  - RNGestureHandler (3.3.0):
+  - RNGestureHandler (3.4.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2681,7 +2681,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNSVG (15.15.5):
+  - RNSVG (15.16.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2703,9 +2703,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNSVG/common (= 15.15.5)
+    - RNSVG/common (= 15.16.1)
     - Yoga
-  - RNSVG/common (15.15.5):
+  - RNSVG/common (15.16.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2815,7 +2815,7 @@ PODS:
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1):
     - ReactNativeDependencies
-  - stream-chat-react-native (9.10.0):
+  - stream-chat-react-native (9.12.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2838,7 +2838,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Teleport (1.2.2):
+  - Teleport (1.2.5):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2860,9 +2860,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - Teleport/common (= 1.2.2)
+    - Teleport/common (= 1.2.5)
     - Yoga
-  - Teleport/common (1.2.2):
+  - Teleport/common (1.2.5):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3298,7 +3298,7 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   NitroModules: acbf91431e93f4c85040280c652824387b914e88
   NitroSound: 9c4624562e384eb8baca0720f4f7bf2131975fe3
-  op-sqlite: 883eed16d1f0c8b54a294ea71e5f0696d96e6142
+  op-sqlite: 9e09cc646119816c897e8bd3b9fb891c7b61e57e
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PromisesSwift: 217dea0fd5d2ad65222a109c48698add13cc1c5b
   RCT-Folly: 82921e585c0400eda46fac1068297aa9dfb035e4
@@ -3341,10 +3341,10 @@ SPEC CHECKSUMS:
   React-Mapbuffer: cf4026a5c35cd3598b648ce6f3ac6e8bfae12ad5
   React-microtasksnativemodule: 3c7c5f3624403317fe91b4ddefa86b60023552a8
   React-mutationobservernativemodule: 7284a91b3c7d7fb85b5d4ac04f7f8da811b22977
-  react-native-blob-util: 13d949591d518214a68e3daa57045c499a0dbd2a
+  react-native-blob-util: c14f542c2965a8d33a8feac2bed2d29e11be4971
   react-native-blur: de08479333dca9ba7793f700280d62526cf8d7ab
   react-native-cameraroll: 12de98186ed2270d873e6a6b3f870a6ddcf898e7
-  react-native-document-picker: ca21279b19ad48ebc107c2ffca904c7aee99e40b
+  react-native-document-picker: 2d4358affe7cd049ad8d042958d27d9ff781366f
   react-native-geolocation: 2c5f29e0098223d8fa2c18813f6acbf882563424
   react-native-image-picker: 7cdf342c3b12b1e4f50f6098c5feaf058ea8d350
   react-native-maps: b39b5d5ee5ac885f2822bb124105af4042768d4b
@@ -3392,21 +3392,21 @@ SPEC CHECKSUMS:
   RNFastImage: 25f87dde869e11156daeef98b4cee2371023407e
   RNFBApp: 21e4d8c20656c236a818ee2eff3f859557ceff33
   RNFBMessaging: e3e31aec89cd0eb986c87ec8247f598190b61c36
-  RNGestureHandler: ddbdf3f293a498368803f8181ff157271ac05c48
+  RNGestureHandler: abdc2d49ac3970908acd127980b429d377927ee1
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNReactNativeHapticFeedback: a1bba076645e8fedcb65c8e70461b77cd5d6dd32
   RNReanimated: 5c641cc430b7255eae87c8039204eb0f816ea1b8
   RNScreens: 5aec93c3d0e1557cda2afa6714ff18b8fb295c5d
   RNShare: 2782800e2fdb15e946048e6acbc17b5652a4380d
-  RNSVG: f932ffc3d95b003bd393551b133145d61e810ccd
+  RNSVG: 62acb707b4fd178063d785d1cdebb4f2c20233eb
   RNWorklets: 488806637a21eb17812a48dadca7cb8c698c8cfd
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
-  stream-chat-react-native: dc4a04f6903f9616ed0d58757e813e96bda1972f
-  Teleport: 8a97ac5c0d76c04e20c36843d4d8f8fe5aa1aa73
+  stream-chat-react-native: 344c71397c12f7b2bb2f37a5b59ed9cd1a6c5ab6
+  Teleport: ce4df4997e1412af59d86df5090e76cf404c99ff
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
 PODFILE CHECKSUM: ac9682db83e42d63d399a8de4586161e86b3e751

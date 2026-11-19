@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(StreamChatNativeInterfaces)
+import StreamChatNativeInterfaces
+#endif
 
 private final class StreamMultipartUploadBridgeTaskBox {
   private let lock = NSLock()
@@ -27,6 +30,7 @@ private final class StreamMultipartUploadBridgeTaskBox {
   }
 }
 
+@objc(StreamMultipartUploaderBridge)
 @objcMembers
 public final class StreamMultipartUploaderBridge: NSObject {
   private static let taskLock = NSLock()
@@ -42,7 +46,7 @@ public final class StreamMultipartUploaderBridge: NSObject {
     progress: [String: Any]?,
     timeoutMs: NSNumber?,
     onProgress: @escaping (NSNumber, NSNumber?) -> Void,
-    completion: @escaping (NSDictionary?, NSError?) -> Void
+    completion: @escaping ([AnyHashable: Any]?, Error?) -> Void
   ) {
     let taskBox = StreamMultipartUploadBridgeTaskBox()
     var replacedTaskBox: StreamMultipartUploadBridgeTaskBox?
@@ -85,7 +89,7 @@ public final class StreamMultipartUploaderBridge: NSObject {
         payload["status"] = NSNumber(value: response.status)
         payload["statusText"] = response.statusText ?? NSNull()
 
-        completion(payload, nil)
+        completion(payload as? [AnyHashable: Any], nil)
       } catch {
         completion(nil, error.asStreamMultipartNSError())
       }
@@ -143,3 +147,5 @@ private extension Error {
     )
   }
 }
+
+extension StreamMultipartUploaderBridge: StreamMultipartUploaderBridgeAPI {}
