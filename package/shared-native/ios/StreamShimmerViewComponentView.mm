@@ -14,17 +14,11 @@
 #error "Unable to find generated codegen headers for StreamShimmerView."
 #endif
 
-#if __has_include(<stream_chat_react_native/stream_chat_react_native-Swift.h>)
-#import <stream_chat_react_native/stream_chat_react_native-Swift.h>
-#elif __has_include(<stream_chat_expo/stream_chat_expo-Swift.h>)
-#import <stream_chat_expo/stream_chat_expo-Swift.h>
-#elif __has_include("stream_chat_react_native-Swift.h")
-#import "stream_chat_react_native-Swift.h"
-#elif __has_include("stream_chat_expo-Swift.h")
-#import "stream_chat_expo-Swift.h"
-#else
-#error "Unable to import generated Swift header for StreamShimmerView."
-#endif
+#import "StreamShimmerViewAPI.h"
+
+// Implemented in StreamShimmerView.swift.
+@interface StreamShimmerView : UIView <StreamShimmerViewAPI>
+@end
 
 #import <React/RCTConversions.h>
 
