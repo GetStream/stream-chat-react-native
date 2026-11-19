@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import { act, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
 
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
@@ -19,11 +19,12 @@ type ViewableItemsChanged = (info: {
 const mockFlashList: {
   containerHeight: number;
   onViewableItemsChanged?: ViewableItemsChanged;
+  scrollToEnd: jest.Mock;
   windowHeight: number;
-} = { containerHeight: 0, windowHeight: 700 };
+} = { containerHeight: 0, scrollToEnd: jest.fn(), windowHeight: 700 };
 
-// Renders nothing but captures the viewability callback; the two sizes drive the "content fits" check
-// and every other ref method is a no-op.
+// Renders nothing but captures the viewability callback; the two sizes drive the "content fits" check,
+// `scrollToEnd` is recorded and every other ref method is a no-op.
 jest.mock('@shopify/flash-list', () => {
   const ReactModule = jest.requireActual<typeof React>('react');
   const { View: MockView } = jest.requireActual<typeof import('react-native')>('react-native');
@@ -43,6 +44,7 @@ jest.mock('@shopify/flash-list', () => {
                   width: 400,
                 }),
                 getWindowSize: () => ({ height: mockFlashList.windowHeight, width: 400 }),
+                scrollToEnd: (...args: unknown[]) => mockFlashList.scrollToEnd(...args),
               },
               {
                 get: (target, key) =>
@@ -126,5 +128,49 @@ describe('MessageFlashList sticky date header', () => {
     reportOnlyNewestViewable();
 
     expect(screen.getByText('shown', { includeHiddenElements: true })).toBeTruthy();
+  });
+});
+
+// The latest set replaces an older, disconnected window rather than extending it, so the list keeps
+// the offset it had there unless it scrolls to the end once the latest set renders.
+describe('MessageFlashList scroll to bottom button', () => {
+  it('scrolls to the end once it swapped in the latest set', async () => {
+    const {
+      channels: [channel],
+      client: chatClient,
+    } = await initiateClientWithChannels();
+    render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageFlashList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    const toMessages = (prefix: string) =>
+      Array.from({ length: 10 }, (_, i) =>
+        channel.state.formatMessage(generateMessage({ id: `${prefix}-${i}` }) as never),
+      );
+    // Jumped away after the channel opened, e.g. to a quoted message in an older set.
+    act(() =>
+      channel.messagePaginator.state.partialNext({ hasMoreHead: true, items: toMessages('older') }),
+    );
+    jest.spyOn(channel.messagePaginator, 'jumpToTheLatestMessage').mockImplementation(() => {
+      channel.messagePaginator.state.partialNext({
+        hasMoreHead: false,
+        items: toMessages('latest'),
+      });
+      return Promise.resolve(true);
+    });
+    await screen.findByTestId('scroll-to-bottom-button');
+    mockFlashList.scrollToEnd.mockClear();
+
+    fireEvent.press(screen.getByTestId('scroll-to-bottom-button'));
+
+    await waitFor(() =>
+      expect(mockFlashList.scrollToEnd).toHaveBeenCalledWith({ animated: false }),
+    );
   });
 });

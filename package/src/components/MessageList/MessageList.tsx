@@ -352,6 +352,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   });
 
   const latestNonCurrentMessageBeforeUpdateRef = useRef<LocalMessage>(undefined);
+  const scrollToLatestAfterJumpRef = useRef(false);
 
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,
@@ -442,6 +443,12 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
       setAutoscrollToRecent(false);
       setScrollToBottomButtonVisible(true);
       return;
+    }
+    if (scrollToLatestAfterJumpRef.current) {
+      scrollToLatestAfterJumpRef.current = false;
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ animated: false, offset: 0 });
+      }, WAIT_FOR_SCROLL_TIMEOUT);
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
     latestNonCurrentMessageBeforeUpdateRef.current = undefined;
@@ -569,7 +576,11 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const goToNewMessages = useStableCallback(async () => {
     if (paginator?.hasMoreHead) {
-      await paginator.jumpToTheLatestMessage();
+      scrollToLatestAfterJumpRef.current = true;
+      const jumped = await paginator.jumpToTheLatestMessage();
+      if (!jumped) {
+        scrollToLatestAfterJumpRef.current = false;
+      }
     } else if (flatListRef.current) {
       flatListRef.current.scrollToOffset({
         animated: true,

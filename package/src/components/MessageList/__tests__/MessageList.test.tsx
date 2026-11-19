@@ -1178,6 +1178,50 @@ describe('MessageList pagination', () => {
     });
   });
 
+  // The latest set replaces an older, disconnected window rather than extending it, so the list
+  // keeps the offset it had there unless it scrolls to the bottom once the latest set renders.
+  it('scrolls to the bottom once the scroll to bottom button swapped in the latest set', async () => {
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    const mockedChannel = generateChannelResponse({ messages: [] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    const { findByTestId, getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    const toMessages = (prefix: string) =>
+      Array.from({ length: 10 }, (_, i) =>
+        channel.state.formatMessage(generateMessage({ id: `${prefix}-${i}` })),
+      ) as LocalMessage[];
+    // Jumped away after the channel opened, e.g. to a quoted message in an older set.
+    act(() =>
+      channel.messagePaginator.state.partialNext({ hasMoreHead: true, items: toMessages('older') }),
+    );
+    jest.spyOn(channel.messagePaginator, 'jumpToTheLatestMessage').mockImplementation(() => {
+      channel.messagePaginator.state.partialNext({
+        hasMoreHead: false,
+        items: toMessages('latest'),
+      });
+      return Promise.resolve(true);
+    });
+    await findByTestId('scroll-to-bottom-button');
+    const scrollToOffset = jest.spyOn(FlatList.prototype, 'scrollToOffset');
+
+    fireEvent.press(getByTestId('scroll-to-bottom-button'));
+
+    await waitFor(() =>
+      expect(scrollToOffset).toHaveBeenCalledWith({ animated: false, offset: 0 }),
+    );
+  });
+
   it('should not expose the scroll to bottom accessibility action when hidden', async () => {
     const { getByTestId, queryByTestId } = await renderMessageListForScrollToBottom();
 
