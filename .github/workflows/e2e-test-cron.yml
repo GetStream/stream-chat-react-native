@@ -45,14 +45,14 @@ jobs:
   ios:
     name: Test iOS ${{ matrix.ios }}
     if: (github.event_name == 'schedule' || inputs.ios) && (inputs.mock_server_branch || 'main') == 'main'
-    runs-on: macos-15
+    runs-on: xcode-27
     timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
         include:
-          - ios: "26.2"
-            device: "iPhone 17 Pro"
+          - ios: "27.2"
+            device: "iPhone 18 Pro"
             setup_runtime: false
           # The oldest runtime the Flutter nightly covers; the runner image doesn't ship it.
           - ios: "17.5"
@@ -62,7 +62,7 @@ jobs:
       DETOX_IOS_DEVICE: ${{ matrix.device }}
       IOS_VERSION: ${{ matrix.ios }}
       # Pinned to match the simulator runtimes this job selects.
-      XCODE_VERSION: "26.2"
+      XCODE_VERSION: "27.2"
       APP_PATH: examples/E2ETestApp/ios/build/detox/Build/Products/Release-iphonesimulator/E2ETestApp.app
       MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
     steps:
