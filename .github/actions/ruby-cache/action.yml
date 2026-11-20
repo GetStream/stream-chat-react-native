@@ -3,6 +3,10 @@ description: 'Cache Ruby dependencies'
 runs:
   using: "composite"
   steps:
+    # RubyGems 3.5 (Ruby 3.3) caches gem specs under ~/.cache/gem, which the self-hosted `public`
+    # runner can't write to. Ruby 3.1 used ~/.local/share. Keep the spec cache in the job's temp dir.
+    - shell: bash
+      run: echo "GEM_SPEC_CACHE=${{ runner.temp }}/gem-specs" >> "$GITHUB_ENV"
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.3
