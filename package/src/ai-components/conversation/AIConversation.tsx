@@ -12,7 +12,7 @@ import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
 import type { LegendListRenderItemProps } from '@legendapp/list/react-native';
 
-import type { AIConversationEntry } from './entries';
+import { type AIConversationEntry, hasOtherReplyVersions } from './entries';
 import { AIChatList } from './list/AIChatList';
 import { type ConversationRow, type RowPosition, useConversationRows } from './useConversationRows';
 
@@ -25,13 +25,16 @@ import {
   editActionOf,
   latestUserMessageIdOf,
   replyActionsOf,
+  userMessageActionsOf,
 } from '../conversation-state/controller/offers';
+import type { AIUserMessageActions } from '../conversation-state/controller/types';
 import { useAIConversationState } from '../conversation-state/controller/useAIConversationState';
 import type { AIMessage, AIPendingMessage } from '../conversation-state/types';
 import type { AIUIHost } from '../generative-ui/AIUIHost';
 import { AIUIGenerated, useAIUIHostRefresh } from '../generative-ui/AIUIView';
 import { primitives } from '../internal/tokens';
 import { AIAssistantMessage } from '../message/AIAssistantMessage';
+import type { AIBranchSwitch } from '../message/AIBranchSwitcher';
 import type { AIMessageAttachmentData } from '../message/AIMessageAttachment';
 import { AIReplyActions, type AIReplyActionsProps } from '../message/AIReplyActions';
 import { AIUserMessage } from '../message/AIUserMessage';
@@ -47,8 +50,23 @@ export type AIConversationUserMessageProps = {
   text: string;
   /** The message, or `undefined` for one on its way. */
   message?: AIMessage;
-  /** Edits the message: a `conversation` offers it on the person's latest message. */
+  /**
+   * Which of the question's versions shows, when the person edited it, from
+   * `userMessageActions`, or from a `conversation` whose transport switches versions.
+   * `AIUserMessage` shows a ‹ i/n › switcher while `count` is 2 or more.
+   */
+  branch?: AIBranchSwitch;
+  /**
+   * Edits the message in the composer: a `conversation` offers it on the person's latest
+   * message, or on any of theirs when its transport switches versions.
+   */
   onEdit?: () => void;
+  /**
+   * Saves the person's edit of the message, made in place, from `userMessageActions`, or from a
+   * `conversation` whose transport switches versions. `AIUserMessage` edits in the composer
+   * (`onEdit`) instead; a `UserMessage` of your own can edit in place with it.
+   */
+  onSaveEdit?: (text: string) => void;
 };
 
 export type AIConversationAssistantMessageProps = {
@@ -81,9 +99,11 @@ export type AIConversationProps = {
   /**
    * The conversation's state and what the person does in it. The conversation shows its messages,
    * the message on its way and the agent thinking, loads older messages through it, and offers
-   * its actions: editing the person's latest message, and rating and regenerating replies. It
-   * takes the place of `messages`, `pendingMessage`, `isThinking`, `loadOlderMessages` and
-   * `replyActions`, and gives its `approver` unless one is passed.
+   * its actions: editing the person's latest message, and rating and regenerating replies, or
+   * any reply and message of theirs, with a ‹ i/n › switcher between versions, when its
+   * transport has `switchBranch`. It takes the place of `messages`, `pendingMessage`,
+   * `isThinking`, `loadOlderMessages`, `replyActions` and `userMessageActions`, and gives its
+   * `approver` unless one is passed.
    */
   conversation?: AIConversationController;
   /** The conversation, oldest message first. Required without `conversation`. */
@@ -136,7 +156,7 @@ export type AIConversationProps = {
   ReplyActions?: ComponentType<AIConversationReplyActionsProps> | null;
   /**
    * What the default `AIReplyActions` offers for a reply besides copy and share, such as its
-   * rating and how to rate or regenerate it. Every message renders again when it changes, so keep
+   * rating, how to rate or regenerate it, and which of its versions shows (`branch`). Every message renders again when it changes, so keep
    * it the same between renders (`useCallback`) unless what it returns changed.
    */
   replyActions?: (
@@ -152,12 +172,25 @@ export type AIConversationProps = {
    * start afresh for a new `context.messageId`.
    */
   ui?: AIUIHost;
+  /**
+   * What the person's messages offer besides what a `conversation` does: a ‹ i/n › switcher
+   * between the versions of an edited question (`branch`), and editing in place
+   * (`onSaveEdit(text)`). Passed to `UserMessage` as `branch` and `onSaveEdit`. Takes the place of
+   * a `conversation`'s own. Keep it the same between renders (`useCallback`) unless what it
+   * returns changed.
+   */
+  userMessageActions?: (message: AIMessage) => AIUserMessageActions | undefined;
   /** The view of the person's messages. Defaults to `AIUserMessage`. */
   UserMessage?: ComponentType<AIConversationUserMessageProps>;
 };
 
-const DefaultUserMessage = ({ attachments, onEdit, text }: AIConversationUserMessageProps) => (
-  <AIUserMessage attachments={attachments} onEdit={onEdit} text={text} />
+const DefaultUserMessage = ({
+  attachments,
+  branch,
+  onEdit,
+  text,
+}: AIConversationUserMessageProps) => (
+  <AIUserMessage attachments={attachments} branch={branch} onEdit={onEdit} text={text} />
 );
 
 const DefaultAssistantMessage = ({
@@ -203,6 +236,7 @@ type ConversationContextValue = {
   editAction?: EditAction;
   replyActions?: AIConversationProps['replyActions'];
   ui?: AIUIHost;
+  userMessageActions?: AIConversationProps['userMessageActions'];
   /** Changes each time the host says what a reply shows changed, so the rows render again. */
   uiVersion: number;
 };
@@ -228,6 +262,7 @@ type EntryViewProps = {
   approver?: AIToolApprover;
   thinkingSince?: number;
   ui?: AIUIHost;
+  userMessageActions?: AIConversationProps['userMessageActions'];
 };
 
 const NO_MESSAGES: AIMessage[] = [];
@@ -257,6 +292,7 @@ const EntryView = ({
   thinkingSince,
   ui,
   UserMessage,
+  userMessageActions,
 }: EntryViewProps) => {
   const { message, pending } = entry;
   const isReply = message?.role !== 'user';
@@ -271,13 +307,16 @@ const EntryView = ({
     ) : null;
   }
   if (message.role === 'user') {
+    const actions = userMessageActions?.(message);
     return (
       <UserMessage
         attachments={
           entry.sentAttachments.length ? entry.sentAttachments : (message.attachments ?? [])
         }
+        branch={actions?.branch}
         message={message}
         onEdit={editAction?.(message)}
+        onSaveEdit={actions?.onSaveEdit}
         text={message.text}
       />
     );
@@ -289,8 +328,8 @@ const EntryView = ({
   const showsUI = !!uiDocument && generated !== null && generated !== undefined;
   const uiFailed = !!uiDocument && !!ui?.hasFailed(message.id);
   // A finished reply has its actions under it whether it answers in text or in UI, once the
-  // UI is written.
-  const hasAnswer = message.text !== '' || showsUI;
+  // UI is written, and a version with neither for its switcher.
+  const hasAnswer = message.text !== '' || showsUI || hasOtherReplyVersions(message);
   const isWritingUI = showsUI && uiDocument.isStreaming;
   return (
     <View style={styles.reply}>
@@ -374,6 +413,7 @@ const Row = memo(({ row }: { row: ConversationRow }) => {
               thinkingSince={row.thinkingSince}
               ui={context.ui}
               UserMessage={context.UserMessage}
+              userMessageActions={context.userMessageActions}
             />
           ) : (
             <>
@@ -461,12 +501,14 @@ export const AIConversation = (props: AIConversationProps) =>
 
 const controlledSelector = ({
   hasOlderMessages,
+  isSwitchingBranch,
   messages,
   pendingMessage,
   ratings,
   status,
 }: AIConversationControllerState) => ({
   hasOlderMessages,
+  isSwitchingBranch,
   messages,
   pendingMessage,
   ratings,
@@ -479,20 +521,38 @@ const ControlledConversation = ({
   conversation,
   ...props
 }: AIConversationProps & { conversation: AIConversationController }) => {
-  const { hasOlderMessages, messages, pendingMessage, ratings, status } = useAIConversationState(
-    conversation,
-    controlledSelector,
-  );
+  const { hasOlderMessages, isSwitchingBranch, messages, pendingMessage, ratings, status } =
+    useAIConversationState(conversation, controlledSelector);
   const replyActions = useMemo(
     () =>
       (message: AIMessage, { isLatestReply }: { isLatestReply: boolean }) =>
-        replyActionsOf(conversation, { ratings, status }, message, isLatestReply),
-    [conversation, ratings, status],
+        replyActionsOf(
+          conversation,
+          { isSwitchingBranch, ratings, status },
+          message,
+          isLatestReply,
+        ),
+    [conversation, isSwitchingBranch, ratings, status],
   );
   const latestUserMessageId = latestUserMessageIdOf(messages);
   const editAction = useMemo<EditAction>(
-    () => (message) => editActionOf(conversation, { latestUserMessageId, status }, message),
-    [conversation, latestUserMessageId, status],
+    () => (message) =>
+      editActionOf(conversation, { isSwitchingBranch, latestUserMessageId, status }, message),
+    [conversation, isSwitchingBranch, latestUserMessageId, status],
+  );
+  // The switcher between the versions of a question the person edited, and editing in place,
+  // while the transport switches versions.
+  const userMessageActions = useMemo(
+    () =>
+      conversation.canSwitchBranch
+        ? (message: AIMessage) =>
+            userMessageActionsOf(
+              conversation,
+              { isSwitchingBranch, latestUserMessageId, status },
+              message,
+            )
+        : undefined,
+    [conversation, isSwitchingBranch, latestUserMessageId, status],
   );
   const { ui } = props;
   // A reply that shows only its UI has started, which the controller can't tell without the
@@ -511,6 +571,7 @@ const ControlledConversation = ({
       messages={messages as AIMessage[]}
       pendingMessage={pendingMessage}
       replyActions={props.replyActions ?? replyActions}
+      userMessageActions={props.userMessageActions ?? userMessageActions}
     />
   );
 };
@@ -538,6 +599,7 @@ const ConversationView = ({
   replyActions,
   ui,
   UserMessage = DefaultUserMessage,
+  userMessageActions,
 }: ConversationViewProps) => {
   // Every reply's UI reaches its renderer before any row asks for its view, oldest first,
   // whether or not the row is on screen. Only what arrived or changed is passed on. The rows
@@ -578,6 +640,7 @@ const ConversationView = ({
       ui,
       uiVersion,
       UserMessage,
+      userMessageActions,
     }),
     [
       approver,
@@ -590,6 +653,7 @@ const ConversationView = ({
       ui,
       uiVersion,
       UserMessage,
+      userMessageActions,
     ],
   );
 

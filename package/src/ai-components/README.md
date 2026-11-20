@@ -344,7 +344,21 @@ send: request =>
   session.responses.create(request.text, { uiAction: request.custom?.uiAction }),
 ```
 
-**Actions.** The views offer editing the person's latest message, and regenerating and rating replies. Turn off what your agent can't do with `actions`: an agent that keeps the conversation on its side and can't rewind it, such as one behind Stream's agents router, takes `actions: { edit: false, regenerate: false }`.
+**Actions.** The views offer editing the person's latest message, and regenerating and rating replies. Turn off what your agent can't do with `actions`, such as `actions: { edit: false, regenerate: false }` for one that can't answer a message again.
+
+**Versions of a message.** A reply written again and a question the person edited each have versions, of which one shows. The backend marks each message with `custom.support_branch` (`{ response_id, of, index, count }`), which `fromStreamMessage` reads as `AIMessage.branch` and `AIMessage.responseId`, and a copy it re-sent of an earlier message with `custom.resent_from`, read as `AIMessage.resentFrom`. Give the transport a `switchBranch` and the conversation follows them:
+
+```ts
+// Shows the previous or next version of `message`'s branch, then feeds its messages.
+// `signal` aborts when the person sends meanwhile: feed nothing of that version then.
+switchBranch: (message, to, signal) => agent.switchBranch(message, to, { signal }),
+```
+
+- A message with two versions or more shows a ‹ i/n › switcher (`AIBranchSwitcher`): in the reply's actions for `of: 'reply'`, under the person's message for `of: 'question'`. The arrows are disabled at their ends, while the agent answers, and while a switch is on its way (`isSwitchingBranch`). A switch that fails, or takes longer than `switchTimeout` (30 seconds by default), shows as `error`, and `retry()` switches again.
+- Regenerate is offered on every finished reply and edit on every one of the person's messages that has a `responseId`, not only the latest. The message, and everything after it, is left out until the new reply starts. Editing happens in the composer; a `UserMessage` of your own gets `onSaveEdit(text)` to edit in place, which calls `editInPlace(message, text)`.
+- Sending while a switch is on its way gives up on it.
+
+Without `switchBranch`, nothing changes: the latest only, and no switcher. Without a controller, pass `branch` yourself through `replyActions` and `userMessageActions`.
 
 ### Generated UI
 

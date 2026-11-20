@@ -912,6 +912,51 @@ describe('MessageList message targeting', () => {
     await waitFor(() => expect(targeted.get(messages[4].id)).toBe(true));
     expect(targeted.get(messages[2].id)).toBe(false);
   });
+
+  // A send right after a jump swaps in the latest messages before the jump's scroll runs. The
+  // scroll must not reach the new list with the index the target had in the old one.
+  it('does not scroll the list that replaced the jumped-to messages before the scroll ran', async () => {
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    const mockedChannel = generateChannelResponse({ messages: [] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+    const toMessages = (prefix: string) =>
+      Array.from({ length: 10 }, (_, i) =>
+        channel.state.formatMessage(generateMessage({ id: `${prefix}-${i}` })),
+      ) as LocalMessage[];
+    const olderMessages = toMessages('older');
+    const latestMessages = toMessages('latest');
+    channel.messagePaginator.state.partialNext({ hasMoreHead: false, items: latestMessages });
+
+    const { getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+    await waitFor(() => expect(getByTestId('message-flat-list')).toBeTruthy());
+    const scrollToIndex = jest.spyOn(FlatList.prototype, 'scrollToIndex');
+
+    // Neither update lets the scroll's timer run in between.
+    act(() => {
+      channel.messagePaginator.state.partialNext({ hasMoreHead: true, items: olderMessages });
+      channel.messagePaginator.emitMessageFocusSignal({
+        messageId: olderMessages[3].id,
+        reason: 'jump-to-message',
+      });
+    });
+    act(() => {
+      channel.messagePaginator.state.partialNext({ hasMoreHead: false, items: latestMessages });
+    });
+    await act(() => new Promise((resolve) => setTimeout(resolve, 10)));
+
+    expect(scrollToIndex).not.toHaveBeenCalled();
+    scrollToIndex.mockRestore();
+  });
 });
 
 describe('MessageList pagination', () => {
@@ -1176,6 +1221,50 @@ describe('MessageList pagination', () => {
 
       expect(jumpToTheLatestMessage).toHaveBeenCalledTimes(1);
     });
+  });
+
+  // The latest set replaces an older, disconnected window rather than extending it, so the list
+  // keeps the offset it had there unless it scrolls to the bottom once the latest set renders.
+  it('scrolls to the bottom once the scroll to bottom button swapped in the latest set', async () => {
+    const chatClient = await getTestClientWithUser({ id: 'testID' } as UserResponse);
+    const mockedChannel = generateChannelResponse({ messages: [] });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id);
+    await channel.watch();
+
+    const { findByTestId, getByTestId } = render(
+      <OverlayProvider>
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <MessageList />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    const toMessages = (prefix: string) =>
+      Array.from({ length: 10 }, (_, i) =>
+        channel.state.formatMessage(generateMessage({ id: `${prefix}-${i}` })),
+      ) as LocalMessage[];
+    // Jumped away after the channel opened, e.g. to a quoted message in an older set.
+    act(() =>
+      channel.messagePaginator.state.partialNext({ hasMoreHead: true, items: toMessages('older') }),
+    );
+    jest.spyOn(channel.messagePaginator, 'jumpToTheLatestMessage').mockImplementation(() => {
+      channel.messagePaginator.state.partialNext({
+        hasMoreHead: false,
+        items: toMessages('latest'),
+      });
+      return Promise.resolve(true);
+    });
+    await findByTestId('scroll-to-bottom-button');
+    const scrollToOffset = jest.spyOn(FlatList.prototype, 'scrollToOffset');
+
+    fireEvent.press(getByTestId('scroll-to-bottom-button'));
+
+    await waitFor(() =>
+      expect(scrollToOffset).toHaveBeenCalledWith({ animated: false, offset: 0 }),
+    );
   });
 
   it('should not expose the scroll to bottom accessibility action when hidden', async () => {

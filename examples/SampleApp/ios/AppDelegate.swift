@@ -2,8 +2,12 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+// Firebase comes from CocoaPods only. The Swift Package Manager smoke build (STREAM_CHAT_SPM_ONLY,
+// see react-native.config.js) links no other native libraries, so it builds without it.
+#if canImport(FirebaseCore)
 import FirebaseCore
 import FirebaseMessaging
+#endif
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -24,7 +28,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       let delegate = ReactNativeDelegate()
       let factory = RCTReactNativeFactory(delegate: delegate)
       delegate.dependencyProvider = RCTAppDependencyProvider()
+#if canImport(FirebaseCore)
       FirebaseApp.configure()
+#endif
    
       reactNativeDelegate = delegate
       reactNativeFactory = factory
@@ -34,8 +40,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+#if canImport(FirebaseMessaging)
       // Pass the device token to FCM
       Messaging.messaging().apnsToken = deviceToken
+#endif
   }
 }
 

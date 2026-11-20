@@ -194,6 +194,12 @@ export type Theme = {
       container?: ViewStyle;
       button?: ViewStyle;
     };
+    /** The ‹ i/n › switcher between a message's versions, on a reply or the person's message. */
+    branchSwitcher?: {
+      container?: ViewStyle;
+      button?: ViewStyle;
+      position?: TextStyle;
+    };
   };
   /**
    * The composer's chat options: the menu in its sheet, and the chip of the one picked. Optional,
@@ -446,6 +452,7 @@ export const defaultTheme: Theme = {
     assistantMessage: { container: {}, attachments: {} },
     attachment: { image: {}, file: {}, fileIcon: {}, fileName: {}, fileDetails: {} },
     replyActions: { container: {}, button: {} },
+    branchSwitcher: { container: {}, button: {}, position: {} },
   },
   chatOptions: {
     // From the shared design tokens.

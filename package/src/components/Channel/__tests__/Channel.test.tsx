@@ -168,6 +168,26 @@ describe('Channel', () => {
     expect(seedSpy).not.toHaveBeenCalled();
   });
 
+  // A query creates a channel with an id the server doesn't have yet, and marks it initialized
+  // without watching it, so an app that watches it on the first send would never do so.
+  it('does not query a channel with initializeOnMount={false}', async () => {
+    const fresh = chatClient.channel('messaging', 'not-created-yet');
+    const watchSpy = jest.spyOn(fresh, 'watch');
+    const getOrCreateSpy = jest.spyOn(fresh, 'getOrCreate');
+    const seedSpy = jest.spyOn(fresh.messagePaginator, 'reload');
+
+    renderComponent({ channel: fresh, initializeOnMount: false });
+    // let the mount effect run to its end
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
+    expect(fresh.initialized).toBe(false);
+    expect(watchSpy).not.toHaveBeenCalled();
+    expect(getOrCreateSpy).not.toHaveBeenCalled();
+    expect(seedSpy).not.toHaveBeenCalled();
+  });
+
   it('should set an error if channel watch fails and render a LoadingErrorIndicator', async () => {
     const watchError = new Error('channel watch fail');
     // Rejected persistently, at the API seam: an offline open fails the mount `watch()` AND the

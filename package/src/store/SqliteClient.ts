@@ -74,6 +74,25 @@ export class SqliteClient {
   private static UNREADABLE_ERROR =
     /not a database|file is encrypted|malformed|disk image is malformed|SQLite (?:error )?code:?\s*(?:26|11)\b|NOTADB|SQLITE_CORRUPT/i;
 
+  /** The same two cases as SQLite result codes, which op-sqlite 19+ sets as `code` on its errors. */
+  // BUSY, LOCKED, NOMEM, READONLY, IOERR, CANTOPEN
+  private static TRANSIENT_CODES = new Set([5, 6, 7, 8, 10, 14]);
+  // CORRUPT, NOTADB
+  private static UNREADABLE_CODES = new Set([11, 26]);
+
+  /** The SQLite result code on an error or, after a re-wrap, on one of its causes. */
+  private static sqliteResultCode = (e: unknown): number | undefined => {
+    let error = e;
+    for (let depth = 0; error && depth < 5; depth += 1) {
+      const code = (error as { code?: unknown }).code;
+      if (typeof code === 'number') {
+        return code;
+      }
+      error = (error as { cause?: unknown }).cause;
+    }
+    return undefined;
+  };
+
   static getDbVersion = () => SqliteClient.dbVersion;
   // Overrides the DB version, mainly for tests.
   static setDbVersion = (version: number) => (SqliteClient.dbVersion = version);
@@ -229,7 +248,8 @@ export class SqliteClient {
         error: e,
         queries,
       });
-      throw new Error(`Queries failed: ${e}`);
+      // `cause` keeps op-sqlite's error, and its SQLite result code, for `isUnreadableDbError`.
+      throw Object.assign(new Error(`Queries failed: ${e}`), { cause: e });
     }
   };
 
@@ -246,7 +266,7 @@ export class SqliteClient {
         error: e,
         query,
       });
-      throw new Error(`Query failed: ${e}: `);
+      throw Object.assign(new Error(`Query failed: ${e}: `), { cause: e });
     }
   };
 
@@ -285,8 +305,8 @@ export class SqliteClient {
 
   /**
    * Whether the file cannot be read with the current key, as opposed to being temporarily
-   * unavailable (busy, locked, disk). Matches on the message text because op-sqlite rejects with a
-   * plain `Error` and this class re-wraps it, so no numeric code survives. Drives
+   * unavailable (busy, locked, disk). Checks the SQLite result code when op-sqlite provides one
+   * (19+, kept through re-wraps as `cause`) and the message text otherwise. Drives
    * `OFFLINE_DB_UNREADABLE`.
    *
    * @param e The error thrown while opening or reading the database.
@@ -294,12 +314,19 @@ export class SqliteClient {
    */
   static isUnreadableDbError = (e: unknown) => {
     const message = String((e as Error)?.message ?? e);
+    const code = SqliteClient.sqliteResultCode(e);
 
-    if (SqliteClient.TRANSIENT_ERROR.test(message)) {
+    if (
+      (code !== undefined && SqliteClient.TRANSIENT_CODES.has(code)) ||
+      SqliteClient.TRANSIENT_ERROR.test(message)
+    ) {
       return false;
     }
 
-    return SqliteClient.UNREADABLE_ERROR.test(message);
+    return (
+      (code !== undefined && SqliteClient.UNREADABLE_CODES.has(code)) ||
+      SqliteClient.UNREADABLE_ERROR.test(message)
+    );
   };
 
   static initializeDatabase = async (): Promise<boolean> => {
@@ -378,7 +405,7 @@ export class SqliteClient {
       return result[0].user_version as number;
     } catch (e) {
       console.log('Error getting user_version', e);
-      throw new Error(`Querying for user_version failed: ${e}`);
+      throw Object.assign(new Error(`Querying for user_version failed: ${e}`), { cause: e });
     }
   };
 
