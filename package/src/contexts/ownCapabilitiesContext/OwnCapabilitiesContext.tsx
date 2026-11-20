@@ -16,6 +16,7 @@ export const allOwnCapabilities = {
   readEvents: 'read-events',
   sendLinks: 'send-links',
   sendMessage: 'send-message',
+  sendMessageMark: 'send-message-mark',
   sendPoll: 'send-poll',
   sendReaction: 'send-reaction',
   sendReply: 'send-reply',

@@ -15,7 +15,13 @@ import {
 
 import { PlayPauseButton } from './PlayPauseButton';
 
-import { useTheme } from '../../../contexts';
+import {
+  useChannelContext,
+  useChatContext,
+  useOwnCapabilitiesContext,
+  useTheme,
+  useTranslationContext,
+} from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks';
 import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
@@ -103,6 +109,26 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
   const waveformData = item.custom?.waveform_data;
+  const { client } = useChatContext();
+  const { channel } = useChannelContext();
+  const { sendMessageMark: canSendMessageMark } = useOwnCapabilitiesContext();
+  const { t } = useTranslationContext();
+  const playedMarkSentRef = React.useRef(false);
+
+  const messageId = message?.id;
+  const isOwnMessage = !!message?.user?.id && message.user.id === client?.userID;
+  const alreadyPlayed = !!message?.own_marks?.some((mark) => mark.type === 'played');
+  // A recipient's first unpaused play sends the played mark, once per mount; the
+  // write is idempotent server-side, so a remount costs at most one no-op request.
+  const shouldSendPlayedMark =
+    !isPreview &&
+    !!messageId &&
+    !message?.parent_id &&
+    !isOwnMessage &&
+    !alreadyPlayed &&
+    !!canSendMessageMark;
+  // The author's view: how many recipients played this voice note.
+  const playedCount = isOwnMessage ? (message?.mark_groups?.played?.count ?? 0) : 0;
 
   const audioPlayer = useAudioPlayer({
     duration: item.duration ?? item.custom?.duration ?? 0,
@@ -156,6 +182,12 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   };
 
   const handlePlayPause = () => {
+    if (!isPlaying && shouldSendPlayedMark && messageId && !playedMarkSentRef.current) {
+      playedMarkSentRef.current = true;
+      channel.sendMessageMark({ id: messageId }, { type: 'played' }).catch((error) => {
+        console.warn('AudioAttachment: sending the played mark failed', error);
+      });
+    }
     audioPlayer.toggle();
   };
 
@@ -256,6 +288,19 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
                 color: isPlaying ? semantics.accentPrimary : semantics.textSecondary,
               }}
             />
+            {playedCount > 0 ? (
+              <Text
+                accessibilityLabel='Played Indicator'
+                style={[
+                  styles.progressDurationText,
+                  progressDurationText,
+                  stylesProps?.durationText,
+                ]}
+                testID='played-indicator'
+              >
+                {t('attachment.audio.played.label', 'Played')}
+              </Text>
+            ) : null}
             {!hideProgressBar && (
               <View style={[styles.progressControlContainer, progressControlContainer]}>
                 {waveformData ? (
