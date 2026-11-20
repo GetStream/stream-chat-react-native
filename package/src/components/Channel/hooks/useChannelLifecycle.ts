@@ -109,8 +109,6 @@ export const useChannelLifecycle = ({
         channel.messagePaginator.pageSize = DEFAULT_MESSAGE_LIST_PAGE_SIZE;
       }
 
-      // With `initializeOnMount={false}` the app loads the channel itself, so nothing here queries
-      // it: a query would create a channel that is meant to exist only from its first message.
       if (initializeOnMount) {
         if (
           !channel.initialized ||
