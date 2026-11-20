@@ -566,7 +566,6 @@ apps' own code.
 - No event listener, reconnect resync or `channel.deleted` unmount; `client.connectionRecovery` reloads active channels.
 - A failed mount `watch()` no longer shows the full-screen error; the error screen follows the paginator's
   `lastQueryError`.
-- `initializeOnMount={false}` still runs a non-watching query when the paginator is empty.
 - A provisional (members-only, id-less) channel is never watched, queried or reloaded on mount, so it is no longer
   created or loaded by opening it; `channel.initialized = true` is no longer needed to stop that.
 - `<Channel>` may render `channel.supersededBy` instead of the instance you passed.
