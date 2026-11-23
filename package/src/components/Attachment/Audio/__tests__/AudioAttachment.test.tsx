@@ -9,6 +9,7 @@ import { initiateClientWithChannels } from '../../../../mock-builders/api/initia
 import { generateAudioAttachment } from '../../../../mock-builders/attachments';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateUser } from '../../../../mock-builders/generator/user';
+import { AudioPlayer } from '../../../../state-store/audio-player';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { AudioAttachment, type AudioAttachmentType } from '../AudioAttachment';
@@ -48,6 +49,10 @@ describe('AudioAttachment played marks', () => {
     client = result.client;
     channel = result.channels[0];
     jest.spyOn(channel, 'markMessagePlayed').mockResolvedValue(null);
+    // The test renderer has no native player, so a press starts playback directly.
+    jest.spyOn(AudioPlayer.prototype, 'play').mockImplementation(function (this: AudioPlayer) {
+      this.state.partialNext({ isPlaying: true });
+    });
   });
 
   afterEach(() => {
