@@ -17,7 +17,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 
 import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
-import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
+import { getPlayedCount, isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 type MessageFooterComponentProps = {
@@ -66,6 +66,7 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
   }
 
   const isEdited = isEditedMessage(message) && !isAIGenerated;
+  const playedCount = getPlayedCount(message);
 
   return (
     <View
@@ -83,6 +84,11 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
       <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
       {isEdited ? (
         <Text style={[styles.editedText, editedText]}>{t('message.edited.text', 'Edited')}</Text>
+      ) : null}
+      {playedCount > 0 ? (
+        <Text style={[styles.editedText, editedText]} testID='message-played-label'>
+          {t('message.played.text', 'Played by {{count}}', { count: playedCount })}
+        </Text>
       ) : null}
     </View>
   );
@@ -128,7 +134,8 @@ const areEqual = (
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned;
+    prevMessage.pinned === nextMessage.pinned &&
+    getPlayedCount(prevMessage) === getPlayedCount(nextMessage);
   if (!messageEqual) {
     return false;
   }

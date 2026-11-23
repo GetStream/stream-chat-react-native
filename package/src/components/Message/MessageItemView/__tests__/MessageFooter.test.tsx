@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react-native';
+import { msToNs } from 'stream-chat';
 import type { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
@@ -67,5 +68,77 @@ describe('MessageFooter sender name (group vs DM)', () => {
     await waitFor(() => {
       expect(within(footer).queryByText('Other Person')).not.toBeNull();
     });
+  });
+});
+
+describe('MessageFooter played label', () => {
+  const me = generateUser({ id: 'me', name: 'Me' });
+  const other = generateUser({ id: 'other', name: 'Other Person' });
+  const third = generateUser({ id: 'third', name: 'Third Person' });
+  const playedBy = (...users: { id: string }[]) => ({
+    played: {
+      count: users.length,
+      latest_by: users.map((user, index) => ({ created_at: msToNs(index + 1), user_id: user.id })),
+    },
+  });
+  // Stable reference: `Message` compares group styles by identity.
+  const groupStyles: ['bottom'] = ['bottom'];
+
+  afterEach(cleanup);
+
+  const setup = async () => {
+    const mockedChannel = generateChannelResponse({
+      members: [generateMember({ user: me }), generateMember({ user: other })],
+      messages: [],
+    });
+    const chatClient = await getTestClientWithUser(me);
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.channel.id) as ChannelType;
+    await channel.watch();
+    const message = generateMessage({ text: 'voice', type: 'regular', user: me });
+    const ui = (props: { message: typeof message }) => (
+      <Chat client={chatClient as StreamChat}>
+        <Channel channel={channel}>
+          <Message groupStyles={groupStyles} message={props.message} />
+        </Channel>
+      </Chat>
+    );
+    return { message, ui };
+  };
+
+  it('shows no played label without played marks', async () => {
+    const { message, ui } = await setup();
+    render(ui({ message }));
+
+    await screen.findByTestId('message-status-time');
+    expect(screen.queryByTestId('message-played-label')).toBeNull();
+  });
+
+  it('shows no played label while nobody played the message', async () => {
+    const { message, ui } = await setup();
+    render(ui({ message: { ...message, mark_groups: playedBy() } }));
+
+    await screen.findByTestId('message-status-time');
+    expect(screen.queryByTestId('message-played-label')).toBeNull();
+  });
+
+  it('shows the played label once a played mark lands on the rendered message', async () => {
+    const { message, ui } = await setup();
+    const { rerender } = render(ui({ message }));
+    await screen.findByTestId('message-status-time');
+
+    rerender(ui({ message: { ...message, mark_groups: playedBy(other) } }));
+
+    expect(await screen.findByTestId('message-played-label')).toHaveTextContent('Played by 1');
+  });
+
+  it('updates the played count when another user plays the message', async () => {
+    const { message, ui } = await setup();
+    const { rerender } = render(ui({ message: { ...message, mark_groups: playedBy(other) } }));
+    expect(await screen.findByTestId('message-played-label')).toHaveTextContent('Played by 1');
+
+    rerender(ui({ message: { ...message, mark_groups: playedBy(other, third) } }));
+
+    expect(await screen.findByTestId('message-played-label')).toHaveTextContent('Played by 2');
   });
 });
