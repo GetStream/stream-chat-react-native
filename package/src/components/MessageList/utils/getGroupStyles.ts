@@ -2,7 +2,7 @@ import { LocalMessage } from 'stream-chat';
 
 import { nsToMs } from 'stream-chat';
 
-import { isEditedMessage } from '../../../utils/utils';
+import { isEditedMessage, isPlayedMessage } from '../../../utils/utils';
 
 export type MessageGroupStylesParams = {
   message: LocalMessage;
@@ -45,7 +45,9 @@ export const getGroupStyle = ({
     userId !== previousMessage?.user?.id ||
     // A date separator above the message starts a new group.
     dateSeparatorDate ||
-    isEditedMessage(previousMessage);
+    // Edited/played messages end the group so the footer label shows.
+    isEditedMessage(previousMessage) ||
+    isPlayedMessage(previousMessage);
 
   const isBottomMessage =
     !nextMessage ||
@@ -55,7 +57,8 @@ export const getGroupStyle = ({
     nextMessageDateSeparatorDate ||
     (maxTimeBetweenGroupedMessages !== undefined &&
       nsToMs(nextMessage.created_at - message.created_at) > maxTimeBetweenGroupedMessages) ||
-    isEditedMessage(message);
+    isEditedMessage(message) ||
+    isPlayedMessage(message);
 
   if (isTopMessage) {
     groupStyles.push('top');
