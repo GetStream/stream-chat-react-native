@@ -1,11 +1,17 @@
 import React, { createContext, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
 
 import { useStateStore } from '../../hooks/useStateStore';
-import { AudioPlayerPool, AudioPlayerPoolState } from '../../state-store/audio-player-pool';
+import {
+  AudioPlayerPool,
+  AudioPlayerPoolOptions,
+  AudioPlayerPoolState,
+} from '../../state-store/audio-player-pool';
 import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 export type AudioPlayerContextProps = {
   allowConcurrentAudioPlayback: boolean;
+  /** Passed to the pool, see `AudioPlayerPoolOptions`. Keep it stable: a new one recreates the pool. */
+  onPlaybackStarted?: AudioPlayerPoolOptions['onPlaybackStarted'];
 };
 
 export type AudioPlayerContextValue = {
@@ -20,10 +26,10 @@ export const AudioPlayerProvider = ({
   value,
   children,
 }: PropsWithChildren<{ value: AudioPlayerContextProps }>) => {
-  const { allowConcurrentAudioPlayback } = value;
+  const { allowConcurrentAudioPlayback, onPlaybackStarted } = value;
   const audioPlayerPool = useMemo(
-    () => new AudioPlayerPool({ allowConcurrentAudioPlayback }),
-    [allowConcurrentAudioPlayback],
+    () => new AudioPlayerPool({ allowConcurrentAudioPlayback, onPlaybackStarted }),
+    [allowConcurrentAudioPlayback, onPlaybackStarted],
   );
   const audioPlayerPoolContextValue = useMemo(() => ({ audioPlayerPool }), [audioPlayerPool]);
 

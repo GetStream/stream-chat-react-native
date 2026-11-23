@@ -15,11 +15,10 @@ import {
 
 import { PlayPauseButton } from './PlayPauseButton';
 
-import { useChannelContext, useTheme } from '../../../contexts';
+import { useTheme } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks';
 import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
-import { useMarkMessagePlayed } from '../../../hooks/useMarkMessagePlayed';
 import {
   NativeHandlers,
   SoundReturnType,
@@ -104,10 +103,11 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
   const waveformData = item.custom?.waveform_data;
-  const { channel } = useChannelContext();
 
   const audioPlayer = useAudioPlayer({
     duration: item.duration ?? item.custom?.duration ?? 0,
+    // A preview's player belongs to no message, so playing it marks nothing.
+    messageId: isPreview ? undefined : message?.id,
     mimeType: item.custom?.mime_type ?? '',
     requester: isPreview
       ? 'preview'
@@ -119,7 +119,6 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
     audioPlayer.state,
     audioPlayerSelector,
   );
-  useMarkMessagePlayed({ channel, isPlaying, message: isPreview ? undefined : message });
 
   // Initializes the player for native CLI apps.
   useEffect(() => {

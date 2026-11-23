@@ -27,6 +27,7 @@ const makeAudioPlayerId = ({
 
 export const useAudioPlayer = ({
   duration,
+  messageId,
   mimeType,
   playbackRates,
   previewVoiceRecording,
@@ -75,6 +76,7 @@ export const useAudioPlayer = ({
       audioPlayerPool?.getOrAddPlayer({
         duration: duration ?? 0,
         id,
+        messageId,
         mimeType: mimeType ?? '',
         onError,
         playbackRates,
@@ -86,6 +88,7 @@ export const useAudioPlayer = ({
       audioPlayerPool,
       duration,
       id,
+      messageId,
       mimeType,
       onError,
       playbackRates,

@@ -5,7 +5,6 @@ import Animated, { SharedValue } from 'react-native-reanimated';
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useStateStore } from '../../../hooks';
-import { useMarkMessagePlayed } from '../../../hooks/useMarkMessagePlayed';
 
 import {
   isVideoPlayerAvailable,
@@ -83,6 +82,7 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
 
   const videoPlayer = useImageGalleryVideoPlayer({
     id: attachmentId,
+    messageId: photo.messageId,
   });
 
   useEffect(() => {
@@ -97,14 +97,6 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
   }, [videoPlayer, shouldRender]);
 
   const { isPlaying, currentPlaybackRate } = useStateStore(videoPlayer.state, videoPlayerSelector);
-
-  const { channel, messages } = imageGalleryStateStore.state.getLatestValue();
-  // The client's copy carries the latest `own_marks`.
-  const playedMessage = photo.messageId
-    ? (channel?.getClient().messageStore.get(photo.messageId) ??
-      messages.find(({ id }) => id === photo.messageId))
-    : undefined;
-  useMarkMessagePlayed({ channel, isPlaying, message: playedMessage });
 
   const onLoadStart = () => {
     setOpacity(1);

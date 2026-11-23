@@ -4,12 +4,14 @@ import { StateStore, Unsubscribe } from '@stream-io/state-store';
 import type { Channel } from 'stream-chat';
 import { Attachment, convertTimestampToDate, LocalMessage, UserResponse } from 'stream-chat';
 
+import type { VideoPlayer } from './video-player';
 import { VideoPlayerPool } from './video-player-pool';
 
 import { getGiphyMimeType } from '../components/Attachment/utils/getGiphyMimeType';
 import { isVideoPlayerAvailable } from '../native';
 import { FileTypes } from '../types/types';
 import { getUrlOfImageAttachment } from '../utils/getUrlOfImageAttachment';
+import { markPlayedMessage } from '../utils/markPlayedMessage';
 
 export type ImageGalleryAsset = {
   id: string;
@@ -82,9 +84,22 @@ export class ImageGalleryStateStore {
   constructor(options: Partial<ImageGalleryOptions> = {}) {
     this.options = { ...INITIAL_IMAGE_GALLERY_OPTIONS, ...options };
     this.state = new StateStore<ImageGalleryState>(INITIAL_STATE);
-    this.videoPlayerPool = new VideoPlayerPool();
+    this.videoPlayerPool = new VideoPlayerPool({ onPlaybackStarted: this.markPlayedIfShown });
     this.currentIndexShared = makeMutable(INITIAL_STATE.currentIndex);
   }
+
+  /**
+   * Marks the video's message played if its slide is the one shown. Autoplay also plays the slides
+   * next to it: those are left unhandled, so they count on their first progress once shown.
+   */
+  private markPlayedIfShown = (player: VideoPlayer) => {
+    const { assets, channel, currentIndex } = this.state.getLatestValue();
+    if (assets[currentIndex]?.id !== player.id) {
+      return false;
+    }
+    markPlayedMessage(channel, player.messageId);
+    return true;
+  };
 
   get messages() {
     return this.state.getLatestValue().messages;

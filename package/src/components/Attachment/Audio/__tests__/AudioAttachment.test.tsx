@@ -43,6 +43,7 @@ const voiceRecording = (type: AudioAttachmentType['type'] = 'voiceRecording') =>
 describe('AudioAttachment played marks', () => {
   let client: StreamChat;
   let channel: ChannelType;
+  let playSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     const result = await initiateClientWithChannels();
@@ -50,10 +51,24 @@ describe('AudioAttachment played marks', () => {
     channel = result.channels[0];
     jest.spyOn(channel, 'markMessagePlayed').mockResolvedValue(null);
     // The test renderer has no native player, so a press starts playback directly.
-    jest.spyOn(AudioPlayer.prototype, 'play').mockImplementation(function (this: AudioPlayer) {
+    playSpy = jest.spyOn(AudioPlayer.prototype, 'play').mockImplementation(function (
+      this: AudioPlayer,
+    ) {
       this.state.partialNext({ isPlaying: true });
     });
   });
+
+  // Stands in for the native player's first progress report.
+  const advancePlayback = () =>
+    act(() => {
+      const playingPlayer = playSpy.mock.contexts.at(-1) as AudioPlayer | undefined;
+      if (playingPlayer) {
+        playingPlayer.position = 1000;
+      }
+    });
+
+  const sentMessage = () =>
+    generateMessage({ user: generateUser({ id: 'other-user' }) }) as LocalMessage;
 
   afterEach(() => {
     cleanup();
@@ -82,31 +97,34 @@ describe('AudioAttachment played marks', () => {
     });
   };
 
-  it('marks the voice message played when playback starts', async () => {
-    const message = generateMessage({ user: generateUser({ id: 'other-user' }) }) as LocalMessage;
+  it('marks the voice message played once playback advances', async () => {
+    const message = sentMessage();
     renderAudio(message);
 
     await pressPlay();
+    expect(channel.markMessagePlayed).not.toHaveBeenCalled();
+    advancePlayback();
 
     expect(channel.markMessagePlayed).toHaveBeenCalledTimes(1);
-    expect(channel.markMessagePlayed).toHaveBeenCalledWith(message);
+    expect(channel.markMessagePlayed).toHaveBeenCalledWith(message.id);
   });
 
-  it('marks an audio file message played when playback starts', async () => {
-    const message = generateMessage({ user: generateUser({ id: 'other-user' }) }) as LocalMessage;
+  it('marks an audio file message played once playback advances', async () => {
+    const message = sentMessage();
     renderAudio(message, voiceRecording('audio'));
 
     await pressPlay();
+    advancePlayback();
 
     expect(channel.markMessagePlayed).toHaveBeenCalledTimes(1);
-    expect(channel.markMessagePlayed).toHaveBeenCalledWith(message);
   });
 
   it('does not mark a composer preview', async () => {
-    const message = generateMessage({ user: generateUser({ id: 'other-user' }) }) as LocalMessage;
+    const message = sentMessage();
     renderAudio(message, voiceRecording(), { isPreview: true });
 
     await pressPlay();
+    advancePlayback();
 
     expect(channel.markMessagePlayed).not.toHaveBeenCalled();
   });
