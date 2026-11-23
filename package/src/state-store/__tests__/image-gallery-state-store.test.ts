@@ -1,4 +1,4 @@
-import type { Attachment, LocalMessage, UserResponse } from 'stream-chat';
+import type { Attachment, Channel, LocalMessage, UserResponse } from 'stream-chat';
 
 import {
   generateImageAttachment,
@@ -684,6 +684,17 @@ describe('ImageGalleryStateStore', () => {
       store.openImageGallery({ messages: newMessages });
 
       expect(store.messages).toEqual(newMessages);
+    });
+
+    it('keeps the channel until the gallery is cleared', () => {
+      const store = new ImageGalleryStateStore();
+      const channel = { cid: 'messaging:gallery' } as Channel;
+
+      store.openImageGallery({ channel, messages: [generateMessage({ id: 'msg-1' })] });
+      expect(store.state.getLatestValue().channel).toBe(channel);
+
+      store.clear();
+      expect(store.state.getLatestValue().channel).toBeUndefined();
     });
   });
 
