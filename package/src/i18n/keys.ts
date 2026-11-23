@@ -301,6 +301,8 @@ export type TranslationCatalog = {
   'message.flagMessageConfirm.label': 'Flag';
   'message.flagMessageConfirm.text': 'Do you want to send a copy of this message to a moderator for further investigation?';
   'message.flagged.text': 'Message has been successfully flagged';
+  'message.mark.played.text': 'Played';
+  'message.mark.playedBy.text': 'Played by {{playedCount}}';
   'message.markUnread.label': 'Mark as Unread';
   'message.markUnreadTooOld.error': 'Error marking message unread. Cannot mark unread messages older than the newest 100 channel messages.';
   'message.markedUnread.text': 'Message marked as unread';
@@ -310,7 +312,6 @@ export type TranslationCatalog = {
   'message.pinMessage.label': 'Pin to Conversation';
   'message.pinned.text': 'Message pinned';
   'message.pinnedBy.text': 'Pinned by';
-  'message.played.text': 'Played by {{count}}';
   'message.reactionList.more.accessibilityLabel_one': 'and {{count}} more reaction';
   'message.reactionList.more.accessibilityLabel_other': 'and {{count}} more reactions';
   'message.reactionList.total.accessibilityLabel_one': '{{count}} reaction';

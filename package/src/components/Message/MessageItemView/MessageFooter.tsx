@@ -44,7 +44,7 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
   const { isDirectChannel } = useStateStore(channel.state, isDirectChannelSelector) ?? {
     isDirectChannel: false,
   };
-  const { MessageStatus, MessageTimestamp } = useComponentsContext();
+  const { MessageMark, MessageStatus, MessageTimestamp } = useComponentsContext();
   const styles = useStyles();
 
   const {
@@ -61,12 +61,26 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
     [message, isMessageAIGenerated],
   );
 
+  const playedCount =
+    channel.config.markTypes.includes('played') && message.type !== 'deleted'
+      ? getPlayedCount(message)
+      : 0;
+
   if (lastGroupMessage === false && message.status === MessageStatusTypes.RECEIVED) {
-    return null;
+    // Earlier messages in a group show only the mark.
+    return playedCount > 0 ? (
+      <View
+        accessible
+        accessibilityRole='text'
+        style={[styles.container, container]}
+        testID='message-status-time'
+      >
+        <MessageMark isDirectChannel={isDirectChannel} playedCount={playedCount} />
+      </View>
+    ) : null;
   }
 
   const isEdited = isEditedMessage(message) && !isAIGenerated;
-  const playedCount = getPlayedCount(message);
 
   return (
     <View
@@ -80,15 +94,13 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
           {message.user.name}
         </Text>
       ) : null}
+      {playedCount > 0 ? (
+        <MessageMark isDirectChannel={isDirectChannel} playedCount={playedCount} showSeparator />
+      ) : null}
       {showMessageStatus ? <MessageStatus /> : null}
       <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
       {isEdited ? (
         <Text style={[styles.editedText, editedText]}>{t('message.edited.text', 'Edited')}</Text>
-      ) : null}
-      {playedCount > 0 ? (
-        <Text style={[styles.editedText, editedText]} testID='message-played-label'>
-          {t('message.played.text', 'Played by {{count}}', { count: playedCount })}
-        </Text>
       ) : null}
     </View>
   );

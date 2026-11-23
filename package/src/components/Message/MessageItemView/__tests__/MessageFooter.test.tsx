@@ -71,31 +71,50 @@ describe('MessageFooter sender name (group vs DM)', () => {
   });
 });
 
-describe('MessageFooter played label', () => {
+describe('MessageFooter message mark', () => {
   const me = generateUser({ id: 'me', name: 'Me' });
   const other = generateUser({ id: 'other', name: 'Other Person' });
   const third = generateUser({ id: 'third', name: 'Third Person' });
-  const playedBy = (...users: { id: string }[]) => ({
+  const playedBy = (count: number) => ({
     played: {
-      count: users.length,
-      latest_by: users.map((user, index) => ({ created_at: msToNs(index + 1), user_id: user.id })),
+      count,
+      latest_by: Array.from({ length: Math.min(count, 100) }, (_, index) => ({
+        created_at: msToNs(index + 1),
+        user_id: `user-${index}`,
+      })),
     },
   });
-  // Stable reference: `Message` compares group styles by identity.
-  const groupStyles: ['bottom'] = ['bottom'];
+  // Stable references: `Message` compares group styles by identity.
+  const lastInGroup: ['bottom'] = ['bottom'];
+  const earlierInGroup: ['top'] = ['top'];
 
   afterEach(cleanup);
 
-  const setup = async () => {
+  const setup = async ({
+    groupStyles = lastInGroup,
+    isDirectChannel = false,
+    markTypes = ['played'],
+  }: {
+    groupStyles?: typeof lastInGroup | typeof earlierInGroup;
+    isDirectChannel?: boolean;
+    markTypes?: string[];
+  } = {}) => {
+    const users = isDirectChannel ? [me, other] : [me, other, third];
     const mockedChannel = generateChannelResponse({
-      members: [generateMember({ user: me }), generateMember({ user: other })],
+      channel: { config: { ...generateChannelResponse().channel.config, mark_types: markTypes } },
+      members: users.map((user) => generateMember({ user })),
       messages: [],
     });
     const chatClient = await getTestClientWithUser(me);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.channel.id) as ChannelType;
     await channel.watch();
-    const message = generateMessage({ text: 'voice', type: 'regular', user: me });
+    const message = generateMessage({
+      status: 'received',
+      text: 'voice',
+      type: 'regular',
+      user: me,
+    });
     const ui = (props: { message: typeof message }) => (
       <Chat client={chatClient as StreamChat}>
         <Channel channel={channel}>
@@ -106,39 +125,61 @@ describe('MessageFooter played label', () => {
     return { message, ui };
   };
 
-  it('shows no played label without played marks', async () => {
+  it('shows no mark while nobody played the message', async () => {
     const { message, ui } = await setup();
-    render(ui({ message }));
+    render(ui({ message: { ...message, mark_groups: playedBy(0) } }));
 
     await screen.findByTestId('message-status-time');
-    expect(screen.queryByTestId('message-played-label')).toBeNull();
+    expect(screen.queryByTestId('message-mark')).toBeNull();
   });
 
-  it('shows no played label while nobody played the message', async () => {
-    const { message, ui } = await setup();
-    render(ui({ message: { ...message, mark_groups: playedBy() } }));
+  it('shows no mark when the channel type has no played mark', async () => {
+    const { message, ui } = await setup({ markTypes: [] });
+    render(ui({ message: { ...message, mark_groups: playedBy(2) } }));
 
     await screen.findByTestId('message-status-time');
-    expect(screen.queryByTestId('message-played-label')).toBeNull();
+    expect(screen.queryByTestId('message-mark')).toBeNull();
   });
 
-  it('shows the played label once a played mark lands on the rendered message', async () => {
-    const { message, ui } = await setup();
+  it('shows "Played" in a direct message once a mark lands on the rendered message', async () => {
+    const { message, ui } = await setup({ isDirectChannel: true });
     const { rerender } = render(ui({ message }));
     await screen.findByTestId('message-status-time');
 
-    rerender(ui({ message: { ...message, mark_groups: playedBy(other) } }));
+    rerender(ui({ message: { ...message, mark_groups: playedBy(1) } }));
 
-    expect(await screen.findByTestId('message-played-label')).toHaveTextContent('Played by 1');
+    expect(await screen.findByTestId('message-mark')).toHaveTextContent('Played·');
   });
 
-  it('updates the played count when another user plays the message', async () => {
+  it('shows the played count in a channel and updates it', async () => {
     const { message, ui } = await setup();
-    const { rerender } = render(ui({ message: { ...message, mark_groups: playedBy(other) } }));
-    expect(await screen.findByTestId('message-played-label')).toHaveTextContent('Played by 1');
+    const { rerender } = render(ui({ message: { ...message, mark_groups: playedBy(1) } }));
+    expect(await screen.findByTestId('message-mark')).toHaveTextContent('Played by 1·');
 
-    rerender(ui({ message: { ...message, mark_groups: playedBy(other, third) } }));
+    rerender(ui({ message: { ...message, mark_groups: playedBy(2) } }));
 
-    expect(await screen.findByTestId('message-played-label')).toHaveTextContent('Played by 2');
+    expect(await screen.findByTestId('message-mark')).toHaveTextContent('Played by 2·');
+  });
+
+  it('caps the played count at 99+', async () => {
+    const { message, ui } = await setup();
+    render(ui({ message: { ...message, mark_groups: playedBy(100) } }));
+
+    expect(await screen.findByTestId('message-mark')).toHaveTextContent('Played by 99+·');
+  });
+
+  it('shows only the mark on an earlier message in a group', async () => {
+    const { message, ui } = await setup({ groupStyles: earlierInGroup });
+    render(ui({ message: { ...message, mark_groups: playedBy(2) } }));
+
+    expect(await screen.findByTestId('message-status-time')).toHaveTextContent('Played by 2');
+  });
+
+  it('shows no footer on an earlier message in a group that nobody played', async () => {
+    const { message, ui } = await setup({ groupStyles: earlierInGroup });
+    render(ui({ message }));
+
+    await screen.findByText('voice');
+    expect(screen.queryByTestId('message-status-time')).toBeNull();
   });
 });
