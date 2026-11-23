@@ -105,15 +105,6 @@ export const isEditedMessage = (message: LocalMessage) => message.message_text_u
 export const getPlayedCount = (message: LocalMessage | MessageResponse) =>
   message.mark_groups?.played?.count ?? 0;
 
-/**
- * Whether another user played the message. See {@link getPlayedCount}.
- *
- * @param message The message to check.
- * @returns Whether the message is played.
- */
-export const isPlayedMessage = (message: LocalMessage | MessageResponse) =>
-  getPlayedCount(message) > 0;
-
 export const makeImageCompatibleUrl = (url?: string) =>
   url ? (url.indexOf('//') === 0 ? `https:${url}` : url).trim() : url;
 
