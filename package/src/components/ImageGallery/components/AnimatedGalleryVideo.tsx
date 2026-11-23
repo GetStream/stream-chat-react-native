@@ -4,7 +4,7 @@ import type { StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
-import { useStateStore } from '../../../hooks';
+import { useStableCallback, useStateStore } from '../../../hooks';
 
 import {
   isVideoPlayerAvailable,
@@ -80,9 +80,13 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
 
   const videoRef = useRef<VideoType>(null);
 
+  const markPlayed = useStableCallback(() =>
+    imageGalleryStateStore.markPlayedIfShown(attachmentId, photo.messageId),
+  );
+
   const videoPlayer = useImageGalleryVideoPlayer({
     id: attachmentId,
-    messageId: photo.messageId,
+    onPlaybackStarted: markPlayed,
   });
 
   useEffect(() => {

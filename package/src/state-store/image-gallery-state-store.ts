@@ -4,7 +4,6 @@ import { StateStore, Unsubscribe } from '@stream-io/state-store';
 import type { Channel } from 'stream-chat';
 import { Attachment, convertTimestampToDate, LocalMessage, UserResponse } from 'stream-chat';
 
-import type { VideoPlayer } from './video-player';
 import { VideoPlayerPool } from './video-player-pool';
 
 import { getGiphyMimeType } from '../components/Attachment/utils/getGiphyMimeType';
@@ -84,20 +83,23 @@ export class ImageGalleryStateStore {
   constructor(options: Partial<ImageGalleryOptions> = {}) {
     this.options = { ...INITIAL_IMAGE_GALLERY_OPTIONS, ...options };
     this.state = new StateStore<ImageGalleryState>(INITIAL_STATE);
-    this.videoPlayerPool = new VideoPlayerPool({ onPlaybackStarted: this.markPlayedIfShown });
+    this.videoPlayerPool = new VideoPlayerPool();
     this.currentIndexShared = makeMutable(INITIAL_STATE.currentIndex);
   }
 
   /**
-   * Marks the video's message played if its slide is the one shown. Autoplay also plays the slides
-   * next to it: those are left unhandled, so they count on their first progress once shown.
+   * Marks a video's message played if its slide is the one shown, and returns whether it did.
+   * Autoplay also plays the slides next to it, which must not count until they are shown.
+   *
+   * @param assetId The video's asset ID.
+   * @param messageId The ID of the message the video belongs to.
    */
-  private markPlayedIfShown = (player: VideoPlayer) => {
+  markPlayedIfShown = (assetId: string, messageId?: string) => {
     const { assets, channel, currentIndex } = this.state.getLatestValue();
-    if (assets[currentIndex]?.id !== player.id) {
+    if (assets[currentIndex]?.id !== assetId) {
       return false;
     }
-    markPlayedMessage(channel, player.messageId);
+    markPlayedMessage(channel, messageId);
     return true;
   };
 

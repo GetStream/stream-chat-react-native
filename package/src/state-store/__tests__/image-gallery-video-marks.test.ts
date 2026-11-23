@@ -11,7 +11,7 @@ jest.mock('../../native', () => ({
   NativeHandlers: { SDK: '' },
 }));
 
-describe('ImageGalleryStateStore video marks', () => {
+describe('ImageGalleryStateStore.markPlayedIfShown', () => {
   let channel: Channel;
   let messages: LocalMessage[];
   let store: ImageGalleryStateStore;
@@ -44,45 +44,32 @@ describe('ImageGalleryStateStore video marks', () => {
     jest.restoreAllMocks();
   });
 
-  const playerFor = (index: number) => {
-    const asset = store.state.getLatestValue().assets[index];
-    const player = store.videoPlayerPool.getOrAddPlayer({
-      id: asset.id,
-      messageId: asset.messageId,
-    });
-    player.duration = 10000;
-    return player;
-  };
+  const assetAt = (index: number) => store.state.getLatestValue().assets[index];
 
-  const startPlayback = (index: number) => {
-    const player = playerFor(index);
-    player.isPlaying = true;
-    player.position = 1000;
-    return player;
-  };
+  it('marks the shown video and reports it handled', () => {
+    const asset = assetAt(0);
 
-  it('marks the shown video once its playback advances', () => {
-    startPlayback(0);
-
-    expect(channel.markMessagePlayed).toHaveBeenCalledTimes(1);
+    expect(store.markPlayedIfShown(asset.id, asset.messageId)).toBe(true);
     expect(channel.markMessagePlayed).toHaveBeenCalledWith('video-message-1');
   });
 
-  it('marks a video that started next to the shown one on its first progress once shown', () => {
-    const neighbour = startPlayback(1);
+  it('leaves a video that is not shown unhandled until its slide is shown', () => {
+    const asset = assetAt(1);
+
+    expect(store.markPlayedIfShown(asset.id, asset.messageId)).toBe(false);
     expect(channel.markMessagePlayed).not.toHaveBeenCalled();
 
     store.currentIndex = 1;
-    neighbour.position = 2000;
 
-    expect(channel.markMessagePlayed).toHaveBeenCalledTimes(1);
+    expect(store.markPlayedIfShown(asset.id, asset.messageId)).toBe(true);
     expect(channel.markMessagePlayed).toHaveBeenCalledWith('video-message-2');
   });
 
   it('marks nothing when the gallery was opened without a channel', () => {
     store.openImageGallery({ messages, selectedAttachmentUrl: 'https://example.com/1.mp4' });
+    const asset = assetAt(0);
 
-    startPlayback(0);
+    store.markPlayedIfShown(asset.id, asset.messageId);
 
     expect(channel.markMessagePlayed).not.toHaveBeenCalled();
   });

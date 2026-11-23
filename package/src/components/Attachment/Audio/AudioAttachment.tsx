@@ -15,7 +15,7 @@ import {
 
 import { PlayPauseButton } from './PlayPauseButton';
 
-import { useTheme } from '../../../contexts';
+import { useChannelContext, useTheme } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks';
 import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
@@ -29,6 +29,7 @@ import {
 import { AudioPlayerState } from '../../../state-store/audio-player';
 import { primitives } from '../../../theme';
 import { AudioConfig } from '../../../types/types';
+import { markPlayedMessage } from '../../../utils/markPlayedMessage';
 import { ProgressControl } from '../../ProgressControl/ProgressControl';
 import { StableDurationLabel } from '../../ProgressControl/StableDurationLabel';
 import { WaveProgressBar } from '../../ProgressControl/WaveProgressBar';
@@ -103,12 +104,18 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
   const waveformData = item.custom?.waveform_data;
+  const { channel } = useChannelContext();
+
+  const markPlayed = useStableCallback(() => {
+    markPlayedMessage(channel, message?.id);
+    return true;
+  });
 
   const audioPlayer = useAudioPlayer({
     duration: item.duration ?? item.custom?.duration ?? 0,
-    // A preview's player belongs to no message, so playing it marks nothing.
-    messageId: isPreview ? undefined : message?.id,
     mimeType: item.custom?.mime_type ?? '',
+    // A preview belongs to no message, so playing it marks nothing.
+    onPlaybackStarted: isPreview ? undefined : markPlayed,
     requester: isPreview
       ? 'preview'
       : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,

@@ -22,10 +22,10 @@ export type VideoPlayerOptions = VideoDescriptor & {
   playbackRates?: number[];
   autoPlay?: boolean;
   /**
-   * The message the video belongs to. Without it the pool is still told when playback starts, but
-   * the SDK marks nothing played.
+   * Called when playback first advances, after any download and buffering. Returns whether the
+   * start was handled; an unhandled start is reported again on the next progress.
    */
-  messageId?: string;
+  onPlaybackStarted?: () => boolean;
 };
 
 const DEFAULT_PLAYBACK_RATES = [1.0, 1.5, 2.0];
@@ -66,6 +66,10 @@ export class VideoPlayer {
   initPlayer = ({ playerRef }: { playerRef?: VideoType }) => {
     this.playerRef = playerRef ?? null;
   };
+
+  setOnPlaybackStarted(onPlaybackStarted?: () => boolean) {
+    this.options = { ...this.options, onPlaybackStarted };
+  }
 
   get id() {
     return this._id;
@@ -121,18 +125,13 @@ export class VideoPlayer {
     this.detectPlaybackStart();
   }
 
-  /** The message the video belongs to, if any. */
-  get messageId() {
-    return this.options.messageId;
-  }
-
-  /** Tells the pool once playback advances, after any download and buffering, until it is handled. */
+  /** Calls `onPlaybackStarted` once playback advances, until it handles the start. */
   private detectPlaybackStart() {
     // expo reports `progress`, RN CLI reports `position`
     if (this.playbackStartHandled || !this.isPlaying || !(this.position > 0 || this.progress > 0)) {
       return;
     }
-    this.playbackStartHandled = this._pool?.notifyPlaybackStarted(this) ?? false;
+    this.playbackStartHandled = this.options.onPlaybackStarted?.() ?? false;
   }
 
   set isPlaying(isPlaying: boolean) {

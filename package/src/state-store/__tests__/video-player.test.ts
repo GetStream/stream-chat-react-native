@@ -683,17 +683,13 @@ describe('VideoPlayer', () => {
   describe('playback start', () => {
     const createPooledPlayer = (options: Partial<VideoPlayerOptions> = {}) => {
       const onPlaybackStarted = jest.fn(() => true);
-      const pool = new VideoPlayerPool({ onPlaybackStarted });
-      const player = pool.getOrAddPlayer({
-        id: 'started-video',
-        messageId: 'message-1',
-        ...options,
-      });
+      const pool = new VideoPlayerPool();
+      const player = pool.getOrAddPlayer({ id: 'started-video', onPlaybackStarted, ...options });
       player.duration = 10 * ONE_SECOND_IN_MILLISECONDS;
-      return { onPlaybackStarted, player };
+      return { onPlaybackStarted, player, pool };
     };
 
-    it('tells the pool once, when the position first advances', () => {
+    it('calls onPlaybackStarted once, when the position first advances', () => {
       const { onPlaybackStarted, player } = createPooledPlayer();
       player.isPlaying = true;
 
@@ -701,11 +697,9 @@ describe('VideoPlayer', () => {
       player.position = 1000;
 
       expect(onPlaybackStarted).toHaveBeenCalledTimes(1);
-      expect(onPlaybackStarted).toHaveBeenCalledWith(player);
-      expect(player.messageId).toBe('message-1');
     });
 
-    it('tells the pool when progress first advances, as Expo reports it', () => {
+    it('calls it when progress first advances, as Expo reports it', () => {
       const { onPlaybackStarted, player } = createPooledPlayer({ autoPlay: true });
 
       player.progress = 0.1;
@@ -725,6 +719,18 @@ describe('VideoPlayer', () => {
 
       player.position = 1000;
 
+      expect(onPlaybackStarted).not.toHaveBeenCalled();
+    });
+
+    it('takes a new callback when the pool reuses the player with one', () => {
+      const { onPlaybackStarted, player, pool } = createPooledPlayer();
+      const replacement = jest.fn(() => true);
+
+      pool.getOrAddPlayer({ id: 'started-video', onPlaybackStarted: replacement });
+      player.isPlaying = true;
+      player.position = 1000;
+
+      expect(replacement).toHaveBeenCalledTimes(1);
       expect(onPlaybackStarted).not.toHaveBeenCalled();
     });
   });

@@ -4,11 +4,6 @@ import { AudioPlayer, AudioPlayerOptions } from './audio-player';
 
 export type AudioPlayerPoolOptions = {
   allowConcurrentAudioPlayback: boolean;
-  /**
-   * Called when a player's playback first advances. Returns whether the start was handled; an
-   * unhandled start is reported again on the player's next progress.
-   */
-  onPlaybackStarted?: (player: AudioPlayer) => boolean;
 };
 
 export type AudioPlayerPoolState = {
@@ -22,12 +17,9 @@ export class AudioPlayerPool {
     activeAudioPlayer: null,
   });
 
-  private onPlaybackStarted?: (player: AudioPlayer) => boolean;
-
-  constructor({ allowConcurrentAudioPlayback, onPlaybackStarted }: AudioPlayerPoolOptions) {
+  constructor({ allowConcurrentAudioPlayback }: AudioPlayerPoolOptions) {
     this.pool = new Map<string, AudioPlayer>();
     this.allowConcurrentAudioPlayback = allowConcurrentAudioPlayback ?? false;
-    this.onPlaybackStarted = onPlaybackStarted;
   }
 
   get players() {
@@ -38,6 +30,10 @@ export class AudioPlayerPool {
     const player = this.pool.get(params.id);
     if (player) {
       player.setOnError(params.onError);
+      // Kept when a caller passes none, so any UI driving the player still reports its start.
+      if (params.onPlaybackStarted) {
+        player.setOnPlaybackStarted(params.onPlaybackStarted);
+      }
       return player;
     }
     const newPlayer = new AudioPlayer(params);
@@ -99,9 +95,5 @@ export class AudioPlayerPool {
 
   notifyPaused() {
     this.setActivePlayer(null);
-  }
-
-  notifyPlaybackStarted(player: AudioPlayer) {
-    return this.onPlaybackStarted?.(player) ?? true;
   }
 }

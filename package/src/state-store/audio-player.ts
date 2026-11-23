@@ -46,12 +46,12 @@ const INITIAL_STATE: AudioPlayerState = {
 };
 
 export type AudioPlayerOptions = AudioDescriptor & {
-  /**
-   * The message the audio belongs to. Without it the pool is still told when playback starts, but
-   * the SDK marks nothing played.
-   */
-  messageId?: string;
   onError?: AudioPlayerErrorHandler;
+  /**
+   * Called when playback first advances, after any download and buffering. Returns whether the
+   * start was handled; an unhandled start is reported again on the next progress.
+   */
+  onPlaybackStarted?: () => boolean;
   playbackRates?: number[];
   /**
    * Plays through the recorder's own player, `NativeHandlers.Audio`, instead of the regular
@@ -63,8 +63,7 @@ export type AudioPlayerOptions = AudioDescriptor & {
 export class AudioPlayer {
   state: StateStore<AudioPlayerState>;
   playerRef: SoundReturnType | null = null;
-  /** The message the audio belongs to, if any. */
-  readonly messageId?: string;
+  private onPlaybackStarted?: () => boolean;
   private playbackStartHandled = false;
   private initRequestId = 0;
   private _id: string;
@@ -81,9 +80,9 @@ export class AudioPlayer {
   constructor(options: AudioPlayerOptions) {
     this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
     this._id = options.id;
-    this.messageId = options.messageId;
     this.type = options.type;
     this.onError = options.onError;
+    this.onPlaybackStarted = options.onPlaybackStarted;
     this.previewVoiceRecording = options.previewVoiceRecording ?? false;
     const playbackRates = options.playbackRates ?? DEFAULT_PLAYBACK_RATES;
     this.state = new StateStore<AudioPlayerState>({
@@ -97,6 +96,10 @@ export class AudioPlayer {
 
   setOnError(onError?: AudioPlayerErrorHandler) {
     this.onError = onError;
+  }
+
+  setOnPlaybackStarted(onPlaybackStarted?: () => boolean) {
+    this.onPlaybackStarted = onPlaybackStarted;
   }
 
   private getError(error: unknown) {
@@ -294,12 +297,12 @@ export class AudioPlayer {
     this.detectPlaybackStart();
   }
 
-  /** Tells the pool once playback advances, after any download and buffering, until it is handled. */
+  /** Calls `onPlaybackStarted` once playback advances, until it handles the start. */
   private detectPlaybackStart() {
     if (this.playbackStartHandled || !this.isPlaying || this.position <= 0) {
       return;
     }
-    this.playbackStartHandled = this._pool?.notifyPlaybackStarted(this) ?? false;
+    this.playbackStartHandled = this.onPlaybackStarted?.() ?? false;
   }
 
   set isPlaying(isPlaying: boolean) {

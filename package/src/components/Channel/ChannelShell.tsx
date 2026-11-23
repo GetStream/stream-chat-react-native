@@ -50,9 +50,7 @@ import {
   isImagePickerAvailable,
   NativeHandlers,
 } from '../../native';
-import type { AudioPlayer } from '../../state-store/audio-player';
 import { MessageInputHeightStore } from '../../state-store/message-input-height-store';
-import { markPlayedMessage } from '../../utils/markPlayedMessage';
 import { ReactionData } from '../../utils/utils';
 import { NotificationAnnouncer } from '../Accessibility/NotificationAnnouncer';
 import { AttachmentPicker } from '../AttachmentPicker/AttachmentPicker';
@@ -511,15 +509,9 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     urlPreviewType,
   });
 
-  // Marks played audio whatever UI controls the player.
-  const onAudioPlaybackStarted = useStableCallback((player: AudioPlayer) => {
-    markPlayedMessage(channel, player.messageId);
-    return true;
-  });
-
   const audioPlayerContext = useMemo<AudioPlayerContextProps>(
-    () => ({ allowConcurrentAudioPlayback, onPlaybackStarted: onAudioPlaybackStarted }),
-    [allowConcurrentAudioPlayback, onAudioPlaybackStarted],
+    () => ({ allowConcurrentAudioPlayback }),
+    [allowConcurrentAudioPlayback],
   );
 
   const messageComposerContext = useMemo(() => ({ channel, thread }), [channel, thread]);
