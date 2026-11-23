@@ -15,7 +15,7 @@ import {
 
 import { PlayPauseButton } from './PlayPauseButton';
 
-import { useTheme } from '../../../contexts';
+import { useChannelContext, useTheme } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks';
 import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
@@ -103,6 +103,8 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
   const waveformData = item.custom?.waveform_data;
+  const { channel } = useChannelContext();
+  const isSentAudio = !isPreview && !!message;
 
   const audioPlayer = useAudioPlayer({
     duration: item.duration ?? item.custom?.duration ?? 0,
@@ -156,6 +158,11 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   };
 
   const handlePlayPause = () => {
+    if (!isPlaying && isSentAudio) {
+      channel
+        .markMessagePlayed(message)
+        .catch((error: unknown) => console.warn('Marking the audio message played failed:', error));
+    }
     audioPlayer.toggle();
   };
 
