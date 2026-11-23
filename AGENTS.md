@@ -303,6 +303,14 @@ Three-tier token architecture: **primitives** (raw colors) → **semantics** (e.
 
 Platform-specific tokens are **generated**: `package/src/theme/generated/{light,dark}/StreamTokens.{ios,android,web}.ts`. Regenerate via `package/sync-theme.sh` when design tokens change — never hand-edit them.
 
+The source is the React Native build of `GetStream/design-system-tokens` (`build/reactnative`). `sync-theme.sh` reads a sibling checkout at `../../design-system-tokens` from `package/`, or the path passed as its first argument.
+
+**Legacy semantic names are adapters.** `theme.semantics` is public API, and the token repo has renamed or removed semantics the SDK shipped (`chat*` → `messageBubble*`, `presence*` → `avatarPresence*`, the `avatarPalette*` set, ...). The React Native build keeps every old name, mapped to its current token. The map and its rules live in the token repo, in `config/formatting/react-native/legacy-names.js` and the `AGENTS.md` next to it.
+
+- They exist only to avoid a breaking change and are removed in the next major. Do not add deprecation markers.
+- New SDK code reads the current names. Existing reads of old names stay until the next major, so integrator overrides of the old names keep applying.
+- When the token repo renames or removes a semantic the SDK already ships, add the mapping there. Never alias tokens in this repo.
+
 Custom themes are passed as the `style` prop to `<Chat>`. `mergeThemes()` deep-merges the custom style over the base theme (deep-cloned via `JSON.parse(JSON.stringify())`). Light/dark mode is auto-detected via `useColorScheme()`.
 
 ## i18n
