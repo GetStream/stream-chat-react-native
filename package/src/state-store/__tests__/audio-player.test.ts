@@ -1,5 +1,6 @@
 import { NativeHandlers } from '../../native';
 import { AudioPlayer } from '../audio-player';
+import { AudioPlayerPool } from '../audio-player-pool';
 
 jest.mock('../../native', () => ({
   NativeHandlers: {
@@ -260,5 +261,54 @@ describe('AudioPlayer', () => {
     expect(player.duration).toBe(30000);
     expect(player.position).toBe(5000);
     expect(player.progress).toBeCloseTo(5000 / 30000);
+  });
+
+  describe('playback start', () => {
+    const createPooledPlayer = () => {
+      const onPlaybackStarted = jest.fn(() => true);
+      const pool = new AudioPlayerPool({ allowConcurrentAudioPlayback: false, onPlaybackStarted });
+      const player = pool.getOrAddPlayer({
+        duration: 10,
+        id: 'started-audio-player',
+        messageId: 'message-1',
+        mimeType: 'audio/mp4',
+        type: 'voiceRecording',
+        uri: 'https://example.com/audio.mp4',
+      });
+      return { onPlaybackStarted, player };
+    };
+
+    it('tells the pool once, when playback first advances', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer();
+      player.isPlaying = true;
+      expect(onPlaybackStarted).not.toHaveBeenCalled();
+
+      player.position = 500;
+      player.position = 1000;
+
+      expect(onPlaybackStarted).toHaveBeenCalledTimes(1);
+      expect(onPlaybackStarted).toHaveBeenCalledWith(player);
+      expect(player.messageId).toBe('message-1');
+    });
+
+    it('reports again on the next progress until the pool handles it', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer();
+      onPlaybackStarted.mockReturnValueOnce(false);
+      player.isPlaying = true;
+
+      player.position = 500;
+      player.position = 1000;
+      player.position = 1500;
+
+      expect(onPlaybackStarted).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not count a position change while paused', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer();
+
+      player.position = 1000;
+
+      expect(onPlaybackStarted).not.toHaveBeenCalled();
+    });
   });
 });

@@ -679,4 +679,53 @@ describe('VideoPlayer', () => {
       expect(player.playerRef).toBe(newMockRef);
     });
   });
+
+  describe('playback start', () => {
+    const createPooledPlayer = (options: Partial<VideoPlayerOptions> = {}) => {
+      const onPlaybackStarted = jest.fn(() => true);
+      const pool = new VideoPlayerPool({ onPlaybackStarted });
+      const player = pool.getOrAddPlayer({
+        id: 'started-video',
+        messageId: 'message-1',
+        ...options,
+      });
+      player.duration = 10 * ONE_SECOND_IN_MILLISECONDS;
+      return { onPlaybackStarted, player };
+    };
+
+    it('tells the pool once, when the position first advances', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer();
+      player.isPlaying = true;
+
+      player.position = 500;
+      player.position = 1000;
+
+      expect(onPlaybackStarted).toHaveBeenCalledTimes(1);
+      expect(onPlaybackStarted).toHaveBeenCalledWith(player);
+      expect(player.messageId).toBe('message-1');
+    });
+
+    it('tells the pool when progress first advances, as Expo reports it', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer({ autoPlay: true });
+
+      player.progress = 0.1;
+
+      expect(onPlaybackStarted).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not count an autoplaying video before it advances', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer({ autoPlay: true });
+
+      expect(player.isPlaying).toBe(true);
+      expect(onPlaybackStarted).not.toHaveBeenCalled();
+    });
+
+    it('does not count a position change while paused', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer();
+
+      player.position = 1000;
+
+      expect(onPlaybackStarted).not.toHaveBeenCalled();
+    });
+  });
 });

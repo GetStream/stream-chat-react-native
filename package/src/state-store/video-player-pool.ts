@@ -6,14 +6,25 @@ export type VideoPlayerPoolState = {
   activeVideoPlayer: VideoPlayer | null;
 };
 
+export type VideoPlayerPoolOptions = {
+  /**
+   * Called when a player's playback first advances. Returns whether the start was handled; an
+   * unhandled start is reported again on the player's next progress.
+   */
+  onPlaybackStarted?: (player: VideoPlayer) => boolean;
+};
+
 export class VideoPlayerPool {
   pool: Map<string, VideoPlayer>;
   state: StateStore<VideoPlayerPoolState> = new StateStore<VideoPlayerPoolState>({
     activeVideoPlayer: null,
   });
 
-  constructor() {
+  private onPlaybackStarted?: (player: VideoPlayer) => boolean;
+
+  constructor({ onPlaybackStarted }: VideoPlayerPoolOptions = {}) {
     this.pool = new Map<string, VideoPlayer>();
+    this.onPlaybackStarted = onPlaybackStarted;
   }
 
   get players() {
@@ -82,5 +93,9 @@ export class VideoPlayerPool {
 
   notifyPaused() {
     this.setActivePlayer(null);
+  }
+
+  notifyPlaybackStarted(player: VideoPlayer) {
+    return this.onPlaybackStarted?.(player) ?? true;
   }
 }

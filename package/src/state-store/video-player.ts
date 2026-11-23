@@ -21,6 +21,11 @@ export type VideoDescriptor = {
 export type VideoPlayerOptions = VideoDescriptor & {
   playbackRates?: number[];
   autoPlay?: boolean;
+  /**
+   * The message the video belongs to. Without it the pool is still told when playback starts, but
+   * the SDK marks nothing played.
+   */
+  messageId?: string;
 };
 
 const DEFAULT_PLAYBACK_RATES = [1.0, 1.5, 2.0];
@@ -41,6 +46,7 @@ export class VideoPlayer {
   _pool: VideoPlayerPool | null = null;
   private _id: string;
   private isExpoCLI: boolean;
+  private playbackStartHandled = false;
 
   constructor(options: VideoPlayerOptions) {
     this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
@@ -104,6 +110,7 @@ export class VideoPlayer {
       position,
       progress: position / this.duration,
     });
+    this.detectPlaybackStart();
   }
 
   set progress(progress: number) {
@@ -111,6 +118,21 @@ export class VideoPlayer {
       position: progress * this.duration,
       progress,
     });
+    this.detectPlaybackStart();
+  }
+
+  /** The message the video belongs to, if any. */
+  get messageId() {
+    return this.options.messageId;
+  }
+
+  /** Tells the pool once playback advances, after any download and buffering, until it is handled. */
+  private detectPlaybackStart() {
+    // expo reports `progress`, RN CLI reports `position`
+    if (this.playbackStartHandled || !this.isPlaying || !(this.position > 0 || this.progress > 0)) {
+      return;
+    }
+    this.playbackStartHandled = this._pool?.notifyPlaybackStarted(this) ?? false;
   }
 
   set isPlaying(isPlaying: boolean) {

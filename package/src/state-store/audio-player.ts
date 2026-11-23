@@ -46,6 +46,11 @@ const INITIAL_STATE: AudioPlayerState = {
 };
 
 export type AudioPlayerOptions = AudioDescriptor & {
+  /**
+   * The message the audio belongs to. Without it the pool is still told when playback starts, but
+   * the SDK marks nothing played.
+   */
+  messageId?: string;
   onError?: AudioPlayerErrorHandler;
   playbackRates?: number[];
   /**
@@ -58,6 +63,9 @@ export type AudioPlayerOptions = AudioDescriptor & {
 export class AudioPlayer {
   state: StateStore<AudioPlayerState>;
   playerRef: SoundReturnType | null = null;
+  /** The message the audio belongs to, if any. */
+  readonly messageId?: string;
+  private playbackStartHandled = false;
   private initRequestId = 0;
   private _id: string;
   private type: 'voiceRecording' | 'audio';
@@ -73,6 +81,7 @@ export class AudioPlayer {
   constructor(options: AudioPlayerOptions) {
     this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
     this._id = options.id;
+    this.messageId = options.messageId;
     this.type = options.type;
     this.onError = options.onError;
     this.previewVoiceRecording = options.previewVoiceRecording ?? false;
@@ -274,6 +283,7 @@ export class AudioPlayer {
       position,
       progress: position / this.duration,
     });
+    this.detectPlaybackStart();
   }
 
   set progress(progress: number) {
@@ -281,6 +291,15 @@ export class AudioPlayer {
       position: progress * this.duration,
       progress,
     });
+    this.detectPlaybackStart();
+  }
+
+  /** Tells the pool once playback advances, after any download and buffering, until it is handled. */
+  private detectPlaybackStart() {
+    if (this.playbackStartHandled || !this.isPlaying || this.position <= 0) {
+      return;
+    }
+    this.playbackStartHandled = this._pool?.notifyPlaybackStarted(this) ?? false;
   }
 
   set isPlaying(isPlaying: boolean) {

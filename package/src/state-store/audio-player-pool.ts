@@ -4,6 +4,11 @@ import { AudioPlayer, AudioPlayerOptions } from './audio-player';
 
 export type AudioPlayerPoolOptions = {
   allowConcurrentAudioPlayback: boolean;
+  /**
+   * Called when a player's playback first advances. Returns whether the start was handled; an
+   * unhandled start is reported again on the player's next progress.
+   */
+  onPlaybackStarted?: (player: AudioPlayer) => boolean;
 };
 
 export type AudioPlayerPoolState = {
@@ -17,9 +22,12 @@ export class AudioPlayerPool {
     activeAudioPlayer: null,
   });
 
-  constructor({ allowConcurrentAudioPlayback }: AudioPlayerPoolOptions) {
+  private onPlaybackStarted?: (player: AudioPlayer) => boolean;
+
+  constructor({ allowConcurrentAudioPlayback, onPlaybackStarted }: AudioPlayerPoolOptions) {
     this.pool = new Map<string, AudioPlayer>();
     this.allowConcurrentAudioPlayback = allowConcurrentAudioPlayback ?? false;
+    this.onPlaybackStarted = onPlaybackStarted;
   }
 
   get players() {
@@ -91,5 +99,9 @@ export class AudioPlayerPool {
 
   notifyPaused() {
     this.setActivePlayer(null);
+  }
+
+  notifyPlaybackStarted(player: AudioPlayer) {
+    return this.onPlaybackStarted?.(player) ?? true;
   }
 }
