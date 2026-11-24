@@ -59,7 +59,7 @@ const videoPlayerSelector = (state: VideoPlayerState) => ({
 
 const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
   const [opacity, setOpacity] = useState<number>(1);
-  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { autoPlayVideo, imageGalleryStateStore } = useImageGalleryContext();
 
   const {
     attachmentId,
@@ -86,12 +86,7 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
   const { handlePlaybackStarted = defaultHandlePlaybackStarted } = useChatConfigContext();
 
   const onPlaybackStarted = useStableCallback(() => {
-    const { assets, channel, currentIndex, messages } =
-      imageGalleryStateStore.state.getLatestValue();
-    // Autoplay also plays the slides next to the shown one, which count only once shown.
-    if (assets[currentIndex]?.id !== attachmentId) {
-      return false;
-    }
+    const { channel, messages } = imageGalleryStateStore.state.getLatestValue();
     const message = messages.find(({ id }) => id === photo.messageId);
     const attachment = message?.attachments?.find(
       (item) =>
@@ -120,6 +115,20 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
       videoPlayer.onRemove();
     };
   }, [videoPlayer, shouldRender]);
+
+  useEffect(() => {
+    if (!autoPlayVideo) {
+      return;
+    }
+    return imageGalleryStateStore.state.subscribeWithSelector(
+      (state) => ({ isShown: state.currentIndex === index }),
+      ({ isShown }) => {
+        if (isShown) {
+          videoPlayer.play();
+        }
+      },
+    );
+  }, [autoPlayVideo, imageGalleryStateStore, index, videoPlayer]);
 
   const { isPlaying, currentPlaybackRate } = useStateStore(videoPlayer.state, videoPlayerSelector);
 

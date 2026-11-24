@@ -32,7 +32,7 @@ jest.mock('../../../native.ts', () => {
   };
 });
 
-describe('AnimatedGalleryVideo playback start', () => {
+describe('AnimatedGalleryVideo', () => {
   let channel: Channel;
   let messages: LocalMessage[];
   let store: ImageGalleryStateStore;
@@ -66,9 +66,14 @@ describe('AnimatedGalleryVideo playback start', () => {
   });
 
   const openGallery = async ({
+    autoPlayVideo = false,
     handlePlaybackStarted,
     withChannel = true,
-  }: { handlePlaybackStarted?: HandlePlaybackStarted; withChannel?: boolean } = {}) => {
+  }: {
+    autoPlayVideo?: boolean;
+    handlePlaybackStarted?: HandlePlaybackStarted;
+    withChannel?: boolean;
+  } = {}) => {
     store.openImageGallery({
       channel: withChannel ? channel : undefined,
       messages,
@@ -78,7 +83,12 @@ describe('AnimatedGalleryVideo playback start', () => {
       <ChatConfigProvider value={{ handlePlaybackStarted }}>
         <OverlayProvider value={{ overlayOpacity: { value: 1 } as SharedValue<number> }}>
           <ImageGalleryContext.Provider
-            value={{ imageGalleryStateStore: store } as unknown as ImageGalleryContextValue}
+            value={
+              {
+                autoPlayVideo,
+                imageGalleryStateStore: store,
+              } as unknown as ImageGalleryContextValue
+            }
           >
             <ImageGallery />
           </ImageGalleryContext.Provider>
@@ -110,6 +120,33 @@ describe('AnimatedGalleryVideo playback start', () => {
       player.position = 1000;
     });
 
+  describe('autoplay', () => {
+    it('plays only the shown video', async () => {
+      await openGallery({ autoPlayVideo: true });
+
+      expect(playerAt(0).isPlaying).toBe(true);
+      expect(playerAt(1).isPlaying).toBe(false);
+    });
+
+    it('pauses the video when another slide is shown and plays that one', async () => {
+      await openGallery({ autoPlayVideo: true });
+
+      act(() => {
+        store.currentIndex = 1;
+      });
+
+      expect(playerAt(0).isPlaying).toBe(false);
+      expect(playerAt(1).isPlaying).toBe(true);
+    });
+
+    it('plays nothing without autoPlayVideo', async () => {
+      await openGallery();
+
+      expect(playerAt(0).isPlaying).toBe(false);
+      expect(playerAt(1).isPlaying).toBe(false);
+    });
+  });
+
   it('marks the shown video once playback advances', async () => {
     await openGallery();
 
@@ -117,20 +154,6 @@ describe('AnimatedGalleryVideo playback start', () => {
 
     expect(channel.markMessagePlayed).toHaveBeenCalledTimes(1);
     expect(channel.markMessagePlayed).toHaveBeenCalledWith('video-message-1');
-  });
-
-  it('marks a video playing next to the shown one only once its slide is shown', async () => {
-    await openGallery();
-
-    advancePlayback(1);
-    expect(channel.markMessagePlayed).not.toHaveBeenCalled();
-
-    act(() => {
-      store.currentIndex = 1;
-    });
-    advancePlayback(1);
-
-    expect(channel.markMessagePlayed).toHaveBeenCalledWith('video-message-2');
   });
 
   it('lets the configured handler decide, asking again until it reports the start handled', async () => {

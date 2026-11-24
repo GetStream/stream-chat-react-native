@@ -166,16 +166,16 @@ export class ImageGalleryStateStore {
 
   set currentIndex(currentIndex: number) {
     const previousIndex = this.state.getLatestValue().currentIndex;
-    this.state.partialNext({ currentIndex });
-    this.currentIndexShared.value = currentIndex;
-    // Moving off the current slide pauses its video. `clear()` bypasses this setter but pauses
-    // everything through `videoPlayerPool.clear()`.
+    // Moving off the current slide pauses its video, before the new slide's autoplay starts.
+    // `clear()` bypasses this setter but pauses everything through `videoPlayerPool.clear()`.
     if (previousIndex !== currentIndex) {
       const activePlayer = this.videoPlayerPool.getActivePlayer();
       if (activePlayer) {
         activePlayer.pause();
       }
     }
+    this.state.partialNext({ currentIndex });
+    this.currentIndexShared.value = currentIndex;
   }
 
   set requesterNode(requesterNode: number | null) {
