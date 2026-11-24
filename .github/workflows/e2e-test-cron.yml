@@ -226,7 +226,7 @@ jobs:
   # saved by a pull request is visible to that pull request alone, and one saved on develop to all.
   android-avd:
     name: Android emulator snapshot
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
@@ -279,7 +279,7 @@ jobs:
   android-build:
     name: Build Android (${{ matrix.coverage && 'coverage' || 'plain' }})
     if: github.event_name == 'schedule' || inputs.android || (inputs.mock_server_branch || 'main') != 'main'
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -337,7 +337,7 @@ jobs:
   android:
     name: Test Android API ${{ matrix.api-level }}${{ matrix.coverage && format(' coverage ({0})', matrix.batch) || '' }}
     needs: android-build
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 180
     strategy:
       fail-fast: false
@@ -485,7 +485,7 @@ jobs:
     needs: android
     # Failed tests keep their previous coverage; only a batch that never finished blocks the map.
     if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.android) && (inputs.mock_server_branch || 'main') == 'main' }}
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
@@ -511,7 +511,7 @@ jobs:
 
   slack:
     name: Slack Report
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 10
     needs: [ios, android-build, android, coverage_map]
     # always(): a job that hit its timeout is `cancelled`, which failure() alone doesn't see.
