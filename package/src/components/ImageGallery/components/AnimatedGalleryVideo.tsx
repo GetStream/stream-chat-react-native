@@ -3,6 +3,7 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
+import { useChatConfigContext } from '../../../contexts/chatConfigContext/ChatConfigContext';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useStableCallback, useStateStore } from '../../../hooks';
 
@@ -21,6 +22,8 @@ import {
 } from '../../../state-store/image-gallery-state-store';
 import { VideoPlayerState } from '../../../state-store/video-player';
 import { ONE_SECOND_IN_MILLISECONDS } from '../../../utils/constants';
+import { getUrlOfImageAttachment } from '../../../utils/getUrlOfImageAttachment';
+import { defaultHandlePlaybackStarted, markPlayedMessage } from '../../../utils/markPlayedMessage';
 import { Spinner } from '../../UIComponents/Spinner';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
 import { useImageGalleryVideoPlayer } from '../hooks/useImageGalleryVideoPlayer';
@@ -80,14 +83,32 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
 
   const videoRef = useRef<VideoType>(null);
 
-  const markPlayed = useStableCallback(() =>
-    imageGalleryStateStore.markPlayedIfShown(attachmentId, photo.messageId),
-  );
+  const { handlePlaybackStarted = defaultHandlePlaybackStarted } = useChatConfigContext();
 
-  const videoPlayer = useImageGalleryVideoPlayer({
-    id: attachmentId,
-    onPlaybackStarted: markPlayed,
+  const onPlaybackStarted = useStableCallback(() => {
+    const { assets, channel, currentIndex, messages } =
+      imageGalleryStateStore.state.getLatestValue();
+    // Autoplay also plays the slides next to the shown one, which count only once shown.
+    if (assets[currentIndex]?.id !== attachmentId) {
+      return false;
+    }
+    const message = messages.find(({ id }) => id === photo.messageId);
+    const attachment = message?.attachments?.find(
+      (item) =>
+        getUrlOfImageAttachment(item, imageGalleryStateStore.options.giphyVersion) === photo.uri,
+    );
+    if (!message || !attachment) {
+      return true;
+    }
+    return handlePlaybackStarted({
+      attachment,
+      markPlayed: () => markPlayedMessage(channel, message.id),
+      message,
+      player: videoPlayer,
+    });
   });
+
+  const videoPlayer = useImageGalleryVideoPlayer({ id: attachmentId, onPlaybackStarted });
 
   useEffect(() => {
     if (videoRef.current && shouldRender) {

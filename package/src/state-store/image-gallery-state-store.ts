@@ -10,7 +10,6 @@ import { getGiphyMimeType } from '../components/Attachment/utils/getGiphyMimeTyp
 import { isVideoPlayerAvailable } from '../native';
 import { FileTypes } from '../types/types';
 import { getUrlOfImageAttachment } from '../utils/getUrlOfImageAttachment';
-import { markPlayedMessage } from '../utils/markPlayedMessage';
 
 export type ImageGalleryAsset = {
   id: string;
@@ -86,22 +85,6 @@ export class ImageGalleryStateStore {
     this.videoPlayerPool = new VideoPlayerPool();
     this.currentIndexShared = makeMutable(INITIAL_STATE.currentIndex);
   }
-
-  /**
-   * Marks a video's message played if its slide is the one shown, and returns whether it did.
-   * Autoplay also plays the slides next to it, which must not count until they are shown.
-   *
-   * @param assetId The video's asset ID.
-   * @param messageId The ID of the message the video belongs to.
-   */
-  markPlayedIfShown = (assetId: string, messageId?: string) => {
-    const { assets, channel, currentIndex } = this.state.getLatestValue();
-    if (assets[currentIndex]?.id !== assetId) {
-      return false;
-    }
-    markPlayedMessage(channel, messageId);
-    return true;
-  };
 
   get messages() {
     return this.state.getLatestValue().messages;

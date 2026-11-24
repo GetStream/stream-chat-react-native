@@ -1,6 +1,14 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import type { HandlePlaybackStarted } from '../../types/types';
+
 export type ChatConfigContextValue = {
+  /**
+   * Decides what playing an audio, voice recording or video attachment does. Defaults to marking the
+   * message played. Render the provider above `OverlayProvider` so it also reaches videos played in
+   * the gallery.
+   */
+  handlePlaybackStarted?: HandlePlaybackStarted;
   /** CDN hosts whose image URLs can be resized. Defaults to `['.stream-io-cdn.com']`. */
   resizableCDNHosts?: string[];
 };

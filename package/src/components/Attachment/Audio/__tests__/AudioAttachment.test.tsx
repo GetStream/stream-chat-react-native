@@ -4,12 +4,13 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react-
 
 import type { Channel as ChannelType, LocalMessage, StreamChat } from 'stream-chat';
 
-import { OverlayProvider } from '../../../../contexts';
+import { ChatConfigProvider, OverlayProvider } from '../../../../contexts';
 import { initiateClientWithChannels } from '../../../../mock-builders/api/initiateClientWithChannels';
 import { generateAudioAttachment } from '../../../../mock-builders/attachments';
 import { generateMessage } from '../../../../mock-builders/generator/message';
 import { generateUser } from '../../../../mock-builders/generator/user';
 import { AudioPlayer } from '../../../../state-store/audio-player';
+import type { HandlePlaybackStarted } from '../../../../types/types';
 import { Channel } from '../../../Channel/Channel';
 import { Chat } from '../../../Chat/Chat';
 import { AudioAttachment, type AudioAttachmentType } from '../AudioAttachment';
@@ -79,15 +80,18 @@ describe('AudioAttachment played marks', () => {
     message: LocalMessage,
     item = voiceRecording(),
     props: { isPreview?: boolean } = {},
+    handlePlaybackStarted?: HandlePlaybackStarted,
   ) =>
     render(
-      <OverlayProvider>
-        <Chat client={client}>
-          <Channel channel={channel}>
-            <AudioAttachment item={item} message={message} {...props} />
-          </Channel>
-        </Chat>
-      </OverlayProvider>,
+      <ChatConfigProvider value={{ handlePlaybackStarted }}>
+        <OverlayProvider>
+          <Chat client={client}>
+            <Channel channel={channel}>
+              <AudioAttachment item={item} message={message} {...props} />
+            </Channel>
+          </Chat>
+        </OverlayProvider>
+      </ChatConfigProvider>,
     );
 
   const pressPlay = async () => {
@@ -126,6 +130,29 @@ describe('AudioAttachment played marks', () => {
     await pressPlay();
     advancePlayback();
 
+    expect(channel.markMessagePlayed).not.toHaveBeenCalled();
+  });
+
+  it('lets the configured handler decide, asking again until it reports the start handled', async () => {
+    const message = sentMessage();
+    const item = voiceRecording();
+    const handlePlaybackStarted = jest.fn().mockReturnValueOnce(false).mockReturnValue(true);
+    renderAudio(message, item, {}, handlePlaybackStarted);
+
+    await pressPlay();
+    advancePlayback();
+    advancePlayback();
+    advancePlayback();
+
+    expect(handlePlaybackStarted).toHaveBeenCalledTimes(2);
+    expect(handlePlaybackStarted).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        attachment: item,
+        markPlayed: expect.any(Function),
+        message,
+        player: playSpy.mock.contexts.at(-1),
+      }),
+    );
     expect(channel.markMessagePlayed).not.toHaveBeenCalled();
   });
 });
