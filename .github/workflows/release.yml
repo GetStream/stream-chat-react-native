@@ -21,7 +21,7 @@ jobs:
     # Every run waits for a reviewer's approval, only the release branches may use this environment,
     # and the npm trusted publisher requires it.
     environment: npm-release
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     strategy:
       matrix:
         node-version: [24.x]

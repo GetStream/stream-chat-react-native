@@ -26,7 +26,7 @@ permissions:
 jobs:
   sdk_size:
     name: Metrics
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     steps:
       # Short-lived token for pushing the size benchmark to stream-internal-metrics.
       - name: Create metrics token

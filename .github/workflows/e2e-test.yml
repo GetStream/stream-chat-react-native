@@ -50,7 +50,7 @@ env:
 jobs:
   check:
     name: Check E2E Required
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 10
     outputs:
       required: ${{ steps.check.outputs.required }}
@@ -234,7 +234,7 @@ jobs:
     name: Build Android
     needs: check
     if: needs.check.outputs.required == 'true' && (github.event_name != 'workflow_dispatch' || inputs.android)
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 60
     env:
       APK_PATHS: |
@@ -302,7 +302,7 @@ jobs:
   android-allure-launch:
     name: Launch Allure TestOps (Android)
     needs: android-build
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 10
     outputs:
       launch_id: ${{ steps.launch.outputs.launch_id }}
@@ -327,7 +327,7 @@ jobs:
     name: Test Android
     needs: [check, android-build, android-allure-launch]
     if: ${{ !cancelled() && needs.android-build.result == 'success' }}
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 60
     strategy:
       matrix:
@@ -437,7 +437,7 @@ jobs:
 
   result:
     name: Test E2E Result
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     if: always()
     needs:
       - check
