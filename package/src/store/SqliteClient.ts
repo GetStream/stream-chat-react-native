@@ -44,7 +44,7 @@ export class SqliteClientError extends Error {
 
 /** Wraps all direct use of `@op-engineering/op-sqlite`. */
 export class SqliteClient {
-  static dbVersion = 19;
+  static dbVersion = 20;
 
   static dbName = DB_NAME;
   static dbLocation = DB_LOCATION;
