@@ -8,8 +8,8 @@ import { markPlayedMessage } from '../utils/markPlayedMessage';
 
 /**
  * Marks a message played once its media has started playing, for a custom player that does not use
- * the SDK's audio or video players. A player created with a `messageId`, as by `useAudioPlayer`,
- * marks its message by itself.
+ * the SDK's audio or video players. A player from `useAudioPlayer` marks through its
+ * `onPlaybackStarted` callback instead.
  *
  * @param params.channel The channel the message belongs to.
  * @param params.hasStartedPlayback Whether playback has advanced, past any download and buffering.
