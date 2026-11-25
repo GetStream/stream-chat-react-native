@@ -29,7 +29,7 @@ env:
 jobs:
   build_and_deploy_ios_testflight_qa:
     name: Build SampleApp iOS and Deploy-${{ github.ref_name == 'develop' || github.ref_name == vars.RC_BRANCH }}
-    runs-on: [xcode-27]
+    runs-on: { group: scaleway-macos }
     strategy:
       matrix:
         node-version: [24.x]

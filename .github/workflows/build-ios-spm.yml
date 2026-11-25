@@ -28,7 +28,7 @@ permissions:
 jobs:
   build_ios_spm:
     name: Build SampleApp iOS (Swift Package Manager)
-    runs-on: [macos-15]
+    runs-on: { group: scaleway-macos }
     env:
       STREAM_CHAT_SPM_ONLY: '1'
       # `pod deintegrate`, run by `react-native spm add --deintegrate`, needs a UTF-8 locale.

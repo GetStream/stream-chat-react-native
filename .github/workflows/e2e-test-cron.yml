@@ -45,7 +45,7 @@ jobs:
   ios:
     name: Test iOS ${{ matrix.ios }}
     if: (github.event_name == 'schedule' || inputs.ios) && (inputs.mock_server_branch || 'main') == 'main'
-    runs-on: xcode-27
+    runs-on: { group: scaleway-macos }
     timeout-minutes: 360
     strategy:
       fail-fast: false
