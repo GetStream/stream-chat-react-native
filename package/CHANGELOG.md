@@ -1,5 +1,12 @@
 # Change Log
 
+## [10.3.0](https://github.com/GetStream/stream-chat-react-native/compare/v10.2.0...v10.3.0) (2026-11-25)
+
+### Features
+
+* played receipts for voice messages and audio files ([#4023](https://github.com/GetStream/stream-chat-react-native/issues/4023)) ([2049a42](https://github.com/GetStream/stream-chat-react-native/commit/2049a421a8c1b9d1ab91983cd41d2585e545658d)), closes [GetStream/design-system-tokens#83](https://github.com/GetStream/design-system-tokens/issues/83)
+* show the active member count where the UI displays a member count ([#4026](https://github.com/GetStream/stream-chat-react-native/issues/4026)) ([f42dab7](https://github.com/GetStream/stream-chat-react-native/commit/f42dab7d0ba5a55bf36c5bf0fe698a2fa27ca544))
+
 ## [10.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v10.1.2...v10.2.0) (2026-11-20)
 
 ### ⚠ BREAKING CHANGES
