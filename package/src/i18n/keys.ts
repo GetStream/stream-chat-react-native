@@ -22,6 +22,9 @@ export type TranslationCatalog = {
   'a2ui.media.play.accessibilityLabel': 'Play';
   'a2ui.modal.close.label': 'Close';
   'aiComponents.attachmentPreview.removeAttachment.accessibilityLabel': 'Remove attachment';
+  'aiComponents.branchSwitcher.next.accessibilityLabel': 'Next version';
+  'aiComponents.branchSwitcher.previous.accessibilityLabel': 'Previous version';
+  'aiComponents.branchSwitcher.versions.accessibilityLabel': 'Version {{ index }} of {{ total }}';
   'aiComponents.chatOptions.removeOption.accessibilityLabel': 'Remove option: {{ option }}';
   'aiComponents.conversation.loadingOlderMessages.accessibilityLabel': 'Loading older messages';
   'aiComponents.conversation.scrollToLatest.accessibilityLabel': 'Scroll to latest';

@@ -2,17 +2,11 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 
-#if __has_include(<stream_chat_react_native/stream_chat_react_native-Swift.h>)
-#import <stream_chat_react_native/stream_chat_react_native-Swift.h>
-#elif __has_include(<stream_chat_expo/stream_chat_expo-Swift.h>)
-#import <stream_chat_expo/stream_chat_expo-Swift.h>
-#elif __has_include("stream_chat_react_native-Swift.h")
-#import "stream_chat_react_native-Swift.h"
-#elif __has_include("stream_chat_expo-Swift.h")
-#import "stream_chat_expo-Swift.h"
-#else
-#error "Unable to import generated Swift header for AIAgent."
-#endif
+#import "AIAgentAPI.h"
+
+// Implemented in AIAgentModule.swift.
+@interface AIAgentModule : NSObject <AIAgentModuleAPI>
+@end
 
 @implementation AIAgent {
   AIAgentModule *moduleInstance;

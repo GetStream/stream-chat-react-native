@@ -10,7 +10,7 @@ permissions:
 jobs:
   cancel:
     name: Cancel
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     steps:
     # Match on the head repository too: a fork's branch can share its name with another PR's branch.
     # Not on the PR number: GitHub leaves `pull_requests` empty on runs from forks and once the PR is closed.

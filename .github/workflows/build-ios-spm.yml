@@ -1,0 +1,81 @@
+name: Build SampleApp iOS with Swift Package Manager
+
+# Builds SampleApp the way React Native 0.88+ builds an app with Swift Package Manager
+# (`react-native spm`), to check that the SDK's Package.swift compiles and links. Runs in the same
+# cases as the SampleApp branch builds (sample-distribution.yml), which cover CocoaPods.
+#
+# Most of SampleApp's other native libraries ship no Package.swift yet, so STREAM_CHAT_SPM_ONLY=1
+# (see examples/SampleApp/react-native.config.js) autolinks only the SDK, and the build bundles
+# `index.spm.js`, a screen that only uses the SDK's own native modules.
+
+concurrency:
+  group: build-ios-spm-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - '.github/workflows/build-ios-spm.yml'
+      - 'package/**'
+      - 'examples/SampleApp/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build_ios_spm:
+    name: Build SampleApp iOS (Swift Package Manager)
+    runs-on: [macos-15]
+    env:
+      STREAM_CHAT_SPM_ONLY: '1'
+      # `pod deintegrate`, run by `react-native spm add --deintegrate`, needs a UTF-8 locale.
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.2'
+      - uses: ./.github/actions/ruby-cache
+      - name: Install && Build - SDK and Sample App
+        uses: ./.github/actions/install-and-build-sdk
+      - name: Sync shared native sources
+        run: yarn workspace stream-chat-react-native-core shared-native:sync
+      - name: Switch SampleApp from CocoaPods to Swift Package Manager
+        working-directory: examples/SampleApp/ios
+        run: |
+          set -o pipefail
+          bundle exec yarn react-native spm add --deintegrate --yes 2>&1 | tee spm-setup.log
+          test -f SampleApp.xcodeproj/.spm-injected.json
+      - name: Build SampleApp (Release)
+        working-directory: examples/SampleApp/ios
+        env:
+          ENTRY_FILE: index.spm.js
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project SampleApp.xcodeproj \
+            -scheme SampleApp \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/spm \
+            CODE_SIGNING_ALLOWED=NO \
+            build 2>&1 | tee build-Release.log
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: ios-spm-SampleApp-logs
+          path: |
+            examples/SampleApp/ios/spm-setup.log
+            examples/SampleApp/ios/build-Release.log

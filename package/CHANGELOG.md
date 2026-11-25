@@ -1,5 +1,64 @@
 # Change Log
 
+## [10.2.0](https://github.com/GetStream/stream-chat-react-native/compare/v10.1.2...v10.2.0) (2026-11-20)
+
+### ⚠ BREAKING CHANGES
+
+* **ai-components:** everything new is optional.
+
+## 🎨 UI Changes
+
+The ‹ i/n › switcher leads the reply's actions, and sits under a
+question with several versions. Screenshots to follow.
+
+## 🧪 Testing
+
+- `yarn lint` (with the translation and entry-isolation checks), `cd
+package && yarn test:typecheck`, `yarn test:unit` (3,258 passed; the 144
+skipped were already skipped before this branch) and `yarn build` all
+pass.
+- New tests in `branches.test.tsx`, `conversationController.test.ts`,
+`conversationExchange.test.ts` and `conversation.test.tsx`. The
+failed-reply test fails without its fix (status `ready` instead of
+`error`).
+- On the iOS simulator and an Android emulator, in the Vision-Agents
+React Native assistant against a local router built from main:
+  - regenerate gives ‹ 2/2 ›, and ‹ brings the first answer back;
+- edit in the composer gives the question its own ‹ 2/2 › with a new
+answer, including an edit made while an older version was shown;
+  - a switch or edit made on one device shows on the other;
+- with the model's key broken, the turn shows "The agent couldn't
+answer" with Try again, and once the key works Try again answers under
+the same question.
+- Edits of a conversation's first question also need the stream-agents
+fix for the `channel.rewound` event's nanosecond time
+
+### chore
+
+* **ai-components:** regenerate and edit any message, with ‹ i/n › versions ([#4005](https://github.com/GetStream/stream-chat-react-native/issues/4005)) ([5c1fd7a](https://github.com/GetStream/stream-chat-react-native/commit/5c1fd7a35b9f89160c523775f1f94950853e9843)), closes [GetStream/stream-chat-react#3434](https://github.com/GetStream/stream-chat-react/issues/3434) [GetStream/Agents#2057](https://github.com/GetStream/Agents/issues/2057)
+
+### Bug Fixes
+
+* **ai-components:** keep the switcher under a version the agent couldn't write ([#4008](https://github.com/GetStream/stream-chat-react-native/issues/4008)) ([29a605f](https://github.com/GetStream/stream-chat-react-native/commit/29a605f064a7019044a709f379ece2703650b83d))
+* **Channel:** don't query the channel on mount with initializeOnMount={false} ([#4019](https://github.com/GetStream/stream-chat-react-native/issues/4019)) ([0833a95](https://github.com/GetStream/stream-chat-react-native/commit/0833a95ea4ca17b09d611ad49cb5fefaf4bf8a71))
+* **MessageList:** reach the bottom after jumping back from another message set ([#4011](https://github.com/GetStream/stream-chat-react-native/issues/4011)) ([471eeed](https://github.com/GetStream/stream-chat-react-native/commit/471eeedf7b8b9deeca8f13ddb6a4e4fb6f4e51fe))
+
+### Features
+
+* sdk spm support ([#4010](https://github.com/GetStream/stream-chat-react-native/issues/4010)) ([c8a51b5](https://github.com/GetStream/stream-chat-react-native/commit/c8a51b59167f18b19e378772abec4fc301d50b54))
+
+## [10.1.2](https://github.com/GetStream/stream-chat-react-native/compare/v10.1.1...v10.1.2) (2026-11-17)
+
+### Bug Fixes
+
+* skip attachments without a url in the image gallery and media list ([#3997](https://github.com/GetStream/stream-chat-react-native/issues/3997)) ([9177faa](https://github.com/GetStream/stream-chat-react-native/commit/9177faa373216ca6d75f098a253c8932da351904))
+
+## [10.1.1](https://github.com/GetStream/stream-chat-react-native/compare/v10.1.0...v10.1.1) (2026-11-16)
+
+### Bug Fixes
+
+* skip attachments without a url in the image gallery and media list ([#3997](https://github.com/GetStream/stream-chat-react-native/issues/3997)) ([#3999](https://github.com/GetStream/stream-chat-react-native/issues/3999)) ([fe1810e](https://github.com/GetStream/stream-chat-react-native/commit/fe1810e903ef3c1629771546b6c9392cd6e1c65b))
+
 ## [10.1.0](https://github.com/GetStream/stream-chat-react-native/compare/v10.0.2...v10.1.0) (2026-11-12)
 
 ### Bug Fixes

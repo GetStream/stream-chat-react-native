@@ -1,6 +1,9 @@
 import AuthenticationServices
 import Foundation
 import UIKit
+#if canImport(StreamChatNativeInterfaces)
+import StreamChatNativeInterfaces
+#endif
 
 /// This install's identifier and the sign-ins of tool calls, for the `AIAgent` TurboModule
 /// (`AIAgent.mm`).
@@ -124,3 +127,5 @@ private final class PresentationAnchor: NSObject, ASWebAuthenticationPresentatio
         return scenes.flatMap(\.windows).first(where: \.isKeyWindow) ?? scenes.first?.windows.first ?? ASPresentationAnchor()
     }
 }
+
+extension AIAgentModule: AIAgentModuleAPI {}

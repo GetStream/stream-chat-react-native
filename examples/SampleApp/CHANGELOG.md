@@ -1,5 +1,19 @@
 # Change Log
 
+## [5.2.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v5.1.2...sampleapp@v5.2.0) (2026-11-20)
+
+### Bug Fixes
+
+* **MessageList:** reach the bottom after jumping back from another message set ([#4011](https://github.com/GetStream/stream-chat-react-native/issues/4011)) ([471eeed](https://github.com/GetStream/stream-chat-react-native/commit/471eeedf7b8b9deeca8f13ddb6a4e4fb6f4e51fe))
+
+### Features
+
+* sdk spm support ([#4010](https://github.com/GetStream/stream-chat-react-native/issues/4010)) ([c8a51b5](https://github.com/GetStream/stream-chat-react-native/commit/c8a51b59167f18b19e378772abec4fc301d50b54))
+
+## [5.1.2](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v5.1.1...sampleapp@v5.1.2) (2026-11-17)
+
+## [5.1.1](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v5.1.0...sampleapp@v5.1.1) (2026-11-16)
+
 ## [5.1.0](https://github.com/GetStream/stream-chat-react-native/compare/sampleapp@v5.0.1...sampleapp@v5.1.0) (2026-11-12)
 
 ### Features

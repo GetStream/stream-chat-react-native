@@ -24,7 +24,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}:${{ inputs.mock_server_branch || 'main' }}
   cancel-in-progress: true
 
 env:
@@ -44,15 +44,15 @@ env:
 jobs:
   ios:
     name: Test iOS ${{ matrix.ios }}
-    if: github.event_name == 'schedule' || inputs.ios
-    runs-on: macos-15
+    if: (github.event_name == 'schedule' || inputs.ios) && (inputs.mock_server_branch || 'main') == 'main'
+    runs-on: xcode-27
     timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
         include:
-          - ios: "26.2"
-            device: "iPhone 17 Pro"
+          - ios: "27.2"
+            device: "iPhone 18 Pro"
             setup_runtime: false
           # The oldest runtime the Flutter nightly covers; the runner image doesn't ship it.
           - ios: "17.5"
@@ -62,7 +62,7 @@ jobs:
       DETOX_IOS_DEVICE: ${{ matrix.device }}
       IOS_VERSION: ${{ matrix.ios }}
       # Pinned to match the simulator runtimes this job selects.
-      XCODE_VERSION: "26.2"
+      XCODE_VERSION: "27.2"
       APP_PATH: examples/E2ETestApp/ios/build/detox/Build/Products/Release-iphonesimulator/E2ETestApp.app
       MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
     steps:
@@ -222,16 +222,71 @@ jobs:
             examples/E2ETestApp/artifacts
 
   # Built once per flavor and shared by the test jobs, as on pull requests.
+  # Saves the AVD with a quick-boot snapshot for the e2e-test.yml batches. Here, because a cache
+  # saved by a pull request is visible to that pull request alone, and one saved on develop to all.
+  android-avd:
+    name: Android emulator snapshot
+    runs-on: { group: github-public-amd64 }
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: ./.github/actions/android-sdk-packages
+        id: sdk
+      - name: Look up the AVD
+        id: avd
+        uses: actions/cache/restore@v5
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: ${{ steps.sdk.outputs.avd-key }}
+          lookup-only: true
+      - name: Create the AVD and its snapshot
+        if: steps.avd.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: ${{ steps.sdk.outputs.api-level }}
+          target: ${{ steps.sdk.outputs.target }}
+          arch: x86_64
+          profile: ${{ steps.sdk.outputs.profile }}
+          cores: ${{ steps.sdk.outputs.cores }}
+          force-avd-creation: false
+          emulator-options: ${{ steps.sdk.outputs.emulator-options }}
+          disable-animations: true
+          # Lets dexopt finish, so the snapshot holds a settled system.
+          script: |
+            "$ANDROID_HOME/platform-tools/adb" -s emulator-5554 shell cmd package bg-dexopt-job > /dev/null 2>&1 || true
+            sleep 30
+      # adb emu kill returns before the snapshot is written. On timeout, nothing is saved.
+      - name: Wait for the emulator to save the snapshot
+        if: steps.avd.outputs.cache-hit != 'true'
+        timeout-minutes: 3
+        run: while pgrep -f qemu-system > /dev/null; do sleep 1; done
+      - name: Save the AVD
+        if: steps.avd.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: ${{ steps.sdk.outputs.avd-key }}
+
   android-build:
     name: Build Android (${{ matrix.coverage && 'coverage' || 'plain' }})
-    if: github.event_name == 'schedule' || inputs.android
-    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || inputs.android || (inputs.mock_server_branch || 'main') != 'main'
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         # The coverage runs need a bundle instrumented with E2E_COVERAGE; the others test the plain app.
-        coverage: [true, false]
+        # Coverage is only collected against the main mock server.
+        coverage: ${{ fromJson((inputs.mock_server_branch || 'main') != 'main' && '[false]' || '[true, false]') }}
     env:
       APK_PATHS: |
         examples/E2ETestApp/android/app/build/outputs/apk/release/app-release.apk
@@ -282,22 +337,30 @@ jobs:
   android:
     name: Test Android API ${{ matrix.api-level }}${{ matrix.coverage && format(' coverage ({0})', matrix.batch) || '' }}
     needs: android-build
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
-        include:
-          # Coverage runs every test in its own app process for the map that selects e2e tests on
-          # pull requests. That is too slow for one runner, so its tests are split across batches.
-          # coverage_map's batch_count must match.
-          - { api-level: 36, coverage: true, batch: 0, batch_count: 4 }
-          - { api-level: 36, coverage: true, batch: 1, batch_count: 4 }
-          - { api-level: 36, coverage: true, batch: 2, batch_count: 4 }
-          - { api-level: 36, coverage: true, batch: 3, batch_count: 4 }
-          - { api-level: 34, batch: 0, batch_count: 1 }
-          - { api-level: 31, batch: 0, batch_count: 1 }
-          - { api-level: 28, batch: 0, batch_count: 1 }
+        # Coverage runs every test in its own app process for the map that selects e2e tests on
+        # pull requests. That is too slow for one runner, so its tests are split across batches.
+        # coverage_map's batch_count must match.
+        # Coverage is only collected against the main mock server.
+        include: |-
+          ${{ fromJson(
+            (inputs.mock_server_branch || 'main') != 'main' && '[
+              { "api-level": 36, "batch": 0, "batch_count": 1 }
+            ]'
+            || '[
+              { "api-level": 36, "coverage": true, "batch": 0, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 1, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 2, "batch_count": 4 },
+              { "api-level": 36, "coverage": true, "batch": 3, "batch_count": 4 },
+              { "api-level": 34, "batch": 0, "batch_count": 1 },
+              { "api-level": 31, "batch": 0, "batch_count": 1 },
+              { "api-level": 28, "batch": 0, "batch_count": 1 }
+            ]'
+          ) }}
     env:
       # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
       # (RN-513).
@@ -356,9 +419,10 @@ jobs:
       - uses: ./.github/actions/android-sdk-packages
         with:
           api-level: ${{ matrix.api-level }}
+          target: default
       - name: Run e2e tests (Android emulator)
         id: tests
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
@@ -420,8 +484,8 @@ jobs:
     name: Build e2e coverage map
     needs: android
     # Failed tests keep their previous coverage; only a batch that never finished blocks the map.
-    if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.android) }}
-    runs-on: ubuntu-latest
+    if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.android) && (inputs.mock_server_branch || 'main') == 'main' }}
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
@@ -447,7 +511,7 @@ jobs:
 
   slack:
     name: Slack Report
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 10
     needs: [ios, android-build, android, coverage_map]
     # always(): a job that hit its timeout is `cancelled`, which failure() alone doesn't see.

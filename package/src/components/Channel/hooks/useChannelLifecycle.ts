@@ -36,7 +36,8 @@ export type UseChannelLifecycleParams = Pick<TranslationContextValue, 't'> & {
  * @param params.channel The channel to manage.
  * @param params.client The chat client.
  * @param params.initialScrollToFirstUnreadMessage Jumps to the first unread message on open.
- * @param params.initializeOnMount Calls `channel.watch()` on mount when the channel needs it.
+ * @param params.initializeOnMount Watches the channel on mount when it needs it, and loads its first
+ * page when it has none. When false, nothing here queries the channel.
  * @param params.markReadOnMount Marks the channel as read on mount.
  * @param params.t The translation function.
  * @returns `hasPendingInitialTargetLoad`, which tells the list whether a jump to a message is
@@ -108,23 +109,24 @@ export const useChannelLifecycle = ({
         channel.messagePaginator.pageSize = DEFAULT_MESSAGE_LIST_PAGE_SIZE;
       }
 
-      if (
-        (!channel.initialized ||
+      if (initializeOnMount) {
+        if (
+          !channel.initialized ||
           !channel.messagePaginator.isActiveIntervalAtHead ||
-          channel.watchStatus === ChannelWatchStatus.NotWatching) &&
-        initializeOnMount
-      ) {
-        try {
-          await channel?.watch();
-        } catch (err) {
-          console.warn('Channel watch request failed with error:', err);
-          channel.offlineMode = true;
+          channel.watchStatus === ChannelWatchStatus.NotWatching
+        ) {
+          try {
+            await channel?.watch();
+          } catch (err) {
+            console.warn('Channel watch request failed with error:', err);
+            channel.offlineMode = true;
+          }
         }
-      }
 
-      // Cold open (push or deep link): seed the paginator.
-      if (!channel.messagePaginator.state.getLatestValue().items?.length) {
-        await channel.messagePaginator.reload();
+        // Cold open (push or deep link): seed the paginator.
+        if (!channel.messagePaginator.state.getLatestValue().items?.length) {
+          await channel.messagePaginator.reload();
+        }
       }
 
       // A reopened channel keeps its paginator and its first-open unread snapshot, so reseed it

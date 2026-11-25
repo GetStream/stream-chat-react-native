@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native",
   "description": "The official React Native SDK for Stream Chat, a service for building chat applications",
-  "version": "10.1.0",
+  "version": "10.2.0",
   "homepage": "https://www.npmjs.com/package/stream-chat-react-native",
   "author": {
     "company": "Stream.io Inc",
@@ -20,6 +20,7 @@
     "android/gradle.properties",
     "android/gradle",
     "ios",
+    "Package.swift",
     "*.podspec",
     "react-native.config.js",
     "package.json",
@@ -119,5 +120,8 @@
         "StreamShimmerView": "StreamShimmerViewComponentView"
       }
     }
+  },
+  "swiftpmConfig": {
+    "name": "StreamChatReactNative"
   }
 }

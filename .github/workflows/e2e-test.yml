@@ -50,7 +50,7 @@ env:
 jobs:
   check:
     name: Check E2E Required
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 10
     outputs:
       required: ${{ steps.check.outputs.required }}
@@ -234,7 +234,7 @@ jobs:
     name: Build Android
     needs: check
     if: needs.check.outputs.required == 'true' && (github.event_name != 'workflow_dispatch' || inputs.android)
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 60
     env:
       APK_PATHS: |
@@ -302,7 +302,7 @@ jobs:
   android-allure-launch:
     name: Launch Allure TestOps (Android)
     needs: android-build
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 10
     outputs:
       launch_id: ${{ steps.launch.outputs.launch_id }}
@@ -327,18 +327,13 @@ jobs:
     name: Test Android
     needs: [check, android-build, android-allure-launch]
     if: ${{ !cancelled() && needs.android-build.result == 'success' }}
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     timeout-minutes: 60
     strategy:
       matrix:
         batch: ${{ fromJson(needs.check.outputs.e2e_batches) }}
       fail-fast: false
     env:
-      # Same as the native Android SDK e2e jobs
-      ANDROID_API_LEVEL: "36"
-      # swangle_indirect, not swiftshader_indirect: with the latter the emulator exits silently mid-run
-      # (RN-513, also outside GiphyTests).
-      ANDROID_EMULATOR_OPTIONS: -no-snapshot-save -no-window -no-audio -no-boot-anim -gpu swangle_indirect -camera-back none -camera-front none
       DETOX_ADB_NAME: "emulator-5554"
       MOCK_SERVER_BUNDLE_PATH: ${{ github.workspace }}/../mock-server-gems
       LAUNCH_ID: ${{ needs.android-allure-launch.outputs.launch_id }}
@@ -388,15 +383,26 @@ jobs:
           path: examples/E2ETestApp
       # The emulator runner downloads these without retrying; a corrupted download fails the job.
       - uses: ./.github/actions/android-sdk-packages
+        id: sdk
+      # Saved by the nightly run. A miss (e.g. after an emulator update) cold boots as before.
+      - name: Restore the AVD
+        id: avd
+        uses: actions/cache/restore@v5
         with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: ${{ steps.sdk.outputs.avd-key }}
       - name: Run e2e tests (Android emulator)
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
-          api-level: ${{ env.ANDROID_API_LEVEL }}
+          api-level: ${{ steps.sdk.outputs.api-level }}
+          target: ${{ steps.sdk.outputs.target }}
           arch: x86_64
-          profile: pixel
-          emulator-options: ${{ env.ANDROID_EMULATOR_OPTIONS }}
+          profile: ${{ steps.sdk.outputs.profile }}
+          cores: ${{ steps.sdk.outputs.cores }}
+          force-avd-creation: ${{ steps.avd.outputs.cache-hit != 'true' }}
+          emulator-options: -no-snapshot-save ${{ steps.sdk.outputs.emulator-options }}
           disable-animations: true
           working-directory: examples/SampleApp
           # Logcat is written on the runner, so it survives the emulator dying mid-run.
@@ -431,7 +437,7 @@ jobs:
 
   result:
     name: Test E2E Result
-    runs-on: ubuntu-latest
+    runs-on: { group: github-public-amd64 }
     if: always()
     needs:
       - check

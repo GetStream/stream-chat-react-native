@@ -340,6 +340,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   );
 
   const latestNonCurrentMessageBeforeUpdateRef = useRef<LocalMessage>(undefined);
+  const scrollToLatestAfterJumpRef = useRef(false);
 
   const shouldScrollToRecentOnNewOwnMessageRef = useShouldScrollToRecentOnNewOwnMessage(
     rawMessageList,
@@ -396,9 +397,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       return;
     }
 
-    lastFocusScrollTokenRef.current = focusToken;
     scrollToDebounceTimeoutRef.current = setTimeout(async () => {
       clearTimeout(scrollToDebounceTimeoutRef.current);
+      lastFocusScrollTokenRef.current = focusToken;
 
       const scrollToIndex = async () => {
         const list = flashListRef.current;
@@ -424,6 +425,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       // may not be visible yet. Start it now that the message is scrolled into view.
       paginator?.scheduleMessageFocusSignalClear({ token: focusToken });
     }, WAIT_FOR_SCROLL_TIMEOUT);
+    return () => clearTimeout(scrollToDebounceTimeoutRef.current);
   }, [paginator, focusToken, focusedMessageId, processedMessageList]);
 
   useEffect(() => {
@@ -438,6 +440,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
       return;
     } else {
       setAutoscrollToRecent(true);
+    }
+    if (scrollToLatestAfterJumpRef.current) {
+      scrollToLatestAfterJumpRef.current = false;
+      flashListRef.current?.scrollToEnd({ animated: false });
     }
     const latestNonCurrentMessageBeforeUpdate = latestNonCurrentMessageBeforeUpdateRef.current;
     latestNonCurrentMessageBeforeUpdateRef.current = undefined;
@@ -562,7 +568,12 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
 
   const goToNewMessages = useStableCallback(async () => {
     if (paginator?.hasMoreHead) {
-      await paginator.jumpToTheLatestMessage();
+      // Scrolls once the latest set has rendered (the effect above), not on the old content.
+      scrollToLatestAfterJumpRef.current = true;
+      const jumped = await paginator.jumpToTheLatestMessage();
+      if (!jumped) {
+        scrollToLatestAfterJumpRef.current = false;
+      }
     } else if (flashListRef.current) {
       flashListRef.current.scrollToEnd({
         animated: true,
