@@ -14,6 +14,7 @@ import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useChannelImage } from '../../../hooks/useChannelImage';
 import { useChannelName } from '../../../hooks/useChannelName';
+import { useDisplayedChannelMemberCount } from '../../../hooks/useDisplayedChannelMemberCount';
 import { CompositeAccessibilityProbe } from '../../Accessibility/CompositeAccessibilityProbe';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 
@@ -68,11 +69,12 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
   const channelName = useChannelName(channel) ?? channel.cid;
 
   const memberCount = Object.keys(members).length;
+  const displayedMemberCount = useDisplayedChannelMemberCount(channel) || memberCount;
   const isGroup = !!channel.data?.custom?.name || memberCount > 2;
   const otherUserName = usersWithoutSelf[0]?.name || usersWithoutSelf[0]?.id;
   const labelParams = useMemo(
-    () => ({ count: memberCount, name: otherUserName ?? '' }),
-    [memberCount, otherUserName],
+    () => ({ count: displayedMemberCount, name: otherUserName ?? '' }),
+    [displayedMemberCount, otherUserName],
   );
   const accessibilityLabel = useA11yLabel(
     isGroup

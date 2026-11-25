@@ -2,6 +2,7 @@ export * from './useIsTargetedMessage';
 export * from '../a11y';
 export * from './actions';
 export * from './useAppStateListener';
+export * from './useDisplayedChannelMemberCount';
 export * from './useChannelMemberCount';
 export * from './useChannelName';
 export * from './useChannelImage';

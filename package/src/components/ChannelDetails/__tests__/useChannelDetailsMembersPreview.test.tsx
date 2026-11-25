@@ -8,9 +8,11 @@ import { generateUser } from '../../../mock-builders/generator/user';
 import { useChannelDetailsMembersPreview } from '../hooks/useChannelDetailsMembersPreview';
 
 const buildChannel = ({
+  activeMemberCount,
   members,
   memberCount,
 }: {
+  activeMemberCount?: number;
   members: ChannelMemberResponse[];
   memberCount?: number;
 }): Channel =>
@@ -23,6 +25,7 @@ const buildChannel = ({
         members.map((m) => [m.user?.id ?? m.user_id ?? '', m]).filter(([k]) => Boolean(k)),
       ),
       ...(memberCount == null ? {} : { memberCount }),
+      ...(activeMemberCount == null ? {} : { activeMemberCount }),
     }),
   }) as unknown as Channel;
 
@@ -78,5 +81,27 @@ describe('useChannelDetailsMembersPreview', () => {
     expect(result.current.total).toBe(2);
     expect(result.current.hasMore).toBe(false);
     expect(result.current.visible).toHaveLength(2);
+  });
+
+  it('shows the active member count while listing every member', () => {
+    const members = Array.from({ length: 6 }, (_, i) =>
+      buildMember(`u-${i}`, `2023-01-0${i + 1}T00:00:00.000Z`),
+    );
+    const channel = buildChannel({ activeMemberCount: 4, members, memberCount: 6 });
+
+    const { result } = renderHook(() => useChannelDetailsMembersPreview(channel, 5));
+
+    expect(result.current.total).toBe(4);
+    expect(result.current.hasMore).toBe(true);
+    expect(result.current.visible).toHaveLength(5);
+  });
+
+  it('shows an active member count of zero', () => {
+    const members = [buildMember('a', '2023-01-01T00:00:00.000Z')];
+    const channel = buildChannel({ activeMemberCount: 0, members, memberCount: 1 });
+
+    const { result } = renderHook(() => useChannelDetailsMembersPreview(channel));
+
+    expect(result.current.total).toBe(0);
   });
 });

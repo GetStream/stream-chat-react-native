@@ -4,14 +4,14 @@ import { renderHook } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelMemberCount } from '../../../hooks/useChannelMemberCount';
+import { useDisplayedChannelMemberCount } from '../../../hooks/useDisplayedChannelMemberCount';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelOnlineMemberCount';
 import { useChannelDetailsMemberStatusText } from '../hooks/useChannelDetailsMemberStatusText';
 
-jest.mock('../../../hooks/useChannelMemberCount', () => ({
-  useChannelMemberCount: jest.fn(),
+jest.mock('../../../hooks/useDisplayedChannelMemberCount', () => ({
+  useDisplayedChannelMemberCount: jest.fn(),
 }));
 
 jest.mock('../../../hooks/useIsDirectChat', () => ({
@@ -73,7 +73,7 @@ describe('useChannelDetailsMemberStatusText', () => {
   afterEach(() => jest.clearAllMocks());
 
   it('formats the reactive member count and online count', () => {
-    (useChannelMemberCount as jest.Mock).mockReturnValue(5);
+    (useDisplayedChannelMemberCount as jest.Mock).mockReturnValue(5);
     (useChannelOnlineMemberCount as jest.Mock).mockReturnValue(2);
     (useChannelMembersState as jest.Mock).mockReturnValue({});
 
@@ -83,7 +83,7 @@ describe('useChannelDetailsMemberStatusText', () => {
   });
 
   it('recomputes when the online count changes', () => {
-    (useChannelMemberCount as jest.Mock).mockReturnValue(4);
+    (useDisplayedChannelMemberCount as jest.Mock).mockReturnValue(4);
     (useChannelOnlineMemberCount as jest.Mock).mockReturnValue(0);
     (useChannelMembersState as jest.Mock).mockReturnValue({});
 
