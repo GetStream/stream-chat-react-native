@@ -15,7 +15,7 @@ import {
 
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { getInitialsFromName, hashStringToNumber } from '../../../utils/utils';
+import { getInitialsFromName } from '../../../utils/utils';
 import { OnlineIndicator } from '../Badge';
 
 export type UserAvatarProps = {
@@ -33,10 +33,8 @@ export const UserAvatar = (props: UserAvatarProps) => {
     theme: { semantics },
   } = useTheme();
   const styles = useStyles();
-  const hashedValue = hashStringToNumber(user?.id || '');
-  const index = ((hashedValue % 5) + 1) as 1 | 2 | 3 | 4 | 5;
-  const avatarBackgroundColor = semantics[`avatarPaletteBg${index}`];
-  const avatarTextColor = semantics[`avatarPaletteText${index}`];
+  const avatarBackgroundColor = semantics.avatarBgDefault;
+  const avatarTextColor = semantics.avatarTextDefault;
 
   const placeholder = useMemo(() => {
     if (user?.name) {

@@ -1,5 +1,6 @@
 import { NativeHandlers } from '../../native';
 import { AudioPlayer } from '../audio-player';
+import { AudioPlayerPool } from '../audio-player-pool';
 
 jest.mock('../../native', () => ({
   NativeHandlers: {
@@ -260,5 +261,62 @@ describe('AudioPlayer', () => {
     expect(player.duration).toBe(30000);
     expect(player.position).toBe(5000);
     expect(player.progress).toBeCloseTo(5000 / 30000);
+  });
+
+  describe('playback start', () => {
+    const descriptor = {
+      duration: 10,
+      id: 'started-audio-player',
+      mimeType: 'audio/mp4',
+      type: 'voiceRecording' as const,
+      uri: 'https://example.com/audio.mp4',
+    };
+    const createPooledPlayer = () => {
+      const onPlaybackStarted = jest.fn(() => true);
+      const pool = new AudioPlayerPool({ allowConcurrentAudioPlayback: false });
+      const player = pool.getOrAddPlayer({ ...descriptor, onPlaybackStarted });
+      return { onPlaybackStarted, player, pool };
+    };
+
+    it('calls onPlaybackStarted once, when playback first advances', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer();
+      player.isPlaying = true;
+      expect(onPlaybackStarted).not.toHaveBeenCalled();
+
+      player.position = 500;
+      player.position = 1000;
+
+      expect(onPlaybackStarted).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls it again on the next progress until it handles the start', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer();
+      onPlaybackStarted.mockReturnValueOnce(false);
+      player.isPlaying = true;
+
+      player.position = 500;
+      player.position = 1000;
+      player.position = 1500;
+
+      expect(onPlaybackStarted).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not count a position change while paused', () => {
+      const { onPlaybackStarted, player } = createPooledPlayer();
+
+      player.position = 1000;
+
+      expect(onPlaybackStarted).not.toHaveBeenCalled();
+    });
+
+    it('keeps the callback when the pool reuses the player without one', () => {
+      const { onPlaybackStarted, player, pool } = createPooledPlayer();
+
+      expect(pool.getOrAddPlayer(descriptor)).toBe(player);
+      player.isPlaying = true;
+      player.position = 1000;
+
+      expect(onPlaybackStarted).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -78,6 +78,8 @@ export class OfflineDB extends AbstractOfflineDB {
 
   getReactions = api.getReactionsForFilterSort;
 
+  getMessageMarks = api.getMessageMarks;
+
   addPendingTask = api.addPendingTask;
 
   updatePendingTask = api.updatePendingTask;
@@ -103,6 +105,8 @@ export class OfflineDB extends AbstractOfflineDB {
   updateReaction = api.updateReaction;
 
   insertReaction = api.insertReaction;
+
+  insertMessageMark = api.insertMessageMark;
 
   channelExists = api.channelExists;
 

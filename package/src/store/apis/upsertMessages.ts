@@ -1,5 +1,6 @@
 import type { LocalMessage, MessageResponse } from 'stream-chat';
 
+import { mapMarkGroupsToStorable } from '../mappers/mapMarkGroupsToStorable';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapPollToStorable } from '../mappers/mapPollToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
@@ -22,12 +23,14 @@ export const upsertMessages = async ({
   const storablePolls: Array<ReturnType<typeof mapPollToStorable>> = [];
   const storableReminders: Array<ReturnType<typeof mapReminderToStorable>> = [];
   const storableLocations: Array<ReturnType<typeof mapSharedLocationToStorable>> = [];
+  const storableMarks: ReturnType<typeof mapMarkGroupsToStorable> = [];
 
   messages?.forEach((message: MessageResponse | LocalMessage) => {
     if (message.parent_id && !message.show_in_channel) {
       return;
     }
     storableMessages.push(mapMessageToStorable(message));
+    storableMarks.push(...mapMarkGroupsToStorable(message));
     if (message.user) {
       storableUsers.push(mapUserToStorable(message.user));
     }
@@ -61,11 +64,13 @@ export const upsertMessages = async ({
     ...storableLocations.map((storableLocation) =>
       createUpsertQuery('locations', storableLocation),
     ),
+    ...storableMarks.map((storableMark) => createUpsertQuery('messageMarks', storableMark)),
   ];
 
   SqliteClient.logger?.('info', 'upsertMessages', {
     execute,
     locations: storableLocations,
+    marks: storableMarks,
     messages: storableMessages,
     polls: storablePolls,
     reactions: storableReactions,

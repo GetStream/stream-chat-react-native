@@ -15,7 +15,7 @@ import {
 
 import { PlayPauseButton } from './PlayPauseButton';
 
-import { useTheme } from '../../../contexts';
+import { useChannelContext, useChatConfigContext, useTheme } from '../../../contexts';
 import { useStableCallback } from '../../../hooks';
 import { useStateStore } from '../../../hooks';
 import { useAudioPlayer } from '../../../hooks/useAudioPlayer';
@@ -29,6 +29,7 @@ import {
 import { AudioPlayerState } from '../../../state-store/audio-player';
 import { primitives } from '../../../theme';
 import { AudioConfig } from '../../../types/types';
+import { defaultHandlePlaybackStarted, markPlayedMessage } from '../../../utils/markPlayedMessage';
 import { ProgressControl } from '../../ProgressControl/ProgressControl';
 import { StableDurationLabel } from '../../ProgressControl/StableDurationLabel';
 import { WaveProgressBar } from '../../ProgressControl/WaveProgressBar';
@@ -103,10 +104,26 @@ export const AudioAttachment = (props: AudioAttachmentProps) => {
   } = props;
   const isVoiceRecording = isVoiceRecordingAttachment(item);
   const waveformData = item.custom?.waveform_data;
+  const { channel } = useChannelContext();
+  const { handlePlaybackStarted = defaultHandlePlaybackStarted } = useChatConfigContext();
+
+  const onPlaybackStarted = useStableCallback(() => {
+    if (!message) {
+      return true;
+    }
+    return handlePlaybackStarted({
+      attachment: item,
+      markPlayed: () => markPlayedMessage(channel, message.id),
+      message,
+      player: audioPlayer,
+    });
+  });
 
   const audioPlayer = useAudioPlayer({
     duration: item.duration ?? item.custom?.duration ?? 0,
     mimeType: item.custom?.mime_type ?? '',
+    // A preview belongs to no message, so playing it marks nothing.
+    onPlaybackStarted: isPreview ? undefined : onPlaybackStarted,
     requester: isPreview
       ? 'preview'
       : message?.id && `${message?.parent_id ?? message?.id}${message?.id}`,

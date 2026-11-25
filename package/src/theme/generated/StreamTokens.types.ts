@@ -2,20 +2,36 @@
 
 import type { ColorValue, TextStyle, ViewStyle } from 'react-native';
 
-export type RNShadowToken = Required<
-  Pick<ViewStyle, 'elevation' | 'shadowColor' | 'shadowOffset' | 'shadowOpacity' | 'shadowRadius'>
->;
+export type RNShadowToken = Required<Pick<ViewStyle,
+  'elevation' | 'shadowColor' | 'shadowOffset' | 'shadowOpacity' | 'shadowRadius'
+>>;
+
+export interface FoundationsBlur {
+  strong: number;
+  subtle: number;
+}
 
 export interface FoundationsColors {
   baseBlack: ColorValue;
   baseTransparent0: ColorValue;
+  baseTransparentBlack0: ColorValue;
   baseTransparentBlack10: ColorValue;
+  baseTransparentBlack15: ColorValue;
+  baseTransparentBlack20: ColorValue;
+  baseTransparentBlack25: ColorValue;
   baseTransparentBlack5: ColorValue;
+  baseTransparentBlack50: ColorValue;
   baseTransparentBlack70: ColorValue;
+  baseTransparentBlack75: ColorValue;
+  baseTransparentWhite0: ColorValue;
   baseTransparentWhite10: ColorValue;
+  baseTransparentWhite15: ColorValue;
   baseTransparentWhite20: ColorValue;
+  baseTransparentWhite25: ColorValue;
   baseTransparentWhite30: ColorValue;
+  baseTransparentWhite50: ColorValue;
   baseTransparentWhite70: ColorValue;
+  baseTransparentWhite75: ColorValue;
   baseWhite: ColorValue;
   blue100: ColorValue;
   blue150: ColorValue;
@@ -130,13 +146,20 @@ export interface FoundationsColors {
 }
 
 export interface FoundationsLayout {
+  size10: number;
   size12: number;
   size128: number;
+  size13: number;
+  size14: number;
   size144: number;
+  size15: number;
   size16: number;
+  size17: number;
+  size18: number;
   size2: number;
   size20: number;
   size208: number;
+  size22: number;
   size24: number;
   size240: number;
   size28: number;
@@ -172,7 +195,9 @@ export interface FoundationsRadius {
 
 export interface FoundationsSpacing {
   space0: number;
+  space10: number;
   space12: number;
+  space14: number;
   space16: number;
   space2: number;
   space20: number;
@@ -181,6 +206,7 @@ export interface FoundationsSpacing {
   space4: number;
   space40: number;
   space48: number;
+  space6: number;
   space64: number;
   space8: number;
   space80: number;
@@ -193,11 +219,14 @@ export interface FoundationsStroke {
   w200: number;
   w300: number;
   w400: number;
+  w80: number;
 }
 
 export interface FoundationsTypography {
+  fontFamilyDmMono: TextStyle['fontFamily'];
   fontFamilyGeist: TextStyle['fontFamily'];
   fontFamilyGeistMono: TextStyle['fontFamily'];
+  fontFamilyInter: TextStyle['fontFamily'];
   fontFamilyRoboto: TextStyle['fontFamily'];
   fontFamilyRobotoMono: TextStyle['fontFamily'];
   fontFamilySfMono: TextStyle['fontFamily'];
@@ -281,6 +310,11 @@ export interface ChatComponents {
   iconStrokeDefault: number;
   iconStrokeEmphasis: number;
   iconStrokeSubtle: number;
+  inputRadiusOptionCard: number;
+  inputRadiusPollOptionInput: number;
+  inputRadiusSearchInput: number;
+  inputRadiusSelectInput: number;
+  inputRadiusTextInput: number;
   messageBubbleRadiusAttachment: number;
   messageBubbleRadiusAttachmentInline: number;
   messageBubbleRadiusGroupBottom: number;
@@ -340,10 +374,14 @@ export interface ChatPrimitives {
 
 export interface ChatSemantics {
   accentError: ColorValue;
+  accentErrorSubtle: ColorValue;
   accentNeutral: ColorValue;
   accentPrimary: ColorValue;
+  accentPrimarySubtle: ColorValue;
   accentSuccess: ColorValue;
+  accentSuccessSubtle: ColorValue;
   accentWarning: ColorValue;
+  accentWarningSubtle: ColorValue;
   avatarBgDefault: ColorValue;
   avatarBgPlaceholder: ColorValue;
   avatarPaletteBg1: ColorValue;
@@ -369,7 +407,9 @@ export interface ChatSemantics {
   backgroundCoreHighlight: ColorValue;
   backgroundCoreInverse: ColorValue;
   backgroundCoreOnAccent: ColorValue;
+  backgroundCoreOnElevation: ColorValue;
   backgroundCoreOverlayDark: ColorValue;
+  backgroundCoreOverlayDarkStrong: ColorValue;
   backgroundCoreOverlayLight: ColorValue;
   backgroundCoreScrim: ColorValue;
   backgroundCoreSurfaceCard: ColorValue;
@@ -377,9 +417,15 @@ export interface ChatSemantics {
   backgroundCoreSurfaceStrong: ColorValue;
   backgroundCoreSurfaceSubtle: ColorValue;
   backgroundUtilityDisabled: ColorValue;
+  backgroundUtilityErrorSubtle: ColorValue;
   backgroundUtilityHover: ColorValue;
+  backgroundUtilityInfoSubtle: ColorValue;
   backgroundUtilityPressed: ColorValue;
   backgroundUtilitySelected: ColorValue;
+  backgroundUtilitySkeletonLoadingBase: ColorValue;
+  backgroundUtilitySkeletonLoadingHighlight: ColorValue;
+  backgroundUtilitySuccessSubtle: ColorValue;
+  backgroundUtilityWarningSubtle: ColorValue;
   badgeBgDefault: ColorValue;
   badgeBgError: ColorValue;
   badgeBgInverse: ColorValue;
@@ -393,6 +439,7 @@ export interface ChatSemantics {
   borderCoreDefault: ColorValue;
   borderCoreInverse: ColorValue;
   borderCoreOnAccent: ColorValue;
+  borderCoreOnElevation: ColorValue;
   borderCoreOnInverse: ColorValue;
   borderCoreOnSurface: ColorValue;
   borderCoreOpacityStrong: ColorValue;
@@ -491,12 +538,18 @@ export interface ChatSemantics {
   chrome700: ColorValue;
   chrome800: ColorValue;
   chrome900: ColorValue;
+  controlAcceptCallButtonBg: ColorValue;
+  controlAcceptCallButtonText: ColorValue;
+  controlCallControlErrorBadgeBg: ColorValue;
+  controlCallControlErrorBadgeText: ColorValue;
   controlCheckboxBg: ColorValue;
   controlCheckboxBgSelected: ColorValue;
   controlCheckboxBorder: ColorValue;
   controlCheckboxIcon: ColorValue;
   controlChipBorder: ColorValue;
   controlChipText: ColorValue;
+  controlDeclineCallButtonBg: ColorValue;
+  controlDeclineCallButtonText: ColorValue;
   controlPlaybackThumbBgActive: ColorValue;
   controlPlaybackThumbBgDefault: ColorValue;
   controlPlaybackThumbBorderActive: ColorValue;
@@ -506,6 +559,7 @@ export interface ChatSemantics {
   controlPlayButtonBg: ColorValue;
   controlPlayButtonIcon: ColorValue;
   controlProgressBarFill: ColorValue;
+  controlProgressBarFillAudio: ColorValue;
   controlProgressBarTrack: ColorValue;
   controlRadioButtonBg: ColorValue;
   controlRadioButtonBgSelected: ColorValue;
@@ -522,12 +576,54 @@ export interface ChatSemantics {
   controlToggleSwitchBgDisabled: ColorValue;
   controlToggleSwitchBgSelected: ColorValue;
   controlToggleSwitchKnob: ColorValue;
+  indicatorConnectionQualityFair: ColorValue;
+  indicatorConnectionQualityGreat: ColorValue;
+  indicatorConnectionQualityPoor: ColorValue;
+  indicatorMicrophoneLevelBarActive: ColorValue;
+  indicatorMicrophoneLevelBarInactive: ColorValue;
+  indicatorSoundIndicatorSpeaking: ColorValue;
   inputSendIcon: ColorValue;
   inputSendIconDisabled: ColorValue;
   inputTextDefault: ColorValue;
   inputTextDisabled: ColorValue;
   inputTextIcon: ColorValue;
+  inputTextIconActive: ColorValue;
   inputTextPlaceholder: ColorValue;
+  labelBgNeutral: ColorValue;
+  labelBgPrimary: ColorValue;
+  labelTextNeutral: ColorValue;
+  labelTextPrimary: ColorValue;
+  messageBubbleBgAttachmentIncoming: ColorValue;
+  messageBubbleBgAttachmentOutgoing: ColorValue;
+  messageBubbleBgIncoming: ColorValue;
+  messageBubbleBgMention: ColorValue;
+  messageBubbleBgMentionBroadcast: ColorValue;
+  messageBubbleBgMentionGroup: ColorValue;
+  messageBubbleBgMentionRole: ColorValue;
+  messageBubbleBgMentionUser: ColorValue;
+  messageBubbleBgOutgoing: ColorValue;
+  messageBubbleBorderIncoming: ColorValue;
+  messageBubbleBorderOnChatIncoming: ColorValue;
+  messageBubbleBorderOnChatOutgoing: ColorValue;
+  messageBubbleBorderOutgoing: ColorValue;
+  messageBubbleTextIncoming: ColorValue;
+  messageBubbleTextLink: ColorValue;
+  messageBubbleTextMention: ColorValue;
+  messageBubbleTextMentionBroadcast: ColorValue;
+  messageBubbleTextMentionGroup: ColorValue;
+  messageBubbleTextMentionRole: ColorValue;
+  messageBubbleTextMentionUser: ColorValue;
+  messageBubbleTextOutgoing: ColorValue;
+  messageBubbleTextReaction: ColorValue;
+  messageBubbleTextRead: ColorValue;
+  messageBubbleTextSystem: ColorValue;
+  messageBubbleTextTimestamp: ColorValue;
+  messageBubbleTextTypingIndicator: ColorValue;
+  messageBubbleTextUsername: ColorValue;
+  pollProgressFillIncoming: ColorValue;
+  pollProgressFillOutgoing: ColorValue;
+  pollProgressTrackIncoming: ColorValue;
+  pollProgressTrackOutgoing: ColorValue;
   presenceBgOffline: ColorValue;
   presenceBgOnline: ColorValue;
   presenceBorder: ColorValue;
@@ -535,12 +631,18 @@ export interface ChatSemantics {
   reactionBorder: ColorValue;
   reactionEmoji: ColorValue;
   reactionText: ColorValue;
+  replyIndicatorIncoming: ColorValue;
+  replyIndicatorOutgoing: ColorValue;
   skeletonLoadingBase: ColorValue;
   skeletonLoadingHighlight: ColorValue;
   systemBgBlur: ColorValue;
   systemCaret: ColorValue;
   systemScrollbar: ColorValue;
   systemText: ColorValue;
+  tabIndicator: ColorValue;
+  tabText: ColorValue;
+  tabTextSelected: ColorValue;
+  tabTrack: ColorValue;
   textDisabled: ColorValue;
   textLink: ColorValue;
   textOnAccent: ColorValue;
@@ -548,10 +650,15 @@ export interface ChatSemantics {
   textPrimary: ColorValue;
   textSecondary: ColorValue;
   textTertiary: ColorValue;
+  threadConnectorIncoming: ColorValue;
+  threadConnectorOutgoing: ColorValue;
+  waveformBar: ColorValue;
+  waveformBarPlaying: ColorValue;
 }
 
 export interface IStreamTokens {
   foundations: {
+    blur: FoundationsBlur;
     colors: FoundationsColors;
     layout: FoundationsLayout;
     radius: FoundationsRadius;

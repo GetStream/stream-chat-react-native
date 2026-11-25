@@ -21,6 +21,11 @@ export type VideoDescriptor = {
 export type VideoPlayerOptions = VideoDescriptor & {
   playbackRates?: number[];
   autoPlay?: boolean;
+  /**
+   * Called when playback first advances, after any download and buffering. Returns whether the
+   * start was handled; an unhandled start is reported again on the next progress.
+   */
+  onPlaybackStarted?: () => boolean;
 };
 
 const DEFAULT_PLAYBACK_RATES = [1.0, 1.5, 2.0];
@@ -41,6 +46,7 @@ export class VideoPlayer {
   _pool: VideoPlayerPool | null = null;
   private _id: string;
   private isExpoCLI: boolean;
+  private playbackStartHandled = false;
 
   constructor(options: VideoPlayerOptions) {
     this.isExpoCLI = NativeHandlers.SDK === 'stream-chat-expo';
@@ -60,6 +66,10 @@ export class VideoPlayer {
   initPlayer = ({ playerRef }: { playerRef?: VideoType }) => {
     this.playerRef = playerRef ?? null;
   };
+
+  setOnPlaybackStarted(onPlaybackStarted?: () => boolean) {
+    this.options = { ...this.options, onPlaybackStarted };
+  }
 
   get id() {
     return this._id;
@@ -104,6 +114,7 @@ export class VideoPlayer {
       position,
       progress: position / this.duration,
     });
+    this.detectPlaybackStart();
   }
 
   set progress(progress: number) {
@@ -111,6 +122,16 @@ export class VideoPlayer {
       position: progress * this.duration,
       progress,
     });
+    this.detectPlaybackStart();
+  }
+
+  /** Calls `onPlaybackStarted` once playback advances, until it handles the start. */
+  private detectPlaybackStart() {
+    // expo reports `progress`, RN CLI reports `position`
+    if (this.playbackStartHandled || !this.isPlaying || !(this.position > 0 || this.progress > 0)) {
+      return;
+    }
+    this.playbackStartHandled = this.options.onPlaybackStarted?.() ?? false;
   }
 
   set isPlaying(isPlaying: boolean) {

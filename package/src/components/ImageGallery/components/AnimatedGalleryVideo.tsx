@@ -3,8 +3,9 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import type { StyleProp } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
+import { useChatConfigContext } from '../../../contexts/chatConfigContext/ChatConfigContext';
 import { useImageGalleryContext } from '../../../contexts/imageGalleryContext/ImageGalleryContext';
-import { useStateStore } from '../../../hooks';
+import { useStableCallback, useStateStore } from '../../../hooks';
 
 import {
   isVideoPlayerAvailable,
@@ -21,6 +22,8 @@ import {
 } from '../../../state-store/image-gallery-state-store';
 import { VideoPlayerState } from '../../../state-store/video-player';
 import { ONE_SECOND_IN_MILLISECONDS } from '../../../utils/constants';
+import { getUrlOfImageAttachment } from '../../../utils/getUrlOfImageAttachment';
+import { defaultHandlePlaybackStarted, markPlayedMessage } from '../../../utils/markPlayedMessage';
 import { Spinner } from '../../UIComponents/Spinner';
 import { useAnimatedGalleryStyle } from '../hooks/useAnimatedGalleryStyle';
 import { useImageGalleryVideoPlayer } from '../hooks/useImageGalleryVideoPlayer';
@@ -56,7 +59,7 @@ const videoPlayerSelector = (state: VideoPlayerState) => ({
 
 const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
   const [opacity, setOpacity] = useState<number>(1);
-  const { imageGalleryStateStore } = useImageGalleryContext();
+  const { autoPlayVideo, imageGalleryStateStore } = useImageGalleryContext();
 
   const {
     attachmentId,
@@ -80,9 +83,27 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
 
   const videoRef = useRef<VideoType>(null);
 
-  const videoPlayer = useImageGalleryVideoPlayer({
-    id: attachmentId,
+  const { handlePlaybackStarted = defaultHandlePlaybackStarted } = useChatConfigContext();
+
+  const onPlaybackStarted = useStableCallback(() => {
+    const { channel, messages } = imageGalleryStateStore.state.getLatestValue();
+    const message = messages.find(({ id }) => id === photo.messageId);
+    const attachment = message?.attachments?.find(
+      (item) =>
+        getUrlOfImageAttachment(item, imageGalleryStateStore.options.giphyVersion) === photo.uri,
+    );
+    if (!message || !attachment) {
+      return true;
+    }
+    return handlePlaybackStarted({
+      attachment,
+      markPlayed: () => markPlayedMessage(channel, message.id),
+      message,
+      player: videoPlayer,
+    });
   });
+
+  const videoPlayer = useImageGalleryVideoPlayer({ id: attachmentId, onPlaybackStarted });
 
   useEffect(() => {
     if (videoRef.current && shouldRender) {
@@ -94,6 +115,20 @@ const AnimatedGalleryVideoComponent = (props: AnimatedGalleryVideoType) => {
       videoPlayer.onRemove();
     };
   }, [videoPlayer, shouldRender]);
+
+  useEffect(() => {
+    if (!autoPlayVideo) {
+      return;
+    }
+    return imageGalleryStateStore.state.subscribeWithSelector(
+      (state) => ({ isShown: state.currentIndex === index }),
+      ({ isShown }) => {
+        if (isShown) {
+          videoPlayer.play();
+        }
+      },
+    );
+  }, [autoPlayVideo, imageGalleryStateStore, index, videoPlayer]);
 
   const { isPlaying, currentPlaybackRate } = useStateStore(videoPlayer.state, videoPlayerSelector);
 

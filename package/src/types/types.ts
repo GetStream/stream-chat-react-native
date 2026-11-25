@@ -1,12 +1,17 @@
 import type {
+  Attachment,
   ChannelFilters,
   SortParamRequest,
   FileReference,
   LocalAudioAttachment,
+  LocalMessage,
   LocalUploadAttachment,
   LocalVoiceRecordingAttachment,
   MinimumUploadRequestResult,
 } from 'stream-chat';
+
+import type { AudioPlayer } from '../state-store/audio-player';
+import type { VideoPlayer } from '../state-store/video-player';
 
 export enum FileTypes {
   Audio = 'audio',
@@ -492,3 +497,21 @@ export type EmojiSearchIndex = {
  * @param file File object to upload
  */
 export type GlobalFileUploadRequest = (file: File) => Promise<MinimumUploadRequestResult>;
+
+export type PlaybackStartedParams = {
+  /** The played attachment. Its `type` tells audio, voice recordings and video apart. */
+  attachment: Attachment;
+  /** Marks the message played by the current user. */
+  markPlayed: () => void;
+  /** The message the attachment belongs to. */
+  message: LocalMessage;
+  /** The player, for its position and duration. */
+  player: AudioPlayer | VideoPlayer;
+};
+
+/**
+ * Called as playback of an audio, voice recording or video attachment advances, until it returns
+ * `true`. Returning `false` asks again on the next progress, for example to wait for a minimum
+ * played time.
+ */
+export type HandlePlaybackStarted = (params: PlaybackStartedParams) => boolean;

@@ -34,6 +34,7 @@ export * from '../components/Notifications/hooks';
 export * from './usePortalSettledCallback';
 export * from './useRAFCoalescedValue';
 export * from './useAudioPlayer';
+export * from './useMarkMessagePlayed';
 export * from './useAttachmentPickerState';
 export * from './messagePreview/useMessageDeliveryStatus';
 export * from './messagePreview/useGroupedAttachments';

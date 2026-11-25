@@ -16,7 +16,9 @@ export const mapMessageToStorable = (
     id,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     latest_reactions,
+    mark_groups,
     message_text_updated_at,
+    own_marks,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     own_reactions,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -41,7 +43,9 @@ export const mapMessageToStorable = (
     deletedForMe: deleted_for_me,
     extraData: JSON.stringify(extraData),
     id,
+    markGroups: JSON.stringify(mark_groups),
     messageTextUpdatedAt: mapTimestampToStorable(message_text_updated_at),
+    ownMarks: JSON.stringify(own_marks),
     poll_id: poll_id || '',
     reactionGroups: JSON.stringify(reaction_groups),
     shared_location: JSON.stringify(shared_location),

@@ -99,6 +99,7 @@ import { MessageError } from '../../components/Message/MessageItemView/MessageEr
 import { MessageFooter } from '../../components/Message/MessageItemView/MessageFooter';
 import { MessageHeader } from '../../components/Message/MessageItemView/MessageHeader';
 import { MessageItemView } from '../../components/Message/MessageItemView/MessageItemView';
+import { MessageMark } from '../../components/Message/MessageItemView/MessageMark';
 import { MessageReplies } from '../../components/Message/MessageItemView/MessageReplies';
 import { MessageRepliesAvatars } from '../../components/Message/MessageItemView/MessageRepliesAvatars';
 import { MessageStatus } from '../../components/Message/MessageItemView/MessageStatus';
@@ -447,6 +448,7 @@ const components = {
   MessageInputLeadingView,
   MessageInputTrailingView,
   MessageItemView,
+  MessageMark,
   MessagePinnedHeader,
   MessageReactionPicker,
   MessageReminderHeader,

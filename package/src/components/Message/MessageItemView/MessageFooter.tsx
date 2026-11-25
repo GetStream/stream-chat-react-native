@@ -17,7 +17,7 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 
 import { useStateStore } from '../../../hooks/useStateStore';
 import { primitives } from '../../../theme';
-import { isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
+import { getPlayedCount, isEditedMessage, MessageStatusTypes } from '../../../utils/utils';
 import { useShouldUseOverlayStyles } from '../hooks/useShouldUseOverlayStyles';
 
 type MessageFooterComponentProps = {
@@ -44,7 +44,7 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
   const { isDirectChannel } = useStateStore(channel.state, isDirectChannelSelector) ?? {
     isDirectChannel: false,
   };
-  const { MessageStatus, MessageTimestamp } = useComponentsContext();
+  const { MessageMark, MessageStatus, MessageTimestamp } = useComponentsContext();
   const styles = useStyles();
 
   const {
@@ -61,8 +61,23 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
     [message, isMessageAIGenerated],
   );
 
+  const playedCount =
+    channel.config.markTypes.includes('played') && message.type !== 'deleted'
+      ? getPlayedCount(message)
+      : 0;
+
   if (lastGroupMessage === false && message.status === MessageStatusTypes.RECEIVED) {
-    return null;
+    // Earlier messages in a group show only the mark.
+    return playedCount > 0 ? (
+      <View
+        accessible
+        accessibilityRole='text'
+        style={[styles.container, container]}
+        testID='message-status-time'
+      >
+        <MessageMark isDirectChannel={isDirectChannel} playedCount={playedCount} />
+      </View>
+    ) : null;
   }
 
   const isEdited = isEditedMessage(message) && !isAIGenerated;
@@ -78,6 +93,9 @@ const MessageFooterWithContext = (props: MessageFooterPropsWithContext) => {
         <Text numberOfLines={1} ellipsizeMode='tail' style={[styles.name, name]}>
           {message.user.name}
         </Text>
+      ) : null}
+      {playedCount > 0 ? (
+        <MessageMark isDirectChannel={isDirectChannel} playedCount={playedCount} showSeparator />
       ) : null}
       {showMessageStatus ? <MessageStatus /> : null}
       <MessageTimestamp formattedDate={formattedDate} timestamp={date} />
@@ -128,7 +146,8 @@ const areEqual = (
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&
-    prevMessage.pinned === nextMessage.pinned;
+    prevMessage.pinned === nextMessage.pinned &&
+    getPlayedCount(prevMessage) === getPlayedCount(nextMessage);
   if (!messageEqual) {
     return false;
   }

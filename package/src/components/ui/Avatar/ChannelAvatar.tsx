@@ -15,7 +15,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useChannelImage } from '../../../hooks/useChannelImage';
 import { useChannelName } from '../../../hooks/useChannelName';
 import { useDisplayedChannelMemberCount } from '../../../hooks/useDisplayedChannelMemberCount';
-import { hashStringToNumber } from '../../../utils/utils';
 import { CompositeAccessibilityProbe } from '../../Accessibility/CompositeAccessibilityProbe';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 
@@ -52,9 +51,7 @@ export const ChannelAvatar = (props: ChannelAvatarProps) => {
     theme: { semantics },
   } = useTheme();
 
-  const hashedValue = hashStringToNumber(channel.cid);
-  const index = ((hashedValue % 5) + 1) as 1 | 2 | 3 | 4 | 5;
-  const avatarBackgroundColor = semantics[`avatarPaletteBg${index}`];
+  const avatarBackgroundColor = semantics.avatarBgDefault;
 
   const channelImage = useChannelImage(channel);
   const imageToDisplay = isPreview ? previewUri : channelImage;

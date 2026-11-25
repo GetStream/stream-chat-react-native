@@ -95,6 +95,16 @@ export const isBouncedMessage = (message: LocalMessage) =>
  */
 export const isEditedMessage = (message: LocalMessage) => message.message_text_updated_at != null;
 
+/**
+ * How many other users played the message, for instance its voice note. Only the author's copy
+ * carries the `played` marks, so this is 0 on other users' messages.
+ *
+ * @param message The message to check.
+ * @returns The number of users who played the message.
+ */
+export const getPlayedCount = (message: LocalMessage | MessageResponse) =>
+  message.mark_groups?.played?.count ?? 0;
+
 export const makeImageCompatibleUrl = (url?: string) =>
   url ? (url.indexOf('//') === 0 ? `https:${url}` : url).trim() : url;
 
@@ -166,7 +176,7 @@ export const stringifyMessage = ({
   } = message;
   // `status` only exists on `LocalMessage`, not on a bare `MessageResponse`.
   const status = 'status' in message ? message.status : undefined;
-  const baseFieldsString = `${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}${attachments?.length}`;
+  const baseFieldsString = `${type}${deleted_at}${text}${reply_count}${status}${updated_at}${JSON.stringify(i18n)}${attachments?.length}${getPlayedCount(message)}`;
   if (!includeReactions) {
     return baseFieldsString;
   }

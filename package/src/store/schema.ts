@@ -169,6 +169,23 @@ export const tables: Tables = {
     ],
     primaryKey: ['cid', 'userId'],
   },
+  messageMarks: {
+    columns: {
+      createdAt: 'INTEGER',
+      messageId: 'TEXT NOT NULL',
+      type: 'TEXT NOT NULL',
+      userId: 'TEXT NOT NULL',
+    },
+    foreignKeys: [
+      {
+        column: 'messageId',
+        onDeleteAction: 'CASCADE',
+        referenceTable: 'messages',
+        referenceTableColumn: 'id',
+      },
+    ],
+    primaryKey: ['messageId', 'userId', 'type'],
+  },
   messages: {
     columns: {
       attachments: 'TEXT',
@@ -178,7 +195,9 @@ export const tables: Tables = {
       deletedForMe: 'BOOLEAN DEFAULT FALSE',
       extraData: 'TEXT',
       id: 'TEXT',
+      markGroups: 'TEXT',
       messageTextUpdatedAt: 'INTEGER',
+      ownMarks: 'TEXT',
       poll_id: 'TEXT',
       reactionGroups: 'TEXT',
       shared_location: 'TEXT',
@@ -419,6 +438,12 @@ export type Schema = {
     userId?: string;
     pinnedAt?: number | null;
   };
+  messageMarks: {
+    createdAt: number | null;
+    messageId: string;
+    type: string;
+    userId: string;
+  };
   messages: {
     attachments: string;
     cid: string;
@@ -427,7 +452,9 @@ export type Schema = {
     deletedForMe?: boolean;
     extraData: string;
     id: string;
+    markGroups: string;
     messageTextUpdatedAt: number | null;
+    ownMarks: string;
     poll_id: string;
     reactionGroups: string;
     shared_location: string;

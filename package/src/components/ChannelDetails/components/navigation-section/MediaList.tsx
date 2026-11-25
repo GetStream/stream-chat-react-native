@@ -132,13 +132,14 @@ const MediaListContent = ({ additionalFlatListProps }: MediaListProps) => {
         return;
       }
       imageGalleryStateStore.openImageGallery({
+        channel,
         messages: messages?.map((message) => formatMessage(message)) ?? [],
         requesterNode,
         selectedAttachmentUrl: url,
       });
       setOverlay('gallery');
     },
-    [imageGalleryStateStore, messages, setOverlay],
+    [channel, imageGalleryStateStore, messages, setOverlay],
   );
 
   const renderItem = useCallback(

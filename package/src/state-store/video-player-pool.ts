@@ -23,6 +23,10 @@ export class VideoPlayerPool {
   getOrAddPlayer(params: VideoPlayerOptions) {
     const player = this.pool.get(params.id);
     if (player) {
+      // Kept when a caller passes none, so any UI driving the player still reports its start.
+      if (params.onPlaybackStarted) {
+        player.setOnPlaybackStarted(params.onPlaybackStarted);
+      }
       return player;
     }
     const newPlayer = new VideoPlayer(params);
