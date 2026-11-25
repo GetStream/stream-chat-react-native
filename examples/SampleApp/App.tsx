@@ -277,6 +277,7 @@ const App = () => {
         <WithComponents overrides={componentOverrides}>
           <OverlayProvider
             accessibility={accessibilityConfig}
+            autoPlayVideo
             value={{ style: streamChatTheme }}
             i18nInstance={streami18n}
           >

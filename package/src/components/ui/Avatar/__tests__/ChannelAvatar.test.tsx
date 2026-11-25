@@ -4,9 +4,11 @@ import { StateStore } from '@stream-io/state-store';
 import { act, render, screen } from '@testing-library/react-native';
 import type { Channel } from 'stream-chat';
 
+import { AccessibilityProvider } from '../../../../contexts/accessibilityContext/AccessibilityContext';
 import { ChatProvider } from '../../../../contexts/chatContext/ChatContext';
 import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import * as useChannelImageModule from '../../../../hooks/useChannelImage';
 import * as useChannelNameModule from '../../../../hooks/useChannelName';
 import * as useChannelPreviewDisplayPresenceModule from '../../../ChannelPreview/hooks/useChannelPreviewDisplayPresence';
@@ -49,12 +51,15 @@ const OWN_USER_ID = 'me';
 const buildMembers = (...ids: string[]) =>
   Object.fromEntries(ids.map((id) => [id, { user: { id } }]));
 
-const buildChannel = (members: Record<string, unknown> = {}): Channel =>
+const buildChannel = (
+  members: Record<string, unknown> = {},
+  counts: { activeMemberCount?: number; memberCount?: number } = {},
+): Channel =>
   ({
     cid: 'messaging:test',
     data: {},
     on: () => ({ unsubscribe: () => undefined }),
-    state: new StateStore({ members }),
+    state: new StateStore({ members, ...counts }),
   }) as unknown as Channel;
 
 const renderAvatar = (
@@ -181,6 +186,46 @@ describe('ChannelAvatar', () => {
       });
 
       expect(avatarGroupRenders).toBe(renders + 1);
+    });
+  });
+
+  describe('accessibility label', () => {
+    const t = ((key: string, params?: { count?: number }) => `${key}:${params?.count}`) as never;
+
+    const renderWithA11y = (channel: Channel) =>
+      render(
+        <ThemeProvider theme={defaultTheme}>
+          <AccessibilityProvider value={{ enabled: true }}>
+            <TranslationProvider
+              value={{
+                t,
+                tDateTimeParser: ((input: unknown) => input) as never,
+                userLanguage: 'en',
+              }}
+            >
+              <ChatProvider value={{ client: { user: { id: OWN_USER_ID } } } as never}>
+                <ChannelAvatar channel={channel} />
+              </ChatProvider>
+            </TranslationProvider>
+          </AccessibilityProvider>
+        </ThemeProvider>,
+      );
+
+    it('announces the active member count of a group', () => {
+      renderWithA11y(
+        buildChannel(buildMembers(OWN_USER_ID, 'a', 'b', 'c'), {
+          activeMemberCount: 3,
+          memberCount: 4,
+        }),
+      );
+
+      expect(screen.getByLabelText('avatar.channel.group.accessibilityLabel:3')).toBeTruthy();
+    });
+
+    it('announces the loaded member count when the channel has no member count', () => {
+      renderWithA11y(buildChannel(buildMembers(OWN_USER_ID, 'a', 'b')));
+
+      expect(screen.getByLabelText('avatar.channel.group.accessibilityLabel:3')).toBeTruthy();
     });
   });
 });

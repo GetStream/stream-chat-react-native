@@ -163,6 +163,17 @@ const coreNotificationTranslators: Record<CoreNotificationType, NotificationTran
       'Reached the vote limit. Remove an existing vote first.',
     ),
   [CORE_NOTIFICATION_TYPE.pollCreateFailed]: translatePollCreateFailed,
+  [CORE_NOTIFICATION_TYPE.scheduledMessageBlocked]: ({ t }) =>
+    t('notifications.scheduledMessageBlocked.error', 'This message cannot be scheduled'),
+  [CORE_NOTIFICATION_TYPE.scheduledMessageCompositionEnded]: ({ t }) =>
+    t(
+      'notifications.scheduledMessageCompositionEnded.error',
+      'The scheduled message can no longer be edited',
+    ),
+  [CORE_NOTIFICATION_TYPE.scheduledMessageCreateFailed]: ({ t }) =>
+    t('notifications.scheduledMessageCreateFailed.error', 'Failed to schedule the message'),
+  [CORE_NOTIFICATION_TYPE.scheduledMessageUpdateFailed]: ({ t }) =>
+    t('notifications.scheduledMessageUpdateFailed.error', 'Failed to update the scheduled message'),
 };
 
 /**

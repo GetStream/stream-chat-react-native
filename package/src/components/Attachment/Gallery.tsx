@@ -16,6 +16,7 @@ import { openUrlSafely } from './utils/openUrlSafely';
 
 import { useA11yLabel } from '../../a11y/hooks/useA11yLabel';
 import { useTranslationContext } from '../../contexts';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatConfigContext } from '../../contexts/chatConfigContext/ChatConfigContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
@@ -229,6 +230,7 @@ const GalleryThumbnail = ({
   setOverlay,
   thumbnail,
 }: GalleryThumbnailProps) => {
+  const { channel } = useChannelContext();
   const { VideoThumbnail } = useComponentsContext();
   const {
     theme: {
@@ -255,6 +257,7 @@ const GalleryThumbnail = ({
       return;
     }
     imageGalleryStateStore.openImageGallery({
+      channel,
       messages: [message],
       requesterNode: findNodeHandle(thumbnailRef.current),
       selectedAttachmentUrl: thumbnail.url,

@@ -834,6 +834,11 @@ export type Theme = {
       name: TextStyle;
       editedText: TextStyle;
     };
+    mark: {
+      container: ViewStyle;
+      separator: TextStyle;
+      text: TextStyle;
+    };
     contentWrapper: ViewStyle;
     contentContainer: ViewStyle;
     leftAlignItems: ViewStyle;
@@ -1943,6 +1948,11 @@ export const defaultTheme: Theme = {
       container: {},
       name: {},
       editedText: {},
+    },
+    mark: {
+      container: {},
+      separator: {},
+      text: {},
     },
     contentWrapper: {},
     contentContainer: {},

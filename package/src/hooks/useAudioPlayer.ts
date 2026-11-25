@@ -28,6 +28,7 @@ const makeAudioPlayerId = ({
 export const useAudioPlayer = ({
   duration,
   mimeType,
+  onPlaybackStarted,
   playbackRates,
   previewVoiceRecording,
   requester = '',
@@ -77,6 +78,7 @@ export const useAudioPlayer = ({
         id,
         mimeType: mimeType ?? '',
         onError,
+        onPlaybackStarted,
         playbackRates,
         previewVoiceRecording,
         type: type ?? 'audio',
@@ -88,6 +90,7 @@ export const useAudioPlayer = ({
       id,
       mimeType,
       onError,
+      onPlaybackStarted,
       playbackRates,
       previewVoiceRecording,
       type,

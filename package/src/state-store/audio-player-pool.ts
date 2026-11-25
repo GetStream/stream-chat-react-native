@@ -30,6 +30,10 @@ export class AudioPlayerPool {
     const player = this.pool.get(params.id);
     if (player) {
       player.setOnError(params.onError);
+      // Kept when a caller passes none, so any UI driving the player still reports its start.
+      if (params.onPlaybackStarted) {
+        player.setOnPlaybackStarted(params.onPlaybackStarted);
+      }
       return player;
     }
     const newPlayer = new AudioPlayer(params);

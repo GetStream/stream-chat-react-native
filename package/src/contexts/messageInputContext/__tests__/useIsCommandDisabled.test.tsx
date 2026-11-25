@@ -22,6 +22,7 @@ const createMessageComposerState = (): TestMessageComposerStateStore => {
   let value: MessageComposerState = {
     draftId: null,
     editedMessage: null,
+    editedScheduledMessage: null,
     id: 'composer-id',
     pollId: null,
     quotedMessage: null,

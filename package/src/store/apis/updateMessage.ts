@@ -1,5 +1,6 @@
 import type { LocalMessage, MessageResponse } from 'stream-chat';
 
+import { mapMarkGroupsToStorable } from '../mappers/mapMarkGroupsToStorable';
 import { mapMessageToStorable } from '../mappers/mapMessageToStorable';
 import { mapReactionToStorable } from '../mappers/mapReactionToStorable';
 import { mapUserToStorable } from '../mappers/mapUserToStorable';
@@ -64,7 +65,14 @@ export const updateMessage = async ({
     queries.push(createUpsertQuery('reactions', storableReaction));
   });
 
+  // Marks are only ever added, so the message's markers are upserted and nothing is removed.
+  const storableMarks = mapMarkGroupsToStorable(message);
+  storableMarks.forEach((storableMark) =>
+    queries.push(createUpsertQuery('messageMarks', storableMark)),
+  );
+
   SqliteClient.logger?.('info', 'updateMessage', {
+    marks: storableMarks,
     message: storableMessage,
     reactions: storableReactions,
     users: storableUsers,

@@ -304,6 +304,8 @@ export type TranslationCatalog = {
   'message.flagMessageConfirm.label': 'Flag';
   'message.flagMessageConfirm.text': 'Do you want to send a copy of this message to a moderator for further investigation?';
   'message.flagged.text': 'Message has been successfully flagged';
+  'message.mark.played.text': 'Played';
+  'message.mark.playedBy.text': 'Played by {{playedCount}}';
   'message.markUnread.label': 'Mark as Unread';
   'message.markUnreadTooOld.error': 'Error marking message unread. Cannot mark unread messages older than the newest 100 channel messages.';
   'message.markedUnread.text': 'Message marked as unread';
@@ -418,6 +420,10 @@ export type TranslationCatalog = {
   'notifications.pollEndFailed.withReason.error': 'Failed to end the poll due to {{reason}}';
   'notifications.pollEnded.text': 'Poll ended';
   'notifications.recordingPlaybackFailed.error': 'Error reproducing the recording';
+  'notifications.scheduledMessageBlocked.error': 'This message cannot be scheduled';
+  'notifications.scheduledMessageCompositionEnded.error': 'The scheduled message can no longer be edited';
+  'notifications.scheduledMessageCreateFailed.error': 'Failed to schedule the message';
+  'notifications.scheduledMessageUpdateFailed.error': 'Failed to update the scheduled message';
   'notifications.voteLimitReached.error': 'Reached the vote limit. Remove an existing vote first.';
   'poll.addComment.description': 'Add a comment to the poll';
   'poll.addComment.label': 'Add a comment';

@@ -1,6 +1,7 @@
 import { makeMutable, SharedValue } from 'react-native-reanimated';
 
 import { StateStore, Unsubscribe } from '@stream-io/state-store';
+import type { Channel } from 'stream-chat';
 import { Attachment, convertTimestampToDate, LocalMessage, UserResponse } from 'stream-chat';
 
 import { VideoPlayerPool } from './video-player-pool';
@@ -41,6 +42,8 @@ const stripQueryFromUrl = (url: string) => url.split('?')[0];
 
 export type ImageGalleryState = {
   assets: ImageGalleryAsset[];
+  /** The channel the messages belong to, used to mark a played video. */
+  channel?: Channel;
   messages: LocalMessage[];
   selectedAttachmentUrl?: string;
   currentIndex: number;
@@ -49,6 +52,7 @@ export type ImageGalleryState = {
 
 const INITIAL_STATE: ImageGalleryState = {
   assets: [],
+  channel: undefined,
   currentIndex: 0,
   messages: [],
   requesterNode: null,
@@ -165,16 +169,16 @@ export class ImageGalleryStateStore {
 
   set currentIndex(currentIndex: number) {
     const previousIndex = this.state.getLatestValue().currentIndex;
-    this.state.partialNext({ currentIndex });
-    this.currentIndexShared.value = currentIndex;
-    // Moving off the current slide pauses its video. `clear()` bypasses this setter but pauses
-    // everything through `videoPlayerPool.clear()`.
+    // Moving off the current slide pauses its video, before the new slide's autoplay starts.
+    // `clear()` bypasses this setter but pauses everything through `videoPlayerPool.clear()`.
     if (previousIndex !== currentIndex) {
       const activePlayer = this.videoPlayerPool.getActivePlayer();
       if (activePlayer) {
         activePlayer.pause();
       }
     }
+    this.state.partialNext({ currentIndex });
+    this.currentIndexShared.value = currentIndex;
   }
 
   set requesterNode(requesterNode: number | null) {
@@ -192,15 +196,18 @@ export class ImageGalleryStateStore {
   };
 
   openImageGallery = ({
+    channel,
     messages,
     requesterNode = null,
     selectedAttachmentUrl,
   }: {
+    /** The channel the messages belong to. Without it a played video is not marked. */
+    channel?: Channel;
     messages: LocalMessage[];
     requesterNode?: number | null;
     selectedAttachmentUrl?: string;
   }) => {
-    this.state.partialNext({ messages, requesterNode, selectedAttachmentUrl });
+    this.state.partialNext({ channel, messages, requesterNode, selectedAttachmentUrl });
   };
 
   subscribeToMessages = () => {

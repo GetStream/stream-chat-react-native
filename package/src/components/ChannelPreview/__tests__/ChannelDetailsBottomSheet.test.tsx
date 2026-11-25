@@ -125,4 +125,27 @@ describe('ChannelDetailsHeader', () => {
     await renderDirectChat(true, 2);
     expect(await screen.findByText('Online')).toBeTruthy();
   });
+
+  it('shows the active member count for a group when the channel has one', async () => {
+    const {
+      channels: [channel],
+      client,
+    } = await initiateClientWithChannels({
+      channelsData: [
+        {
+          members: ['me', 'a', 'b'].map((id) =>
+            generateMember({ user: id === 'me' ? me : generateUser({ id }) }),
+          ),
+        },
+      ],
+      customUser: me,
+    });
+    channel.state.partialNext({ activeMemberCount: 2 });
+    render(
+      <Chat client={client}>
+        <ChannelDetailsHeader channel={channel} />
+      </Chat>,
+    );
+    expect(await screen.findByText(/^2 members/)).toBeTruthy();
+  });
 });

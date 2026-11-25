@@ -27,7 +27,7 @@ export const Avatar = (props: AvatarProps) => {
     theme: { semantics },
   } = useTheme();
   const { ImageComponent } = useComponentsContext();
-  const defaultAvatarBg = semantics.avatarPaletteBg1;
+  const defaultAvatarBg = semantics.avatarBgDefault;
   const {
     accessibilityLabel: accessibilityLabelOverride,
     backgroundColor = defaultAvatarBg,

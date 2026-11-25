@@ -83,6 +83,7 @@ import {
   hasOnlyEmojis,
   isBlockedMessage,
   isBouncedMessage,
+  getPlayedCount,
   MessageStatusTypes,
 } from '../../utils/utils';
 import type { Thumbnail } from '../Attachment/utils/buildGallery/types';
@@ -925,6 +926,10 @@ const areEqual = (prevProps: MessagePropsWithContext, nextProps: MessagePropsWit
         )
       : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) {
+    return false;
+  }
+
+  if (getPlayedCount(prevMessage) !== getPlayedCount(nextMessage)) {
     return false;
   }
 

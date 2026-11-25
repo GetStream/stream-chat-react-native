@@ -17,6 +17,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import type { ChannelActionItem } from '../../hooks/actions/useChannelActionItems';
 import { useChannelMuteActive } from '../../hooks/useChannelMuteActive';
+import { useDisplayedChannelMemberCount } from '../../hooks/useDisplayedChannelMemberCount';
 import { useIsDirectChat } from '../../hooks/useIsDirectChat';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { primitives } from '../../theme';
@@ -38,7 +39,7 @@ export const ChannelDetailsHeader = ({ channel }: ChannelDetailsHeaderProps) => 
   const { client } = useChatContext();
   const { t } = useTranslationContext();
   const members = useChannelMembersState(channel);
-  const memberCount = useMemo(() => Object.keys(members).length, [members]);
+  const memberCount = useDisplayedChannelMemberCount(channel);
   const onlineCount = useChannelOnlineMemberCount(channel);
   const isDirectChat = useIsDirectChat(channel);
   // The watcher count includes the current user, so a DM reads the other member's presence.

@@ -75,7 +75,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
                     "width": 32,
                   },
                   {
-                    "backgroundColor": "#fcd579",
+                    "backgroundColor": "#c3d9ff",
                   },
                   {
                     "borderColor": "rgba(26, 27, 37, 0.1)",
@@ -141,7 +141,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
                     "width": 32,
                   },
                   {
-                    "backgroundColor": "#8febbd",
+                    "backgroundColor": "#c3d9ff",
                   },
                   {
                     "borderColor": "rgba(26, 27, 37, 0.1)",
