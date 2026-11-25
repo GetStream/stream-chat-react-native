@@ -74,7 +74,7 @@ jobs:
   ios:
     needs: check
     if: needs.check.outputs.required == 'true' && github.event_name == 'workflow_dispatch' && inputs.ios
-    runs-on: macos-15
+    runs-on: { group: scaleway-macos }
     timeout-minutes: 60
     env:
       DETOX_IOS_DEVICE: "iPhone 17 Pro"
