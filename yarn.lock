@@ -6984,7 +6984,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-web: "npm:~0.21.4"
     react-native-worklets: "npm:0.13.0"
-    stream-chat: "npm:^10.0.1"
+    stream-chat: "npm:^10.3.1"
     stream-chat-expo: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -9637,7 +9637,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^10.0.1"
+    stream-chat: "npm:^10.3.1"
     stream-chat-react-native: "workspace:^"
     typescript: "npm:6.0.3"
   languageName: unknown
@@ -18754,7 +18754,7 @@ __metadata:
     react-native-teleport: "npm:^1.2.2"
     react-native-video: "npm:^6.19.3"
     react-native-worklets: "npm:^0.13.0"
-    stream-chat: "npm:^10.0.1"
+    stream-chat: "npm:^10.3.1"
     stream-chat-react-native: "workspace:^"
     stream-chat-react-native-core: "workspace:^"
     typescript: "npm:6.0.3"
@@ -19610,7 +19610,7 @@ __metadata:
     react-test-renderer: "npm:19.3.0"
     rimraf: "npm:^6.0.1"
     simple-markdown: "npm:^0.7.3"
-    stream-chat: "npm:^10.0.1"
+    stream-chat: "npm:^10.3.1"
     typescript: "npm:6.0.3"
     use-sync-external-store: "npm:^1.7.0"
     uuid: "npm:^11.1.0"
@@ -19704,9 +19704,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"stream-chat@npm:^10.0.1":
-  version: 10.0.1
-  resolution: "stream-chat@npm:10.0.1"
+"stream-chat@npm:^10.3.1":
+  version: 10.3.1
+  resolution: "stream-chat@npm:10.3.1"
   dependencies:
     "@stream-io/logger": "npm:^2.1.0"
     "@stream-io/state-store": "npm:^1.2.0"
@@ -19717,7 +19717,7 @@ __metadata:
       built: true
     husky:
       built: true
-  checksum: 10c0/23e1acfee4320a99f63d9b8a9de9cfcf01ad34af9e2efa96daf4d6c0ef6d6752e39e8d9e787c78490bed21aaf6f9405dd9a9d5ca86bcc54568f54c5a35c8bc47
+  checksum: 10c0/eefb80461f3105b69a4f68e76e985f6f8817816b6d6aca8c32e52000135c799a39bc652c140e5017162322154bf6a33d7891e9651d521c8a177df87d8a81bc24
   languageName: node
   linkType: hard
 
