@@ -1,7 +1,13 @@
 import { useMemo } from 'react';
 
 import type { Channel } from 'stream-chat';
-import { useTranslationContext } from 'stream-chat-react-native';
+import {
+  useChannelMemberCount,
+  useChannelMembersState,
+  useChannelOnlineMemberCount,
+  useDisplayedChannelMemberCount,
+  useTranslationContext,
+} from 'stream-chat-react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
@@ -16,14 +22,16 @@ export const useChannelMembersStatus = (channel: Channel) => {
   const { t } = useTranslationContext();
   const { chatClient } = useAppContext();
 
-  const watchersCount = channel.state.watcher_count;
-  const memberCount = channel?.data?.member_count ?? 0;
+  const members = useChannelMembersState(channel);
+  const memberCount = useChannelMemberCount(channel);
+  const displayedMemberCount = useDisplayedChannelMemberCount(channel);
+  const onlineCount = useChannelOnlineMemberCount(channel);
 
   return useMemo(() => {
     const isOneOnOneConversation = memberCount === 2 && channel.id?.indexOf('!members-') === 0;
 
     if (isOneOnOneConversation) {
-      const other = Object.values({ ...channel.state.members }).find(
+      const other = Object.values(members).find(
         (member) => member.user?.id !== chatClient?.user?.id,
       );
 
@@ -31,14 +39,11 @@ export const useChannelMembersStatus = (channel: Channel) => {
     }
 
     return t('channelDetails.presence.membersOnline.label', {
-      count: memberCount,
-      memberCount: memberCount > 9 ? '9+' : `${memberCount}`,
-      onlineCount: watchersCount > 9 ? '9+' : `${watchersCount}`,
+      count: displayedMemberCount,
+      memberCount: displayedMemberCount > 9 ? '9+' : `${displayedMemberCount}`,
+      onlineCount: onlineCount > 9 ? '9+' : `${onlineCount}`,
       defaultValue_one: '{{memberCount}} member, {{onlineCount}} online',
       defaultValue_other: '{{memberCount}} members, {{onlineCount}} online',
     });
-    // `channel.state` is intentionally not a dependency — it is mutated in place, so it never
-    // changes identity. The counts below are what actually move.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.id, chatClient, memberCount, watchersCount, t]);
+  }, [channel.id, chatClient, displayedMemberCount, memberCount, members, onlineCount, t]);
 };

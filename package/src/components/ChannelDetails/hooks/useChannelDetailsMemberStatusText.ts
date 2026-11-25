@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import type { Channel } from 'stream-chat';
 
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { useChannelMemberCount } from '../../../hooks/useChannelMemberCount';
+import { useDisplayedChannelMemberCount } from '../../../hooks/useDisplayedChannelMemberCount';
 import { useIsDirectChat } from '../../../hooks/useIsDirectChat';
 import { useChannelMembersState } from '../../ChannelList/hooks/useChannelMembersState';
 import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelOnlineMemberCount';
@@ -18,7 +18,7 @@ import { useChannelOnlineMemberCount } from '../../ChannelList/hooks/useChannelO
 export const useChannelDetailsMemberStatusText = (channel: Channel): string => {
   const { t } = useTranslationContext();
   const members = useChannelMembersState(channel);
-  const memberCount = useChannelMemberCount(channel);
+  const memberCount = useDisplayedChannelMemberCount(channel);
   const onlineCount = useChannelOnlineMemberCount(channel);
   const isDirect = useIsDirectChat(channel);
 
