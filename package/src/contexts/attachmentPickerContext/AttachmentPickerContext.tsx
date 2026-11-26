@@ -21,13 +21,18 @@ export type AttachmentPickerContextValue = Pick<
   'attachmentSelectionBarHeight' | 'attachmentPickerBottomSheetHeight'
 > & {
   /**
-   * Determines the height of the `AttachmentPicker` and how far the `MessageList` shifts when it
-   * opens. Set via the `bottomInset` prop on `Channel`.
+   * Space at the bottom of the `Channel` covered by something positioned over it, such as an
+   * absolutely positioned tab bar. The `AttachmentPicker` and the composer above it are lifted by
+   * this much. Set via the `bottomInset` prop on `Channel`.
    */
   bottomInset: number;
   bottomSheetRef: React.RefObject<BottomSheet | null>;
   closePicker: () => void;
   openPicker: () => void;
+  /**
+   * The distance from the top of the window to the top of the `Channel`, such as a header or a
+   * native modal above it. Set via the `topInset` prop on `Channel`.
+   */
   topInset: number;
 
   /**

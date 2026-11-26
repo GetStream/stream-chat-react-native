@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Alert } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type { Channel as ChannelType, StreamChat, UserResponse } from 'stream-chat';
@@ -22,6 +22,7 @@ import { Chat } from '../../Chat/Chat';
 import { MessageComposer } from '../MessageComposer';
 
 jest.spyOn(Alert, 'alert');
+let attachmentPickerContextOverrides: Record<string, unknown> = {};
 jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementation(() => {
   const attachmentPickerStore = new AttachmentPickerStore();
   attachmentPickerStore.setSelectedPicker('images');
@@ -33,6 +34,7 @@ jest.spyOn(AttachmentPickerUtils, 'useAttachmentPickerContext').mockImplementati
     setBottomInset: jest.fn(),
     setTopInset: jest.fn(),
     attachmentPickerStore,
+    ...attachmentPickerContextOverrides,
   } as unknown as ReturnType<typeof AttachmentPickerUtils.useAttachmentPickerContext>;
 });
 
@@ -69,9 +71,23 @@ describe('MessageComposer', () => {
   });
 
   afterEach(() => {
+    attachmentPickerContextOverrides = {};
     act(() => {
       channel.messageComposer.clear();
     });
+  });
+
+  // The picker is lifted by the bottom inset, so the composer rises above both.
+  it('rises above the picker and the bottom inset', () => {
+    attachmentPickerContextOverrides = { attachmentPickerBottomSheetHeight: 300, bottomInset: 80 };
+    renderComponent({ channelProps: { channel }, client, props: {} });
+
+    const paddings = screen.UNSAFE_root.findAll(
+      (node) => typeof node.type === 'string' && node.props.style !== undefined,
+    ).map((node) => StyleSheet.flatten(node.props.style)?.paddingBottom);
+
+    expect(paddings).toContain(300 + 80 + 16);
+    expect(paddings).not.toContain(300 - 80 + 16);
   });
 
   // Mention candidates are read from the channel when `Input` asks for them. A member added after mount

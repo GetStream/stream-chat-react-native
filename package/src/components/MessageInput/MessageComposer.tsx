@@ -343,7 +343,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
           style={{
             paddingBottom:
               selectedPicker && !isKeyboardVisible
-                ? attachmentPickerBottomSheetHeight - bottomInset
+                ? attachmentPickerBottomSheetHeight + bottomInset
                 : 0,
           }}
         />
@@ -356,7 +356,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                 {
                   bottom:
                     selectedPicker && !isKeyboardVisible
-                      ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
+                      ? attachmentPickerBottomSheetHeight + bottomInset + BOTTOM_OFFSET
                       : BOTTOM_OFFSET,
                 },
                 floatingWrapper,
@@ -375,7 +375,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
               messageInputHeightStore.setHeight(
                 newHeight -
                   (selectedPicker && !isKeyboardVisible
-                    ? attachmentPickerBottomSheetHeight - bottomInset
+                    ? attachmentPickerBottomSheetHeight + bottomInset
                     : 0),
               );
             }}
@@ -390,7 +390,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                       borderTopColor: semantics.borderCoreSubtle,
                       paddingBottom:
                         selectedPicker && !isKeyboardVisible
-                          ? attachmentPickerBottomSheetHeight - bottomInset + BOTTOM_OFFSET
+                          ? attachmentPickerBottomSheetHeight + bottomInset + BOTTOM_OFFSET
                           : BOTTOM_OFFSET,
                     },
                     wrapper,
