@@ -1162,6 +1162,86 @@ export type Theme = {
     };
   };
   screenPadding: number;
+  scheduledMessages: {
+    actionsSheet: {
+      container: ViewStyle;
+    };
+    banner: {
+      banner: ViewStyle;
+      container: ViewStyle;
+      label: TextStyle;
+      link: TextStyle;
+    };
+    calendar: {
+      container: ViewStyle;
+      day: ViewStyle;
+      dayText: TextStyle;
+      header: ViewStyle;
+      monthTitle: TextStyle;
+      selectedDay: ViewStyle;
+      weekday: TextStyle;
+    };
+    list: {
+      container: ViewStyle;
+      list: ViewStyle;
+      listContent: ViewStyle;
+    };
+    listItem: {
+      channelName: TextStyle;
+      container: ViewStyle;
+      content: ViewStyle;
+      preview: TextStyle;
+      row: ViewStyle;
+      status: ViewStyle;
+      statusText: TextStyle;
+      time: TextStyle;
+    };
+    notice: {
+      container: ViewStyle;
+      description: TextStyle;
+      title: TextStyle;
+    };
+    presetSheet: {
+      container: ViewStyle;
+      option: ViewStyle;
+      optionLabel: TextStyle;
+      options: ViewStyle;
+    };
+    sheetHeader: {
+      container: ViewStyle;
+      title: TextStyle;
+    };
+    sheetPreview: {
+      bar: ViewStyle;
+      container: ViewStyle;
+      text: TextStyle;
+      thumbnail: ImageStyle;
+      title: TextStyle;
+    };
+    timePicker: {
+      columns: ViewStyle;
+      container: ViewStyle;
+      item: ViewStyle;
+      itemText: TextStyle;
+      label: TextStyle;
+      pill: ViewStyle;
+      pillText: TextStyle;
+      row: ViewStyle;
+    };
+    timeSheet: {
+      container: ViewStyle;
+      content: ViewStyle;
+    };
+  };
+  scheduledMessageListSkeleton: {
+    animationTime: number;
+    avatar: ViewStyle;
+    container: ViewStyle;
+    content: ViewStyle;
+    subtitle: ViewStyle;
+    textContainer: ViewStyle;
+    title: ViewStyle;
+  };
   selectionCircle: {
     circle: ViewStyle;
     circleSelected: ViewStyle;
@@ -2262,6 +2342,86 @@ export const defaultTheme: Theme = {
     },
   },
   screenPadding: 16,
+  scheduledMessages: {
+    actionsSheet: {
+      container: {},
+    },
+    banner: {
+      banner: {},
+      container: {},
+      label: {},
+      link: {},
+    },
+    calendar: {
+      container: {},
+      day: {},
+      dayText: {},
+      header: {},
+      monthTitle: {},
+      selectedDay: {},
+      weekday: {},
+    },
+    list: {
+      container: {},
+      list: {},
+      listContent: {},
+    },
+    listItem: {
+      channelName: {},
+      container: {},
+      content: {},
+      preview: {},
+      row: {},
+      status: {},
+      statusText: {},
+      time: {},
+    },
+    notice: {
+      container: {},
+      description: {},
+      title: {},
+    },
+    presetSheet: {
+      container: {},
+      option: {},
+      optionLabel: {},
+      options: {},
+    },
+    sheetHeader: {
+      container: {},
+      title: {},
+    },
+    sheetPreview: {
+      bar: {},
+      container: {},
+      text: {},
+      thumbnail: {},
+      title: {},
+    },
+    timePicker: {
+      columns: {},
+      container: {},
+      item: {},
+      itemText: {},
+      label: {},
+      pill: {},
+      pillText: {},
+      row: {},
+    },
+    timeSheet: {
+      container: {},
+      content: {},
+    },
+  },
+  scheduledMessageListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    avatar: {},
+    container: {},
+    content: {},
+    subtitle: {},
+    textContainer: {},
+    title: {},
+  },
   selectionCircle: {
     circle: {},
     circleSelected: {},

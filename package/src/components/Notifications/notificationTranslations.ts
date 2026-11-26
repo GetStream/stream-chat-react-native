@@ -1,13 +1,25 @@
-import { CORE_NOTIFICATION_TYPE } from 'stream-chat';
+import {
+  CORE_NOTIFICATION_TYPE,
+  MessageComposer,
+  ScheduledMessageBlockReason,
+  ScheduledMessageCompositionEndReason,
+} from 'stream-chat';
 import type { CoreNotificationType, Notification } from 'stream-chat';
 
 import type { StreamTFunction } from '../../i18n/types';
 import { asDynamicKey } from '../../i18n/utils';
+import { getScheduleErrorText } from '../ScheduledMessages/utils/scheduleErrors';
 
 type NotificationTranslator = (options: {
   notification: Notification;
   t: StreamTFunction;
 }) => string;
+
+/** The channel of the composer a notification came from, when a composer emitted it. */
+const getNotificationComposerChannel = (notification: Notification) => {
+  const composer = notification.origin.context?.composer;
+  return composer instanceof MessageComposer ? composer.channel : undefined;
+};
 
 const normalizeReason = (notification?: Notification) => {
   const reason = notification?.metadata?.reason;
@@ -31,6 +43,48 @@ const withReasonFallback = ({
   if (!reason) return t(asDynamicKey(fallbackTranslationKey));
 
   return t(asDynamicKey(reasonTranslationKey), { reason });
+};
+
+const translateScheduledMessageBlocked: NotificationTranslator = ({ notification, t }) => {
+  switch (notification.metadata?.reason) {
+    case ScheduledMessageBlockReason.Command:
+      return t(
+        'notifications.scheduledMessageBlocked.command.error',
+        "Commands can't be scheduled",
+      );
+    case ScheduledMessageBlockReason.SharedLocation:
+      return t(
+        'notifications.scheduledMessageBlocked.sharedLocation.error',
+        "Locations can't be scheduled",
+      );
+    default:
+      return t('notifications.scheduledMessageBlocked.error', 'This message cannot be scheduled');
+  }
+};
+
+const translateScheduledMessageCompositionEnded: NotificationTranslator = ({ notification, t }) => {
+  switch (notification.metadata?.reason) {
+    case ScheduledMessageCompositionEndReason.Sent:
+      return t(
+        'notifications.scheduledMessageCompositionEnded.sent.error',
+        'This message was already sent',
+      );
+    case ScheduledMessageCompositionEndReason.Deleted:
+      return t(
+        'notifications.scheduledMessageCompositionEnded.deleted.error',
+        'This scheduled message was deleted',
+      );
+    case ScheduledMessageCompositionEndReason.Failed:
+      return t(
+        'notifications.scheduledMessageCompositionEnded.failed.error',
+        'This scheduled message failed to send',
+      );
+    default:
+      return t(
+        'notifications.scheduledMessageCompositionEnded.error',
+        'The scheduled message can no longer be edited',
+      );
+  }
 };
 
 const translateAttachmentUploadBlocked = ({
@@ -163,17 +217,23 @@ const coreNotificationTranslators: Record<CoreNotificationType, NotificationTran
       'Reached the vote limit. Remove an existing vote first.',
     ),
   [CORE_NOTIFICATION_TYPE.pollCreateFailed]: translatePollCreateFailed,
-  [CORE_NOTIFICATION_TYPE.scheduledMessageBlocked]: ({ t }) =>
-    t('notifications.scheduledMessageBlocked.error', 'This message cannot be scheduled'),
-  [CORE_NOTIFICATION_TYPE.scheduledMessageCompositionEnded]: ({ t }) =>
-    t(
-      'notifications.scheduledMessageCompositionEnded.error',
-      'The scheduled message can no longer be edited',
+  [CORE_NOTIFICATION_TYPE.scheduledMessageBlocked]: translateScheduledMessageBlocked,
+  [CORE_NOTIFICATION_TYPE.scheduledMessageCompositionEnded]:
+    translateScheduledMessageCompositionEnded,
+  [CORE_NOTIFICATION_TYPE.scheduledMessageCreateFailed]: ({ notification, t }) =>
+    getScheduleErrorText(
+      t,
+      notification.originalError,
+      'schedule',
+      getNotificationComposerChannel(notification),
     ),
-  [CORE_NOTIFICATION_TYPE.scheduledMessageCreateFailed]: ({ t }) =>
-    t('notifications.scheduledMessageCreateFailed.error', 'Failed to schedule the message'),
-  [CORE_NOTIFICATION_TYPE.scheduledMessageUpdateFailed]: ({ t }) =>
-    t('notifications.scheduledMessageUpdateFailed.error', 'Failed to update the scheduled message'),
+  [CORE_NOTIFICATION_TYPE.scheduledMessageUpdateFailed]: ({ notification, t }) =>
+    getScheduleErrorText(
+      t,
+      notification.originalError,
+      'update',
+      getNotificationComposerChannel(notification),
+    ),
 };
 
 /**

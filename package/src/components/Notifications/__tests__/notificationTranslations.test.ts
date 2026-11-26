@@ -1,4 +1,4 @@
-import { CORE_NOTIFICATION_TYPE } from 'stream-chat';
+import { CORE_NOTIFICATION_TYPE, StreamAPIError } from 'stream-chat';
 import type { CommandSuggestionDisabledReason, Notification } from 'stream-chat';
 
 import type { StreamTFunction } from '../../../i18n/types';
@@ -55,5 +55,45 @@ describe('getNotificationDisplayMessage', () => {
     const notification = buildNotification({ type: 'someone:elses:identifier' });
 
     expect(getNotificationDisplayMessage({ notification, t })).toBe('developer-facing fallback');
+  });
+});
+
+describe('scheduled message notifications', () => {
+  it.each([
+    ['sent', 'This message was already sent'],
+    ['deleted', 'This scheduled message was deleted'],
+    ['failed', 'This scheduled message failed to send'],
+  ])('renders the copy for an edit that ended because the message was %s', (reason, expected) => {
+    const notification = buildNotification({
+      metadata: { reason },
+      type: CORE_NOTIFICATION_TYPE.scheduledMessageCompositionEnded,
+    });
+
+    expect(getNotificationDisplayMessage({ notification, t })).toBe(expected);
+  });
+
+  it('renders the command copy for a blocked command', () => {
+    const notification = buildNotification({
+      metadata: { reason: 'command' },
+      type: CORE_NOTIFICATION_TYPE.scheduledMessageBlocked,
+    });
+
+    expect(getNotificationDisplayMessage({ notification, t })).toBe("Commands can't be scheduled");
+  });
+
+  it('maps the server error of a failed schedule to its copy', () => {
+    const originalError = new StreamAPIError('limit', {
+      code: 118,
+      response: undefined,
+      status: 400,
+    });
+    const notification = buildNotification({
+      originalError,
+      type: CORE_NOTIFICATION_TYPE.scheduledMessageCreateFailed,
+    });
+
+    expect(getNotificationDisplayMessage({ notification, t })).toBe(
+      "You've reached your limit of scheduled messages.",
+    );
   });
 });

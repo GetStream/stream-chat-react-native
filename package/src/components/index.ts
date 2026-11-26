@@ -201,6 +201,8 @@ export * from './UIComponents/EmptySearchResult';
 export * from './UIComponents/SearchInput';
 export * from './UIComponents/SelectionCircle';
 
+export * from './ScheduledMessages';
+
 export * from './Thread/Thread';
 export * from './Thread/components/ThreadFooterComponent';
 export * from './ThreadList/ThreadList';

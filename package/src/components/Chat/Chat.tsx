@@ -209,12 +209,14 @@ const ChatWithContext = (props: PropsWithChildren<ChatProps>) => {
     client.polls.registerSubscriptions();
     client.reminders.registerSubscriptions();
     client.reminders.initTimers();
+    client.scheduledMessagePaginators.registerSubscriptions();
 
     return () => {
       client.threads.unregisterSubscriptions();
       client.polls.unregisterSubscriptions();
       client.reminders.unregisterSubscriptions();
       client.reminders.clearTimers();
+      client.scheduledMessagePaginators.unregisterSubscriptions();
     };
   }, [client]);
 
