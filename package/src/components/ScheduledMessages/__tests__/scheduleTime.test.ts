@@ -1,6 +1,7 @@
 import type { Channel } from 'stream-chat';
 import { StreamAPIError } from 'stream-chat';
 
+import { getCalendarWeeks } from '../ScheduleCalendar';
 import { getScheduleErrorText } from '../utils/scheduleErrors';
 import {
   formatTimeZoneOffset,
@@ -115,6 +116,15 @@ describe('formatTimeZoneOffset', () => {
     expect(formatTimeZoneOffset(at(-330))).toBe('GMT+5:30');
     expect(formatTimeZoneOffset(at(300))).toBe('GMT-5');
     expect(formatTimeZoneOffset(at(0))).toBe('GMT');
+  });
+});
+
+describe('getCalendarWeeks', () => {
+  it('lays out October 2026 from Sunday, starting on a Thursday', () => {
+    const weeks = getCalendarWeeks(2026, 9);
+
+    expect(weeks[0]).toEqual([undefined, undefined, undefined, undefined, 1, 2, 3]);
+    expect(weeks[weeks.length - 1]).toEqual([25, 26, 27, 28, 29, 30, 31]);
   });
 });
 

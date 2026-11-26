@@ -218,6 +218,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
     MessageComposerTrailingView,
     MessageInputHeaderView,
     MessageInputTrailingView,
+    ScheduleMessageSheet,
   } = useComponentsContext();
 
   const styles = useStyles();
@@ -469,6 +470,7 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
           />
         </PollModal>
       ) : null}
+      <ScheduleMessageSheet />
     </MicPositionProvider>
   );
 };

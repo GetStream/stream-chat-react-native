@@ -171,6 +171,8 @@ import { PollOptionFullResultsContent } from '../../components/Poll/components/P
 import { PollResultsContent } from '../../components/Poll/components/PollResults/PollResults';
 import { PollHeader } from '../../components/Poll/Poll';
 import { Reply } from '../../components/Reply/Reply';
+import { ScheduleMessageSheet } from '../../components/ScheduledMessages/ScheduleMessageSheet';
+import { ScheduleTimeSheet } from '../../components/ScheduledMessages/ScheduleTimeSheet';
 import {
   DefaultThreadListComponent as ThreadListComponent,
   DefaultThreadListEmptyPlaceholder,
@@ -484,6 +486,8 @@ const components = {
   ReactionListItemWrapper,
   ReactionListTop,
   Reply,
+  ScheduleMessageSheet,
+  ScheduleTimeSheet,
   ScrollToBottomButton,
   SendButton,
   SendMessageDisallowedIndicator,

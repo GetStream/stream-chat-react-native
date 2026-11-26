@@ -39,6 +39,9 @@ export const useCreateMessageInputContext = ({
   deleteVoiceRecording,
   uploadVoiceRecording,
   stopVoiceRecording,
+  closeScheduleSheet,
+  openScheduleSheet,
+  scheduleSheetStore,
 }: MessageInputContextValue) => {
   const messageInputContext: MessageInputContextValue = useMemo(
     () => ({
@@ -78,6 +81,9 @@ export const useCreateMessageInputContext = ({
       deleteVoiceRecording,
       uploadVoiceRecording,
       stopVoiceRecording,
+      closeScheduleSheet,
+      openScheduleSheet,
+      scheduleSheetStore,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [hasCommands, showPollCreationDialog],

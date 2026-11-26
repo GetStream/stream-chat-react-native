@@ -1211,13 +1211,6 @@ export type Theme = {
       container: ViewStyle;
       title: TextStyle;
     };
-    sheetPreview: {
-      bar: ViewStyle;
-      container: ViewStyle;
-      text: TextStyle;
-      thumbnail: ImageStyle;
-      title: TextStyle;
-    };
     timePicker: {
       columns: ViewStyle;
       container: ViewStyle;
@@ -2389,13 +2382,6 @@ export const defaultTheme: Theme = {
     },
     sheetHeader: {
       container: {},
-      title: {},
-    },
-    sheetPreview: {
-      bar: {},
-      container: {},
-      text: {},
-      thumbnail: {},
       title: {},
     },
     timePicker: {

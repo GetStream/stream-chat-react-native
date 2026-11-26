@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { Alert, Linking, TextInputProps } from 'react-native';
 
+import { StateStore } from '@stream-io/state-store';
 import { lookup as lookupMimeType } from 'mime-types';
 
 import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
@@ -33,6 +34,8 @@ import { DEFAULT_BASE_CONTEXT_VALUE } from '../utils/defaultBaseContextValue';
 
 import { isTestEnvironment } from '../utils/isTestEnvironment';
 
+export type ScheduleSheetState = { isOpen: boolean };
+
 export type LocalMessageInputContext = {
   closeAttachmentPicker: () => void;
   inputBoxRef: React.RefObject<InputBoxRef | null>;
@@ -53,6 +56,10 @@ export type LocalMessageInputContext = {
   deleteVoiceRecording: () => Promise<void>;
   uploadVoiceRecording: (sendOnComplete: boolean) => Promise<void>;
   stopVoiceRecording: () => Promise<void>;
+  closeScheduleSheet: () => void;
+  /** Opens the sheet that schedules the composer's message, as a long press on send does. */
+  openScheduleSheet: () => void;
+  scheduleSheetStore: StateStore<ScheduleSheetState>;
 };
 
 export type InputBoxRef = TextInputRef & {
@@ -174,6 +181,18 @@ export const MessageInputProvider = ({
 
   const defaultOpenPollCreationDialog = useCallback(() => setShowPollCreationDialog(true), []);
   const closePollCreationDialog = useCallback(() => setShowPollCreationDialog(false), []);
+
+  const [scheduleSheetStore] = useState(
+    () => new StateStore<ScheduleSheetState>({ isOpen: false }),
+  );
+  const openScheduleSheet = useCallback(
+    () => scheduleSheetStore.partialNext({ isOpen: true }),
+    [scheduleSheetStore],
+  );
+  const closeScheduleSheet = useCallback(
+    () => scheduleSheetStore.partialNext({ isOpen: false }),
+    [scheduleSheetStore],
+  );
 
   const { openPollCreationDialog: openPollCreationDialogFromContext } = value;
 
@@ -398,6 +417,9 @@ export const MessageInputProvider = ({
     openPollCreationDialog,
     sendMessage,
     showPollCreationDialog,
+    closeScheduleSheet,
+    openScheduleSheet,
+    scheduleSheetStore,
     audioRecorderManager,
     startVoiceRecording,
     deleteVoiceRecording,

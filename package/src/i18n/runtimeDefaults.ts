@@ -143,6 +143,7 @@ export const runtimeDefaults = {
   'poll.modalHeader.close.accessibilityLabel': 'Close poll',
   'reply.removeEdit.accessibilityLabel': 'Remove edit',
   'reply.removeReply.accessibilityLabel': 'Remove reply',
+  'scheduledMessages.confirm.accessibilityLabel': 'Schedule',
   'uiComponents.bottomSheetModal.opened.accessibilityLabel':
     'Bottom sheet opened. Activate the close action or use the escape gesture to dismiss.',
 };

@@ -1,0 +1,112 @@
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import type { IconProps } from '../../icons';
+import { primitives } from '../../theme';
+import { Button } from '../ui';
+
+export type ScheduleSheetHeaderProps = {
+  onClose: () => void;
+  title: string;
+  /** Renders the confirm button when set. */
+  onConfirm?: () => void;
+  confirmDisabled?: boolean;
+};
+
+/** The header of the schedule sheets: close on the start, the title, and an optional confirm. */
+export const ScheduleSheetHeader = ({
+  confirmDisabled = false,
+  onClose,
+  onConfirm,
+  title,
+}: ScheduleSheetHeaderProps) => {
+  const { icons } = useComponentsContext();
+  const {
+    theme: {
+      scheduledMessages: { sheetHeader },
+      semantics,
+    },
+  } = useTheme();
+  const styles = useStyles();
+
+  const renderConfirmIcon = useCallback(
+    (props: IconProps) => (
+      <icons.Check
+        {...props}
+        height={18}
+        stroke={confirmDisabled ? semantics.textDisabled : semantics.textOnAccent}
+        width={18}
+      />
+    ),
+    [confirmDisabled, icons, semantics.textDisabled, semantics.textOnAccent],
+  );
+
+  return (
+    <View style={[styles.container, sheetHeader.container]}>
+      <View style={styles.side}>
+        <Button
+          accessibilityLabelKey='common.close.accessibilityLabel'
+          iconOnly
+          LeadingIcon={icons.Cross}
+          onPress={onClose}
+          size='md'
+          testID='schedule-sheet-close'
+          type='outline'
+          variant='secondary'
+        />
+      </View>
+      <Text
+        accessibilityRole='header'
+        numberOfLines={1}
+        style={[styles.title, { color: semantics.textPrimary }, sheetHeader.title]}
+      >
+        {title}
+      </Text>
+      <View style={[styles.side, styles.sideEnd]}>
+        {onConfirm ? (
+          <Button
+            accessibilityLabelKey='scheduledMessages.confirm.accessibilityLabel'
+            disabled={confirmDisabled}
+            iconOnly
+            LeadingIcon={renderConfirmIcon}
+            onPress={onConfirm}
+            size='md'
+            testID='schedule-sheet-confirm'
+            type='solid'
+            variant='primary'
+          />
+        ) : null}
+      </View>
+    </View>
+  );
+};
+
+const useStyles = () =>
+  useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: primitives.spacingSm,
+          paddingBottom: primitives.spacingSm,
+          paddingHorizontal: primitives.spacingMd,
+        },
+        side: {
+          minWidth: 40,
+        },
+        sideEnd: {
+          alignItems: 'flex-end',
+        },
+        title: {
+          flex: 1,
+          fontSize: primitives.typographyFontSizeMd,
+          fontWeight: primitives.typographyFontWeightSemiBold,
+          lineHeight: primitives.typographyLineHeightNormal,
+          textAlign: 'center',
+        },
+      }),
+    [],
+  );

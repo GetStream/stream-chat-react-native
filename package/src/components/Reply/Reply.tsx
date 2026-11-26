@@ -103,6 +103,8 @@ export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageP
     isParentMessageMine?: boolean;
     onDismiss?: () => void;
     mode: 'reply' | 'edit';
+    /** Replaces the title the mode gives, e.g. `Message to Maya Ross`. */
+    title?: string;
     // Style overrides passed by `MessageContent`.
     styles?: {
       container?: ViewStyle;
@@ -125,6 +127,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
     onDismiss,
     quotedMessage,
     styles: stylesProp,
+    title: titleProp,
   } = props;
   const {
     theme: {
@@ -142,14 +145,15 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
 
   const title = useMemo(
     () =>
-      mode === 'edit'
+      titleProp ??
+      (mode === 'edit'
         ? t('message.editMessage.label', 'Edit Message')
         : isMyMessage
           ? t('common.you.label', 'You')
           : quotedMessage?.user?.name
             ? t('reply.replyTo.title', 'Reply to {{name}}', { name: quotedMessage?.user?.name })
-            : t('message.reply.label', 'Reply'),
-    [mode, isMyMessage, quotedMessage?.user?.name, t],
+            : t('message.reply.label', 'Reply')),
+    [mode, isMyMessage, quotedMessage?.user?.name, t, titleProp],
   );
 
   if (!quotedMessage) {
@@ -202,6 +206,7 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
     mode: prevMode,
     quotedMessage: prevQuotedMessage,
     onDismiss: prevOnDismiss,
+    title: prevTitle,
   } = prevProps;
   const {
     styles: nextStyles,
@@ -210,6 +215,7 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
     mode: nextMode,
     quotedMessage: nextQuotedMessage,
     onDismiss: nextOnDismiss,
+    title: nextTitle,
   } = nextProps;
 
   if (prevStyles !== nextStyles) {
@@ -230,6 +236,10 @@ const areEqual = (prevProps: ReplyPropsWithContext, nextProps: ReplyPropsWithCon
 
   const modeEqual = prevMode === nextMode;
   if (!modeEqual) {
+    return false;
+  }
+
+  if (prevTitle !== nextTitle) {
     return false;
   }
 
