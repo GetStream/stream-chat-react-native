@@ -309,6 +309,12 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
     [channel, messageId, navigation, setThread],
   );
 
+  const onScheduledMessagesBannerPress = useCallback(
+    ({ channel: bannerChannel }: { channel: StreamChatChannel }) =>
+      navigation.navigate('ScheduledMessagesScreen', { channel: bannerChannel }),
+    [navigation],
+  );
+
   const handleMessageInfo = useCallback((message: LocalMessage) => {
     setSelectedMessage(message);
     setModalVisible(true);
@@ -387,6 +393,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation, route 
         keyboardVerticalOffset={0}
         messageActions={messageActions}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+        onScheduledMessagesBannerPress={onScheduledMessagesBannerPress}
       >
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
           <ChannelHeader channel={channel} />

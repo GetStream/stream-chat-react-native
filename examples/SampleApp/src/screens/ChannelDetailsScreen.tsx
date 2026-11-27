@@ -42,9 +42,11 @@ const navigationItems: {
   [key in ChannelDetailsNavigationSectionType]:
     | 'ChannelPinnedMessagesScreen'
     | 'ChannelImagesScreen'
-    | 'ChannelFilesScreen';
+    | 'ChannelFilesScreen'
+    | 'ScheduledMessagesScreen';
 } = {
   'pinned-messages': 'ChannelPinnedMessagesScreen',
+  'scheduled-messages': 'ScheduledMessagesScreen',
   'photos-and-videos': 'ChannelImagesScreen',
   files: 'ChannelFilesScreen',
 };

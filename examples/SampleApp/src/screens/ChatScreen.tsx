@@ -10,6 +10,7 @@ import { ChannelListScreen } from './ChannelListScreen';
 import { DraftsScreen } from './DraftScreen';
 import { MentionsScreen } from './MentionsScreen';
 import { RemindersScreen } from './RemindersScreen';
+import { ScheduledScreen } from './ScheduledScreen';
 import { ThreadListScreen } from './ThreadListScreen';
 
 import { BottomTabs } from '../components/BottomTabs';
@@ -37,6 +38,11 @@ export const ChatScreen: React.FC<Props> = () => (
     <Tab.Screen
       component={ThreadListScreen}
       name='ThreadsScreen'
+      options={{ headerShown: false }}
+    />
+    <Tab.Screen
+      component={ScheduledScreen}
+      name='ScheduledScreen'
       options={{ headerShown: false }}
     />
     <Tab.Screen component={DraftsScreen} name='DraftsScreen' options={{ headerShown: false }} />

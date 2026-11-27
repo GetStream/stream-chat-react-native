@@ -30,6 +30,10 @@ export type StackNavigatorParamList = {
   NewDirectMessagingScreen: { initialUser?: UserResponse } | undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: undefined;
+  ScheduledMessagesScreen: {
+    channel: Channel;
+    thread?: Thread;
+  };
   ThreadScreen: {
     channel: Channel;
     thread: Thread;
@@ -47,6 +51,7 @@ export type BottomTabNavigatorParamList = {
   DraftsScreen: undefined;
   RemindersScreen: undefined;
   MentionsScreen: undefined;
+  ScheduledScreen: undefined;
   ThreadsScreen: undefined;
 };
 

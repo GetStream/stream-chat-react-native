@@ -1,5 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, {
+  LayoutAnimationConfig,
+  SlideInDown,
+  SlideOutDown,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -13,8 +18,11 @@ import { DraftsTab } from '../icons/DraftsTab';
 import { MentionsTab } from '../icons/MentionsTab';
 
 import { RemindersTab } from '../icons/ReminderTab';
+import { ScheduledTab } from '../icons/ScheduledTab';
 import { ThreadsTab } from '../icons/ThreadsTab';
 import { useLegacyColors } from '../theme/useLegacyColors';
+
+const TAB_BAR_SLIDE_DURATION_MS = 200;
 
 const styles = StyleSheet.create({
   notification: {
@@ -72,6 +80,12 @@ const getTab = (key: string) => {
         iconActive: <RemindersTab active />,
         title: 'Reminders',
       };
+    case 'ScheduledScreen':
+      return {
+        icon: <ScheduledTab />,
+        iconActive: <ScheduledTab active />,
+        title: 'Scheduled',
+      };
     // Add more cases for other tabs as needed
     default:
       return null;
@@ -127,28 +141,39 @@ const Tab = (props: TabProps) => {
 };
 
 export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
-  const { navigation, state } = props;
+  const { descriptors, navigation, state } = props;
   const {
     theme: { semantics },
   } = useTheme();
   const { bottom, left, right } = useSafeAreaInsets();
+  const { tabBarStyle } = descriptors[state.routes[state.index].key].options;
+
+  // A screen hides the tab bar with `tabBarStyle: { display: 'none' }`, e.g. while editing. It
+  // slides down out of view, and back up when shown again, but not when the app opens.
+  const hidden = StyleSheet.flatten(tabBarStyle)?.display === 'none';
 
   return (
-    <View
-      style={[
-        styles.tabListContainer,
-        {
-          backgroundColor: semantics.backgroundCoreElevation1,
-          borderTopColor: semantics.borderCoreSubtle,
-          paddingBottom: bottom,
-          paddingLeft: left,
-          paddingRight: right,
-        },
-      ]}
-    >
-      {state.routes.map((route, index) => (
-        <Tab key={index} route={route} index={index} navigation={navigation} state={state} />
-      ))}
-    </View>
+    <LayoutAnimationConfig skipEntering>
+      {hidden ? null : (
+        <Animated.View
+          entering={SlideInDown.duration(TAB_BAR_SLIDE_DURATION_MS)}
+          exiting={SlideOutDown.duration(TAB_BAR_SLIDE_DURATION_MS)}
+          style={[
+            styles.tabListContainer,
+            {
+              backgroundColor: semantics.backgroundCoreElevation1,
+              borderTopColor: semantics.borderCoreSubtle,
+              paddingBottom: bottom,
+              paddingLeft: left,
+              paddingRight: right,
+            },
+          ]}
+        >
+          {state.routes.map((route, index) => (
+            <Tab key={index} route={route} index={index} navigation={navigation} state={state} />
+          ))}
+        </Animated.View>
+      )}
+    </LayoutAnimationConfig>
   );
 };

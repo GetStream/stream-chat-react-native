@@ -54,6 +54,7 @@ import { MapScreen } from './src/screens/MapScreen';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
 import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
+import { ScheduledMessagesScreen } from './src/screens/ScheduledMessagesScreen';
 import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 
@@ -460,6 +461,11 @@ const HomeScreen = () => {
       <Stack.Screen
         component={ChannelPinnedMessagesScreen}
         name='ChannelPinnedMessagesScreen'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={ScheduledMessagesScreen}
+        name='ScheduledMessagesScreen'
         options={{ headerShown: false }}
       />
       <Stack.Screen

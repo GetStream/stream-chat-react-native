@@ -165,6 +165,11 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
     [channel, navigation],
   );
 
+  const onScheduledMessagesBannerPress = useCallback(
+    () => navigation.navigate('ScheduledMessagesScreen', { channel, thread }),
+    [channel, navigation, thread],
+  );
+
   return (
     <SafeAreaView
       collapsable={false}
@@ -181,6 +186,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ navigation, route })
         onPressMessage={onPressMessage}
         thread={thread}
         onAlsoSentToChannelHeaderPress={onAlsoSentToChannelHeaderPress}
+        onScheduledMessagesBannerPress={onScheduledMessagesBannerPress}
         onThreadDismount={onThreadDismount}
       >
         <PortalWhileClosingView portalHostName='overlay-header' portalName='channel-header'>
