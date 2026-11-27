@@ -22,6 +22,8 @@ const HOURS = Array.from({ length: 24 }, (_, hour) => hour);
 const MINUTES = Array.from({ length: 60 }, (_, minute) => minute);
 const COLUMN_HEIGHT = 168;
 const ITEM_HEIGHT = 36;
+// The pill follows the iOS date picker's time button, whose size has no Stream token.
+const PILL_HEIGHT = 34;
 
 const twoDigits = (value: number) => String(value).padStart(2, '0');
 
@@ -226,8 +228,9 @@ const styles = StyleSheet.create({
   },
   pill: {
     borderRadius: primitives.radiusMax,
+    height: PILL_HEIGHT,
+    justifyContent: 'center',
     paddingHorizontal: primitives.spacingSm,
-    paddingVertical: primitives.spacingXs,
   },
   pillText: {
     fontSize: primitives.typographyFontSizeMd,
@@ -237,7 +240,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    minHeight: 48,
+    minHeight: 52,
   },
   selectedItemText: {
     fontWeight: primitives.typographyFontWeightSemiBold,

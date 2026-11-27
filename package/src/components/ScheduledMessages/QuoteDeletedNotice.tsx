@@ -5,7 +5,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { primitives } from '../../theme';
+import { components, primitives } from '../../theme';
 
 /** Shown in the composer while editing a scheduled message whose quoted message was deleted. */
 export const QuoteDeletedNotice = () => {
@@ -24,13 +24,17 @@ export const QuoteDeletedNotice = () => {
       accessibilityLiveRegion='polite'
       style={[
         styles.container,
-        { backgroundColor: semantics.backgroundUtilityErrorSubtle },
+        { backgroundColor: semantics.backgroundCoreSurfaceDefault },
         noticeTheme.container,
       ]}
       testID='scheduled-message-quote-deleted'
     >
-      <icons.ExclamationCircle height={16} stroke={semantics.accentError} width={16} />
-      <Text style={[styles.title, { color: semantics.textPrimary }, noticeTheme.title]}>
+      <icons.ExclamationCircleOutline
+        height={components.iconSizeMd}
+        stroke={semantics.textTertiary}
+        width={components.iconSizeMd}
+      />
+      <Text style={[styles.title, { color: semantics.chatTextSystem }, noticeTheme.title]}>
         {t('scheduledMessages.quoteDeleted.title', 'The quoted message was deleted')}
       </Text>
       <Pressable
@@ -51,18 +55,20 @@ const styles = StyleSheet.create({
   action: {
     fontSize: primitives.typographyFontSizeXs,
     fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightTight,
   },
   container: {
     alignItems: 'center',
     borderRadius: primitives.radiusLg,
     flexDirection: 'row',
     gap: primitives.spacingXs,
-    paddingHorizontal: primitives.spacingSm,
-    paddingVertical: primitives.spacingXs,
+    paddingHorizontal: primitives.spacingXs,
+    paddingVertical: primitives.spacingSm,
   },
   title: {
     flex: 1,
     fontSize: primitives.typographyFontSizeXs,
     fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightTight,
   },
 });

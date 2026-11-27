@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import type { IconProps } from '../../icons';
-import { primitives } from '../../theme';
+import { components, primitives } from '../../theme';
 import { Button } from '../ui';
 
 export type ScheduleSheetHeaderProps = {
@@ -34,9 +34,9 @@ export const ScheduleSheetHeader = ({
     (props: IconProps) => (
       <icons.Check
         {...props}
-        height={18}
+        height={components.iconSizeMd}
         stroke={confirmDisabled ? semantics.textDisabled : semantics.textOnAccent}
-        width={18}
+        width={components.iconSizeMd}
       />
     ),
     [confirmDisabled, icons, semantics.textDisabled, semantics.textOnAccent],
@@ -63,7 +63,7 @@ export const ScheduleSheetHeader = ({
       >
         {title}
       </Text>
-      <View style={[styles.side, styles.sideEnd]}>
+      <View style={styles.side}>
         {onConfirm ? (
           <Button
             accessibilityLabelKey='scheduledMessages.confirm.accessibilityLabel'
@@ -88,13 +88,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: primitives.spacingSm,
     paddingBottom: primitives.spacingSm,
-    paddingHorizontal: primitives.spacingMd,
+    paddingHorizontal: primitives.spacingSm,
   },
+  // A 48 wide hit area for each 40 wide button, as in the design.
   side: {
-    minWidth: 40,
-  },
-  sideEnd: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    minWidth: 48,
   },
   title: {
     flex: 1,

@@ -1190,9 +1190,12 @@ export type Theme = {
       channelName: TextStyle;
       container: ViewStyle;
       content: ViewStyle;
+      contentContainer: ViewStyle;
+      messageGroup: ViewStyle;
       preview: TextStyle;
       row: ViewStyle;
       status: ViewStyle;
+      statusIcon: ViewStyle;
       statusText: TextStyle;
       time: TextStyle;
     };
@@ -2363,9 +2366,12 @@ export const defaultTheme: Theme = {
       channelName: {},
       container: {},
       content: {},
+      contentContainer: {},
+      messageGroup: {},
       preview: {},
       row: {},
       status: {},
+      statusIcon: {},
       statusText: {},
       time: {},
     },

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { primitives } from '../../theme';
+import { components, primitives } from '../../theme';
 
 export type ScheduleSheetNoticeProps = {
   /** The bold first line. */
@@ -23,7 +23,7 @@ export const ScheduleSheetNotice = ({ description, title, type }: ScheduleSheetN
     },
   } = useTheme();
   const isError = type === 'error';
-  const Icon = isError ? icons.ExclamationCircle : icons.InfoTooltip;
+  const Icon = isError ? icons.ExclamationCircleOutline : icons.InfoTooltip;
 
   return (
     <View
@@ -34,16 +34,16 @@ export const ScheduleSheetNotice = ({ description, title, type }: ScheduleSheetN
         {
           backgroundColor: isError
             ? semantics.backgroundUtilityErrorSubtle
-            : semantics.backgroundUtilityInfoSubtle,
+            : semantics.accentPrimarySubtle,
         },
         noticeTheme.container,
       ]}
       testID={`schedule-sheet-notice-${type}`}
     >
       <Icon
-        height={20}
+        height={components.iconSizeMd}
         stroke={isError ? semantics.accentError : semantics.accentPrimary}
-        width={20}
+        width={components.iconSizeMd}
       />
       <View style={styles.texts}>
         <Text style={[styles.title, { color: semantics.textPrimary }, noticeTheme.title]}>
@@ -68,10 +68,11 @@ export const ScheduleSheetNotice = ({ description, title, type }: ScheduleSheetN
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    borderRadius: primitives.radiusLg,
+    borderRadius: primitives.radiusMd,
     flexDirection: 'row',
-    gap: primitives.spacingSm,
-    paddingHorizontal: primitives.spacingMd,
+    gap: primitives.spacingXs,
+    minHeight: 46,
+    paddingHorizontal: primitives.spacingSm,
     paddingVertical: primitives.spacingSm,
   },
   description: {
@@ -80,6 +81,7 @@ const styles = StyleSheet.create({
   },
   texts: {
     flex: 1,
+    gap: primitives.spacingXxxs,
   },
   title: {
     fontSize: primitives.typographyFontSizeXs,

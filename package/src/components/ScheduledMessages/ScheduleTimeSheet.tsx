@@ -174,18 +174,21 @@ const ScheduleTimeSheetContent = ({
       <View style={[styles.content, timeSheet.content]}>
         {message ? <Reply mode='reply' quotedMessage={message} title={previewTitle} /> : null}
         {errorText ? <ScheduleSheetNotice title={errorText} type='error' /> : null}
-        <View style={[styles.divider, { backgroundColor: semantics.borderCoreSubtle }]} />
-        <ScheduleCalendar
-          minimumDate={bounds.earliest}
-          onSelectDate={changeTime}
-          selectedDate={scheduledAt}
-        />
-        <View style={[styles.divider, { backgroundColor: semantics.borderCoreSubtle }]} />
-        <ScheduleTimePicker
-          minimumDate={bounds.earliest}
-          onSelectTime={changeTime}
-          selectedDate={scheduledAt}
-        />
+        {/* The date and time sit right under their dividers, so the gap only spaces the sections. */}
+        <View style={[styles.section, { borderTopColor: semantics.borderCoreSubtle }]}>
+          <ScheduleCalendar
+            minimumDate={bounds.earliest}
+            onSelectDate={changeTime}
+            selectedDate={scheduledAt}
+          />
+          <View style={[styles.section, { borderTopColor: semantics.borderCoreSubtle }]}>
+            <ScheduleTimePicker
+              minimumDate={bounds.earliest}
+              onSelectTime={changeTime}
+              selectedDate={scheduledAt}
+            />
+          </View>
+        </View>
         <ScheduleSheetNotice
           description={
             usageText
@@ -223,10 +226,11 @@ const styles = StyleSheet.create({
     paddingBottom: primitives.spacingMd,
   },
   content: {
-    gap: primitives.spacingSm,
+    gap: primitives.spacingMd,
     paddingHorizontal: primitives.spacingMd,
+    paddingTop: primitives.spacingXs,
   },
-  divider: {
-    height: StyleSheet.hairlineWidth,
+  section: {
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
 });

@@ -30,7 +30,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { useStateStore } from '../../hooks/useStateStore';
-import { primitives } from '../../theme';
+import { components, primitives } from '../../theme';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
 const scheduleSheetSelector = ({ isOpen }: ScheduleSheetState) => ({ isOpen });
@@ -52,6 +52,7 @@ const ScheduleOption = ({ disabled, label, onPress, showChevron, testID }: Sched
     },
   } = useTheme();
   const color = disabled ? semantics.textDisabled : semantics.textPrimary;
+  const iconColor = disabled ? semantics.textDisabled : semantics.textSecondary;
   const Chevron = I18nManager.isRTL ? icons.ChevronLeft : icons.ChevronRight;
 
   const style = useCallback(
@@ -73,11 +74,13 @@ const ScheduleOption = ({ disabled, label, onPress, showChevron, testID }: Sched
       style={style}
       testID={testID}
     >
-      <icons.Time height={20} stroke={color} width={20} />
+      <icons.Time height={components.iconSizeMd} stroke={iconColor} width={components.iconSizeMd} />
       <Text numberOfLines={1} style={[styles.optionLabel, { color }, presetSheet.optionLabel]}>
         {label}
       </Text>
-      {showChevron ? <Chevron height={20} stroke={color} width={20} /> : null}
+      {showChevron ? (
+        <Chevron height={components.iconSizeMd} stroke={iconColor} width={components.iconSizeMd} />
+      ) : null}
     </Pressable>
   );
 };
@@ -220,11 +223,12 @@ const styles = StyleSheet.create({
   },
   option: {
     alignItems: 'center',
-    borderRadius: primitives.radiusLg,
+    borderRadius: primitives.radiusMd,
     flexDirection: 'row',
     gap: primitives.spacingSm,
     minHeight: 48,
     paddingHorizontal: primitives.spacingSm,
+    paddingVertical: primitives.spacingXs,
   },
   optionLabel: {
     flex: 1,
@@ -232,6 +236,6 @@ const styles = StyleSheet.create({
     lineHeight: primitives.typographyLineHeightNormal,
   },
   options: {
-    paddingHorizontal: primitives.spacingXs,
+    paddingHorizontal: primitives.spacingXxs,
   },
 });

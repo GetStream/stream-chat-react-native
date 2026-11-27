@@ -217,7 +217,7 @@ export const ScheduleCalendar = ({
         {weekdayNames.map((name) => (
           <Text
             key={name}
-            style={[styles.weekday, { color: semantics.textTertiary }, calendarTheme.weekday]}
+            style={[styles.weekday, { color: semantics.textDisabled }, calendarTheme.weekday]}
           >
             {name}
           </Text>
@@ -248,7 +248,8 @@ export const ScheduleCalendar = ({
   );
 };
 
-const DAY_SIZE = 40;
+// The calendar follows the iOS date picker, whose sizes have no Stream tokens.
+const DAY_SIZE = 38;
 
 const styles = StyleSheet.create({
   container: {
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
   },
   navigation: {
     flexDirection: 'row',
-    gap: primitives.spacingLg,
+    gap: 28,
   },
   selectedDayText: {
     fontWeight: primitives.typographyFontWeightSemiBold,

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, useColorScheme } from 'react-native';
 
 import Animated from 'react-native-reanimated';
 
@@ -24,7 +24,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks/useStateStore';
-import { primitives } from '../../theme';
+import { components, primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
 
 /** The gap between the banner and the composer. */
@@ -51,6 +51,8 @@ const ScheduledMessagesBannerContent = () => {
       semantics,
     },
   } = useTheme();
+  const scheme = useColorScheme();
+  const shadow = scheme === 'dark' ? primitives.darkElevation3 : primitives.lightElevation3;
 
   const channelWideView = useChannelWideScheduledMessagesView(channel);
   // A thread's banner counts only the thread's scheduled replies.
@@ -120,7 +122,7 @@ const ScheduledMessagesBannerContent = () => {
     ? () => onScheduledMessagesBannerPress({ channel, thread: thread ?? undefined })
     : undefined;
 
-  const Icon = isFailure ? icons.ExclamationCircle : icons.Time;
+  const Icon = isFailure ? icons.ExclamationCircleOutline : icons.Time;
 
   return (
     <Animated.View
@@ -141,17 +143,18 @@ const ScheduledMessagesBannerContent = () => {
         style={[
           styles.banner,
           {
-            backgroundColor: semantics.backgroundCoreElevation1,
-            borderColor: semantics.borderCoreSubtle,
+            backgroundColor: semantics.backgroundCoreElevation2,
+            borderColor: semantics.borderCoreDefault,
           },
+          shadow,
           bannerTheme.banner,
         ]}
         testID='scheduled-messages-banner'
       >
         <Icon
-          height={20}
+          height={components.iconSizeMd}
           stroke={isFailure ? semantics.accentError : semantics.accentPrimary}
-          width={20}
+          width={components.iconSizeMd}
         />
         <Text
           numberOfLines={1}
@@ -186,16 +189,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: primitives.radiusMax,
     borderWidth: 1,
-    elevation: 3,
     flexDirection: 'row',
     gap: primitives.spacingSm,
     minHeight: 44,
     paddingHorizontal: primitives.spacingMd,
     paddingVertical: primitives.spacingSm,
-    shadowColor: '#000',
-    shadowOffset: { height: 2, width: 0 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
   },
   container: {
     marginBottom: COMPOSER_GAP,
@@ -205,11 +203,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: primitives.typographyFontSizeXs,
     fontWeight: primitives.typographyFontWeightSemiBold,
-    lineHeight: primitives.typographyLineHeightNormal,
+    lineHeight: primitives.typographyLineHeightTight,
   },
   link: {
     fontSize: primitives.typographyFontSizeXs,
     fontWeight: primitives.typographyFontWeightRegular,
-    lineHeight: primitives.typographyLineHeightNormal,
+    lineHeight: primitives.typographyLineHeightTight,
   },
 });

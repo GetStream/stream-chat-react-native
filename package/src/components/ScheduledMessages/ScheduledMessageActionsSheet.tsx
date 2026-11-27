@@ -85,6 +85,5 @@ export const ScheduledMessageActionsSheet = ({
 const styles = StyleSheet.create({
   container: {
     paddingBottom: primitives.spacingMd,
-    paddingHorizontal: primitives.spacingXs,
   },
 });

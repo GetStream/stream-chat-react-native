@@ -16,7 +16,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useMessagePreviewIcon, useMessagePreviewText } from '../../hooks';
-import { primitives } from '../../theme';
+import { components, primitives } from '../../theme';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { ChannelAvatar } from '../ui/Avatar/ChannelAvatar';
 import { Spinner } from '../UIComponents/Spinner';
@@ -84,60 +84,102 @@ export const ScheduledMessageListItem = ({
     <Pressable
       accessibilityRole='button'
       onPress={() => onPress(scheduledMessage)}
-      style={({ pressed }) => [
+      style={[
         styles.container,
         { borderBottomColor: semantics.borderCoreSubtle },
-        pressed ? { backgroundColor: semantics.backgroundUtilityPressed } : null,
         listItem.container,
       ]}
       testID={`scheduled-message-item-${scheduledMessage.id}`}
     >
-      <Text style={[styles.time, { color: semantics.textTertiary }, listItem.time]}>
-        {sendTime}
-      </Text>
-      <View style={[styles.row, listItem.row]}>
-        <ChannelAvatar channel={channel} showOnlineIndicator={false} size='xl' />
-        <View style={[styles.content, listItem.content]}>
-          {channelName ? (
-            <Text
-              numberOfLines={1}
-              style={[styles.channelName, { color: semantics.textSecondary }, listItem.channelName]}
-            >
-              {channelName}
-            </Text>
-          ) : null}
-          <View style={styles.previewRow}>
-            {PreviewIcon && !!message.attachments?.length ? (
-              <PreviewIcon height={16} stroke={semantics.textPrimary} width={16} />
-            ) : null}
-            <Text
-              numberOfLines={1}
-              style={[styles.preview, { color: semantics.textPrimary }, listItem.preview]}
-            >
-              {prefix ? `${prefix} ${previewText?.trim() ?? ''}` : previewText?.trim()}
-            </Text>
+      {({ pressed }) => (
+        <View
+          style={[
+            styles.contentContainer,
+            pressed ? { backgroundColor: semantics.backgroundUtilityPressed } : null,
+            listItem.contentContainer,
+          ]}
+        >
+          <Text
+            style={[
+              styles.time,
+              // A message that can't be sent as it is shows its time as disabled.
+              { color: failureText ? semantics.textDisabled : semantics.textTertiary },
+              listItem.time,
+            ]}
+          >
+            {sendTime}
+          </Text>
+          <View style={[styles.row, listItem.row]}>
+            <ChannelAvatar channel={channel} showOnlineIndicator={false} size='xl' />
+            <View style={[styles.content, listItem.content]}>
+              <View style={[styles.messageGroup, listItem.messageGroup]}>
+                {channelName ? (
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      styles.channelName,
+                      { color: semantics.textTertiary },
+                      listItem.channelName,
+                    ]}
+                  >
+                    {channelName}
+                  </Text>
+                ) : null}
+                <View style={styles.previewRow}>
+                  {PreviewIcon && !!message.attachments?.length ? (
+                    <PreviewIcon
+                      height={components.iconSizeMd}
+                      stroke={semantics.textPrimary}
+                      width={components.iconSizeMd}
+                    />
+                  ) : null}
+                  <Text
+                    numberOfLines={1}
+                    style={[styles.preview, { color: semantics.textPrimary }, listItem.preview]}
+                  >
+                    {prefix ? `${prefix} ${previewText?.trim() ?? ''}` : previewText?.trim()}
+                  </Text>
+                </View>
+              </View>
+              {failureText ? (
+                <View style={[styles.status, listItem.status]}>
+                  <View style={[styles.statusIcon, listItem.statusIcon]}>
+                    <icons.Warning
+                      height={components.iconSizeSm}
+                      pathFill={semantics.accentError}
+                      width={components.iconSizeSm}
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.statusText,
+                      { color: semantics.accentError },
+                      listItem.statusText,
+                    ]}
+                  >
+                    {failureText}
+                  </Text>
+                </View>
+              ) : isSending ? (
+                <View style={[styles.status, listItem.status]}>
+                  <View style={[styles.statusIcon, listItem.statusIcon]}>
+                    <Spinner height={components.iconSizeSm} width={components.iconSizeSm} />
+                  </View>
+                  <Text
+                    style={[
+                      styles.statusText,
+                      { color: semantics.textTertiary },
+                      listItem.statusText,
+                    ]}
+                  >
+                    {t('scheduledMessages.sending.label', 'Sending…')}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
           </View>
-          {failureText ? (
-            <View style={[styles.status, listItem.status]}>
-              <icons.Warning height={14} pathFill={semantics.accentError} width={14} />
-              <Text
-                style={[styles.statusText, { color: semantics.accentError }, listItem.statusText]}
-              >
-                {failureText}
-              </Text>
-            </View>
-          ) : isSending ? (
-            <View style={[styles.status, listItem.status]}>
-              <Spinner height={14} width={14} />
-              <Text
-                style={[styles.statusText, { color: semantics.textSecondary }, listItem.statusText]}
-              >
-                {t('scheduledMessages.sending.label', 'Sending…')}
-              </Text>
-            </View>
-          ) : null}
         </View>
-      </View>
+      )}
     </Pressable>
   );
 };
@@ -150,13 +192,23 @@ const styles = StyleSheet.create({
     writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
   },
   container: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    gap: primitives.spacingXxs,
-    paddingHorizontal: primitives.spacingMd,
-    paddingVertical: primitives.spacingSm,
+    borderBottomWidth: 1,
+    minHeight: 48,
+    paddingHorizontal: primitives.spacingXxs,
   },
   content: {
     flex: 1,
+    gap: primitives.spacingXs,
+  },
+  contentContainer: {
+    borderRadius: primitives.radiusMd,
+    gap: primitives.spacingXs,
+    minHeight: 48,
+    padding: primitives.spacingMd,
+  },
+  messageGroup: {
+    gap: primitives.spacingXxs,
+    paddingVertical: primitives.spacingXxxs,
   },
   preview: {
     flexShrink: 1,
@@ -169,15 +221,18 @@ const styles = StyleSheet.create({
     gap: primitives.spacingXxs,
   },
   row: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexDirection: 'row',
     gap: primitives.spacingSm,
   },
   status: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexDirection: 'row',
     gap: primitives.spacingXxs,
-    paddingTop: primitives.spacingXxs,
+  },
+  // Keeps the icon level with the first line when the reason wraps.
+  statusIcon: {
+    paddingVertical: primitives.spacingXxxs,
   },
   statusText: {
     flexShrink: 1,

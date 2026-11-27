@@ -22,7 +22,7 @@ import { useComponentsContext } from '../../contexts/componentsContext/Component
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks/useStableCallback';
-import { primitives } from '../../theme';
+import { components, primitives } from '../../theme';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { NotificationList } from '../Notifications/NotificationList';
 import { NotificationTargetProvider } from '../Notifications/NotificationTargetContext';
@@ -73,18 +73,24 @@ const ScheduledMessageListLoadError = ({ onRetry }: { onRetry: () => void }) => 
 
   return (
     <View style={styles.centered} testID='scheduled-message-list-error'>
-      <icons.ExclamationCircle height={28} stroke={semantics.textSecondary} width={28} />
-      <Text style={[styles.errorText, { color: semantics.textSecondary }]}>
-        {t('scheduledMessages.loadFailed.error', "Couldn't load scheduled messages")}
-      </Text>
-      <Button
-        label={t('scheduledMessages.tryAgain.label', 'Try again')}
-        onPress={onRetry}
-        size='md'
-        testID='scheduled-message-list-retry'
-        type='outline'
-        variant='secondary'
+      <icons.ExclamationCircleOutline
+        height={components.iconSizeLg}
+        stroke={semantics.textTertiary}
+        width={components.iconSizeLg}
       />
+      <View style={styles.errorBody}>
+        <Text style={[styles.errorText, { color: semantics.textSecondary }]}>
+          {t('scheduledMessages.loadFailed.error', "Couldn't load scheduled messages")}
+        </Text>
+        <Button
+          label={t('scheduledMessages.tryAgain.label', 'Try again')}
+          onPress={onRetry}
+          size='md'
+          testID='scheduled-message-list-retry'
+          type='outline'
+          variant='secondary'
+        />
+      </View>
     </View>
   );
 };
@@ -105,6 +111,7 @@ const ScheduledMessageListContent = ({
     theme: {
       scheduledMessageListSkeleton,
       scheduledMessages: { list: listTheme },
+      semantics,
     },
   } = useTheme();
   const { icons, ScheduledMessageActionsSheet, ScheduledMessageListItem, ScheduleTimeSheet } =
@@ -243,8 +250,15 @@ const ScheduledMessageListContent = ({
   });
 
   return (
-    <View style={[styles.container, listTheme.container]}>
-      {hasItems || searchQuery ? (
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: semantics.backgroundCoreApp },
+        listTheme.container,
+      ]}
+    >
+      {/* Shown while the first page loads too, so the screen doesn't shift once it arrives. */}
+      {hasItems || searchQuery || (!items && !error) ? (
         <SearchInput
           accessibilityLabel={t(
             'scheduledMessages.search.accessibilityLabel',
@@ -323,14 +337,20 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: primitives.spacingSm,
     justifyContent: 'center',
-    padding: primitives.spacingXl,
+    paddingHorizontal: primitives.spacingMd,
+    paddingVertical: primitives.spacing3xl,
   },
   container: {
     flex: 1,
   },
+  errorBody: {
+    alignItems: 'center',
+    gap: primitives.spacingMd,
+  },
   errorText: {
     fontSize: primitives.typographyFontSizeMd,
     lineHeight: primitives.typographyLineHeightNormal,
+    maxWidth: 200,
     textAlign: 'center',
   },
   list: {

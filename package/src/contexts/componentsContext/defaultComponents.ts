@@ -209,6 +209,7 @@ import { Delete } from '../../icons/delete';
 import { Edit } from '../../icons/edit';
 import { Smile } from '../../icons/emoji';
 import { MoreEmojis } from '../../icons/emoji-add-1';
+import { ExclamationCircleOutline } from '../../icons/exclamation-circle';
 import { ExclamationCircle } from '../../icons/exclamation-circle-fill';
 import { Exclamation } from '../../icons/exclamation-mark-fill';
 import { Warning } from '../../icons/exclamation-triangle-fill';
@@ -314,6 +315,7 @@ export const defaultIcons = {
   Edit,
   Exclamation,
   ExclamationCircle,
+  ExclamationCircleOutline,
   EyeOpen,
   File,
   FilePickerIcon,
