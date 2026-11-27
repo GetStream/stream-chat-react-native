@@ -11,7 +11,7 @@ import {
 } from './RescheduleSheet';
 
 import { useMessageComposerAPIContext } from '../../contexts/messageComposerContext/MessageComposerAPIContext';
-import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
+import { useFocusMessageInput } from '../../hooks/useFocusMessageInput';
 import { useStableCallback } from '../../hooks/useStableCallback';
 import { MessageComposer } from '../MessageInput/MessageComposer';
 
@@ -41,7 +41,6 @@ export const ScheduledMessageEditComposer = ({
   scheduledMessage,
 }: ScheduledMessageEditComposerProps) => {
   const { editScheduledMessage } = useMessageComposerAPIContext();
-  const { inputBoxRef } = useMessageInputContext();
   const { editedScheduledMessage } = useEditedScheduledMessage();
   const editedId = editedScheduledMessage?.id;
   // Kept here rather than in the save button, so the sheet outlives the edit and slides closed.
@@ -65,16 +64,18 @@ export const ScheduledMessageEditComposer = ({
     startEdit();
   }, [scheduledMessage?.id, startEdit]);
 
-  // Opens the keyboard when an edit starts, as editing a sent message does, and closes it when the
-  // edit ends. Unmounting leaves `editedId` as it was, so it doesn't count as an end.
+  // Opens the keyboard when an edit starts, as editing a sent message does.
+  useFocusMessageInput(editedId);
+
+  // Closes the keyboard when the edit ends. Unmounting leaves `editedId` as it was, so it doesn't
+  // count as an end.
   useEffect(() => {
     if (!editedId) return;
-    inputBoxRef.current?.focus();
     return () => {
       Keyboard.dismiss();
       closeIfDone();
     };
-  }, [closeIfDone, editedId, inputBoxRef]);
+  }, [closeIfDone, editedId]);
 
   return (
     <RescheduleSheetContext.Provider value={setRescheduleRequest}>

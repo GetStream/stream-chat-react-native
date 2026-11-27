@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Keyboard, Pressable, Text } from 'react-native';
+import { Alert, AppState, Keyboard, Platform, Pressable, Text } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import type {
@@ -24,7 +24,10 @@ import {
   useMessageComposerAPIContext,
 } from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
 import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
-import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
+import {
+  type MessageInputContextValue,
+  useMessageInputContext,
+} from '../../../contexts/messageInputContext/MessageInputContext';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
@@ -859,6 +862,74 @@ describe('ScheduledMessageEditComposer', () => {
     expect(scheduleSpy).not.toHaveBeenCalled();
     expect(screen.queryByTestId('schedule-time-sheet')).toBeNull();
     expect(dismissSpy).toHaveBeenCalled();
+  });
+
+  describe('focusing the input once the window has focus', () => {
+    const originalOS = Platform.OS;
+    const setPlatform = (os: typeof Platform.OS) =>
+      Object.defineProperty(Platform, 'OS', { configurable: true, get: () => os });
+
+    let windowFocusListeners: (() => void)[];
+    let inputBoxRef: MessageInputContextValue['inputBoxRef'];
+
+    const InputRefProbe = () => {
+      ({ inputBoxRef } = useMessageInputContext());
+      return null;
+    };
+
+    const renderEditWithInputRef = () =>
+      render(
+        <OverlayProvider>
+          <Chat client={client}>
+            <Channel channel={channel} initializeOnMount={false} markReadOnMount={false}>
+              <ApiProbe />
+              <InputRefProbe />
+              <ScheduledMessageEditComposer />
+            </Channel>
+          </Chat>
+        </OverlayProvider>,
+      );
+
+    beforeEach(() => {
+      windowFocusListeners = [];
+      jest.spyOn(AppState, 'addEventListener').mockImplementation((type, listener) => {
+        if (type === 'focus') windowFocusListeners.push(listener as () => void);
+        return { remove: jest.fn() } as never;
+      });
+    });
+
+    afterEach(() => setPlatform(originalOS));
+
+    it('focuses the input again on Android, where a closing sheet can still hold the window', async () => {
+      setPlatform('android');
+      const scheduledMessage = generateScheduledMessage(channel, { message: { text: 'Edit me' } });
+      renderEditWithInputRef();
+
+      await startEdit(scheduledMessage);
+      await waitFor(() => expect(screen.getByText('Edit scheduled message')).toBeTruthy());
+      const focusSpy = jest.spyOn(
+        inputBoxRef.current as NonNullable<typeof inputBoxRef.current>,
+        'focus',
+      );
+      expect(windowFocusListeners).toHaveLength(1);
+
+      focusSpy.mockClear();
+
+      act(() => windowFocusListeners.forEach((listener) => listener()));
+
+      expect(focusSpy).toHaveBeenCalled();
+    });
+
+    it('does not wait for the window on iOS', async () => {
+      setPlatform('ios');
+      const scheduledMessage = generateScheduledMessage(channel, { message: { text: 'Edit me' } });
+      renderEditWithInputRef();
+
+      await startEdit(scheduledMessage);
+      await waitFor(() => expect(screen.getByText('Edit scheduled message')).toBeTruthy());
+
+      expect(windowFocusListeners).toHaveLength(0);
+    });
   });
 
   it('hides the composer when the edit is cancelled', async () => {
