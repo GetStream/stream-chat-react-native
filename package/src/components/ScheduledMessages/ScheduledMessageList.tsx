@@ -15,8 +15,9 @@ import type {
 } from './hooks/useScheduledMessageActionItems';
 import { useScheduledMessageList } from './hooks/useScheduledMessageList';
 
-import { useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
 import { ScheduledMessageListLoadingSkeleton } from './ScheduledMessageListLoadingSkeleton';
+
+import { formatScheduledDateTime } from './utils/scheduledTimeLabels';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -105,8 +106,7 @@ const ScheduledMessageListContent = ({
 }: ScheduledMessageListProps) => {
   const { error, hasMoreTail, isLoading, items, loadMore, reload } = useScheduledMessageList(view);
   const { client } = useChatContext();
-  const { t } = useTranslationContext();
-  const { formatDateTime } = useScheduledTimeFormatter();
+  const { t, tDateTimeParser } = useTranslationContext();
   const {
     theme: {
       scheduledMessages: { list: listTheme },
@@ -300,7 +300,10 @@ const ScheduledMessageListContent = ({
           onClose={closeReschedule}
           onConfirm={confirmReschedule}
           previewTitle={t('scheduledMessages.banner.single.text', 'Scheduled for {{ time }}', {
-            time: formatDateTime(nsToDate(rescheduleTarget.scheduled_at)),
+            time: formatScheduledDateTime(nsToDate(rescheduleTarget.scheduled_at), {
+              t,
+              tDateTimeParser,
+            }),
           })}
           title={t('scheduledMessages.rescheduleMessage.title', 'Reschedule message')}
           visible

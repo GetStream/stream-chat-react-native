@@ -563,6 +563,9 @@ export type TranslationCatalog = {
   'timestamp.MessageSystem': '{{ timestamp | timestampFormatter(calendar: true) }}';
   'timestamp.MessageTimestamp': '{{ timestamp | timestampFormatter(format: LT) }}';
   'timestamp.PollVote': '{{ timestamp | timestampFormatter(relativeCompact: true) }}';
+  'timestamp.ScheduledMessageDate': '{{ timestamp | timestampFormatter(format: ddd, MMM D) }}';
+  'timestamp.ScheduledMessageTime': '{{ timestamp | timestampFormatter(format: HH:mm) }}';
+  'timestamp.ScheduledMessageWeekday': '{{ timestamp | timestampFormatter(format: dddd) }}';
   'timestamp.StickyHeader': '{{ timestamp | timestampFormatter(calendar: true) }}';
   'timestamp.ThreadListItem': '{{ timestamp | timestampFormatter(calendar: true; calendarFormats: {"lastDay":"[Yesterday]", "lastWeek":"dddd", "nextDay":"[Tomorrow]", "nextWeek":"dddd [at] LT", "sameDay":"LT", "sameElse":"L"}) }}';
   'timestamp.UserActivityStatus': 'Last seen {{ timestamp | fromNowFormatter }}';
@@ -665,6 +668,9 @@ export type BundledTranslationKey =
   | 'timestamp.MessageSystem'
   | 'timestamp.MessageTimestamp'
   | 'timestamp.PollVote'
+  | 'timestamp.ScheduledMessageDate'
+  | 'timestamp.ScheduledMessageTime'
+  | 'timestamp.ScheduledMessageWeekday'
   | 'timestamp.StickyHeader'
   | 'timestamp.ThreadListItem'
   | 'timestamp.UserActivityStatus'

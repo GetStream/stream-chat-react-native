@@ -3,7 +3,8 @@ import React, { createContext, useContext } from 'react';
 import type { LocalMessage } from 'stream-chat';
 
 import { useScheduleComposerMessage } from './hooks/useScheduleComposerMessage';
-import { useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
+
+import { formatScheduledDateTime } from './utils/scheduledTimeLabels';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -37,8 +38,7 @@ type RescheduleSheetProps = {
 export const RescheduleSheet = ({ onClose, request }: RescheduleSheetProps) => {
   const { ScheduleTimeSheet } = useComponentsContext();
   const { channel } = useChannelContext();
-  const { t } = useTranslationContext();
-  const { formatDateTime } = useScheduledTimeFormatter();
+  const { t, tDateTimeParser } = useTranslationContext();
   const schedule = useScheduleComposerMessage();
 
   const confirm = useStableCallback((scheduledAt: Date) =>
@@ -55,7 +55,7 @@ export const RescheduleSheet = ({ onClose, request }: RescheduleSheetProps) => {
       previewTitle={
         request?.initialDate
           ? t('scheduledMessages.banner.single.text', 'Scheduled for {{ time }}', {
-              time: formatDateTime(request.initialDate),
+              time: formatScheduledDateTime(request.initialDate, { t, tDateTimeParser }),
             })
           : undefined
       }

@@ -12,10 +12,10 @@ import type { LocalMessage } from 'stream-chat';
 
 import { useChannelScheduledMessageLimit } from './hooks/useChannelScheduledMessageLimit';
 import { useScheduleComposerMessage } from './hooks/useScheduleComposerMessage';
-import { useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
 
 import { ScheduleSheetHeader } from './ScheduleSheetHeader';
 
+import { formatSchedulePreset } from './utils/scheduledTimeLabels';
 import { getAvailableSchedulePresets, getScheduleTimeBounds } from './utils/scheduleTime';
 
 import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
@@ -155,8 +155,7 @@ const ScheduleMessageSheetContent = () => {
   const { channel } = useChannelContext();
   const { isLimitReached, maxPerChannel } = useChannelScheduledMessageLimit(channel);
   const schedule = useScheduleComposerMessage();
-  const { t } = useTranslationContext();
-  const { formatPreset } = useScheduledTimeFormatter();
+  const { t, tDateTimeParser } = useTranslationContext();
   const {
     theme: {
       scheduledMessages: { presetSheet },
@@ -194,7 +193,7 @@ const ScheduleMessageSheetContent = () => {
           <PresetOption
             disabled={isLimitReached}
             key={preset.getTime()}
-            label={formatPreset(preset, now)}
+            label={formatSchedulePreset(preset, now, { t, tDateTimeParser })}
             onSelect={selectPreset}
             preset={preset}
           />

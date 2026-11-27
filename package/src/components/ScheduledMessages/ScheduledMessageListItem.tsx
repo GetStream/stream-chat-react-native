@@ -6,10 +6,10 @@ import { nsToDate, SCHEDULED_MESSAGE_STATUS, toScheduledMessagePreview } from 's
 
 import { getScheduledMessageChannel } from './hooks/useScheduledMessageActionHandlers';
 
-import { useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
-
 import { getScheduledMessageFailureText } from './utils/failureReason';
 import { hasDeletedQuote } from './utils/quote';
+
+import { formatScheduledDateTime } from './utils/scheduledTimeLabels';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -32,8 +32,7 @@ export const ScheduledMessageListItem = ({
 }: ScheduledMessageListItemProps) => {
   const { client } = useChatContext();
   const { icons } = useComponentsContext();
-  const { t } = useTranslationContext();
-  const { formatDateTime } = useScheduledTimeFormatter();
+  const { t, tDateTimeParser } = useTranslationContext();
   const {
     theme: {
       scheduledMessages: { listItem },
@@ -77,7 +76,7 @@ export const ScheduledMessageListItem = ({
         )
       : undefined;
   const sendTime = t('scheduledMessages.sendTime.label', 'Send {{ time }}', {
-    time: formatDateTime(nsToDate(scheduledMessage.scheduled_at)),
+    time: formatScheduledDateTime(nsToDate(scheduledMessage.scheduled_at), { t, tDateTimeParser }),
   });
 
   return (

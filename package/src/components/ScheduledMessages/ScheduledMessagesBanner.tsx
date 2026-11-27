@@ -11,8 +11,9 @@ import { useChannelScheduledMessages } from './hooks/useChannelScheduledMessages
 import { useChannelWideScheduledMessagesView } from './hooks/useChannelWideScheduledMessagesView';
 import { useEditedScheduledMessage } from './hooks/useEditedScheduledMessage';
 
-import { useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
 import { isPendingScheduledMessage } from './utils/actions';
+
+import { formatScheduledDateTime } from './utils/scheduledTimeLabels';
 
 import { useAnnounceOnStateChange } from '../../a11y/hooks/useAnnounceOnStateChange';
 
@@ -43,8 +44,7 @@ const ScheduledMessagesBannerContent = () => {
   const { onScheduledMessagesBannerPress } = useMessagesContext();
   const { messageInputHeightStore } = useMessageInputContext();
   const { icons } = useComponentsContext();
-  const { t } = useTranslationContext();
-  const { formatDateTime } = useScheduledTimeFormatter();
+  const { t, tDateTimeParser } = useTranslationContext();
   const {
     theme: {
       scheduledMessages: { banner: bannerTheme },
@@ -100,7 +100,7 @@ const ScheduledMessagesBannerContent = () => {
     );
   } else if (pendingCount === 1 && single) {
     label = t('scheduledMessages.banner.single.text', 'Scheduled for {{ time }}', {
-      time: formatDateTime(nsToDate(single.scheduled_at)),
+      time: formatScheduledDateTime(nsToDate(single.scheduled_at), { t, tDateTimeParser }),
     });
   } else {
     label = t('scheduledMessages.banner.count.text', '{{ count }} scheduled messages', {

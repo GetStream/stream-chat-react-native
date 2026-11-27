@@ -13,9 +13,9 @@ import { ScheduledMessageBlockReason } from 'stream-chat';
 
 import { useChannelScheduledMessageLimit } from './hooks/useChannelScheduledMessageLimit';
 import type { ScheduleComposerMessageResult } from './hooks/useScheduleComposerMessage';
-import { formatWithParser, useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
 import { ScheduleSheetHeader } from './ScheduleSheetHeader';
 import { ScheduleSheetNotice } from './ScheduleSheetNotice';
+import { formatScheduledDate, formatScheduledTime } from './utils/scheduledTimeLabels';
 import {
   formatTimeZoneOffset,
   getDefaultScheduledAt,
@@ -142,7 +142,6 @@ const ScheduleTimeSheetContent = ({
     MessageComposerContext,
   ) as Partial<MessageComposerContextValue>;
   const { t, tDateTimeParser } = useTranslationContext();
-  const { formatTime } = useScheduledTimeFormatter();
   const channelName = useChannelPreviewDisplayName(channel)?.trim();
   const { maxPerChannel, pendingCount } = useChannelScheduledMessageLimit(channel);
 
@@ -306,7 +305,7 @@ const ScheduleTimeSheetContent = ({
             label={t('scheduledMessages.date.label', 'Date')}
             onPress={pickDate}
             testID='schedule-time-sheet-date'
-            value={formatWithParser(tDateTimeParser, scheduledAt, 'ddd, MMM D')}
+            value={formatScheduledDate(scheduledAt, { t, tDateTimeParser })}
           />
           <ScheduleTimeRow
             disabled={!pickDateTime}
@@ -314,7 +313,7 @@ const ScheduleTimeSheetContent = ({
             label={t('scheduledMessages.time.label', 'Time')}
             onPress={pickTime}
             testID='schedule-time-sheet-time'
-            value={formatTime(scheduledAt)}
+            value={formatScheduledTime(scheduledAt, { t, tDateTimeParser })}
           />
         </View>
         <ScheduleSheetNotice
