@@ -2,8 +2,8 @@ import React from 'react';
 import { Pressable } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, StreamChat } from 'stream-chat';
-import { StreamAPIError } from 'stream-chat';
+import type { Channel as ChannelType, ScheduledMessageResponse, StreamChat } from 'stream-chat';
+import { dateToNs, StreamAPIError } from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
@@ -11,6 +11,7 @@ import { initiateClientWithChannels } from '../../../mock-builders/api/initiateC
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { SendButton } from '../../MessageInput/components/OutputButtons/SendButton';
+import { ScheduledMessagesBanner } from '../ScheduledMessagesBanner';
 import { ScheduleMessageSheet } from '../ScheduleMessageSheet';
 import { ScheduleTimePicker } from '../ScheduleTimePicker';
 
@@ -54,6 +55,114 @@ jest.mock('../../UIComponents/BottomSheetModal', () => {
       );
     },
   };
+});
+
+let idCounter = 0;
+
+const generateScheduledMessage = (
+  channel: ChannelType,
+  overrides: Partial<ScheduledMessageResponse> & {
+    message?: Partial<ScheduledMessageResponse['message']>;
+  } = {},
+): ScheduledMessageResponse => {
+  idCounter += 1;
+  const { message, ...rest } = overrides;
+  const now = dateToNs(new Date());
+  return {
+    cid: channel.cid,
+    created_at: now,
+    id: `scheduled-${idCounter}`,
+    message: { custom: {}, text: `Scheduled text ${idCounter}`, ...message },
+    scheduled_at: dateToNs(new Date(Date.now() + 24 * 60 * 60 * 1000)),
+    status: 'scheduled',
+    updated_at: now,
+    user: { id: 'me' } as ScheduledMessageResponse['user'],
+    ...rest,
+  } as ScheduledMessageResponse;
+};
+
+const ingest = (channel: ChannelType, scheduledMessages: ScheduledMessageResponse[]) =>
+  act(() => {
+    channel.scheduledMessagesPaginator.hydrate(scheduledMessages);
+  });
+
+describe('ScheduledMessagesBanner', () => {
+  let client: StreamChat;
+  let channel: ChannelType;
+
+  const renderBanner = (onScheduledMessagesBannerPress?: jest.Mock) =>
+    render(
+      <OverlayProvider>
+        <Chat client={client}>
+          <Channel
+            channel={channel}
+            onScheduledMessagesBannerPress={onScheduledMessagesBannerPress}
+          >
+            <ScheduledMessagesBanner />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+  beforeEach(async () => {
+    const { client: chatClient, channels } = await initiateClientWithChannels();
+    client = chatClient;
+    channel = channels[0];
+    jest.spyOn(channel, 'ensureScheduledMessagesLoaded').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    cleanup();
+    jest.restoreAllMocks();
+  });
+
+  it('renders nothing without scheduled messages', async () => {
+    renderBanner();
+    ingest(channel, []);
+
+    await waitFor(() => expect(screen.queryByTestId('scheduled-messages-banner')).toBeNull());
+  });
+
+  it('shows the time of a single scheduled message and opens the list', async () => {
+    const onPress = jest.fn();
+    renderBanner(onPress);
+    ingest(channel, [generateScheduledMessage(channel)]);
+
+    await waitFor(() => expect(screen.getByText(/^Scheduled for /)).toBeTruthy());
+    fireEvent.press(screen.getByTestId('scheduled-messages-banner'));
+
+    expect(screen.getByText('View')).toBeTruthy();
+    expect(onPress).toHaveBeenCalledWith({ channel, thread: undefined });
+  });
+
+  it('counts several scheduled messages, thread replies included', async () => {
+    renderBanner(jest.fn());
+    ingest(channel, [
+      generateScheduledMessage(channel),
+      generateScheduledMessage(channel, { message: { parent_id: 'parent-1' } }),
+    ]);
+
+    await waitFor(() => expect(screen.getByText('2 scheduled messages')).toBeTruthy());
+    expect(screen.getByText('View all')).toBeTruthy();
+  });
+
+  it('shows failed messages before the scheduled ones', async () => {
+    renderBanner(jest.fn());
+    ingest(channel, [
+      generateScheduledMessage(channel),
+      generateScheduledMessage(channel, { failure_reason: 'internal_error', status: 'failed' }),
+    ]);
+
+    await waitFor(() => expect(screen.getByText('1 failed to send')).toBeTruthy());
+  });
+
+  it('hides the link when the app has nowhere to open the list', async () => {
+    renderBanner();
+    ingest(channel, [generateScheduledMessage(channel)]);
+
+    await waitFor(() => expect(screen.getByTestId('scheduled-messages-banner')).toBeTruthy());
+    expect(screen.queryByText('View')).toBeNull();
+  });
 });
 
 describe('ScheduleTimePicker', () => {

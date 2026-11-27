@@ -189,6 +189,7 @@ export type ChannelConfigProps = Partial<
       | 'messageSwipeToReplyHitSlop'
       | 'myMessageTheme'
       | 'onAlsoSentToChannelHeaderPress'
+      | 'onScheduledMessagesBannerPress'
       | 'onLongPressMessage'
       | 'onPressInMessage'
       | 'onPressMessage'
@@ -339,6 +340,7 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     onPressInMessage,
     onPressMessage,
     onAlsoSentToChannelHeaderPress,
+    onScheduledMessagesBannerPress,
     openPollCreationDialog,
     overrideOwnCapabilities,
     reactionListPosition = 'top',
@@ -499,6 +501,7 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
     myMessageTheme,
     onAlsoSentToChannelHeaderPress,
     onLongPressMessage,
+    onScheduledMessagesBannerPress,
     onPressInMessage,
     onPressMessage,
     reactionListPosition,

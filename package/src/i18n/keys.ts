@@ -482,6 +482,10 @@ export type TranslationCatalog = {
   'reply.replying.withUser.accessibilityLabel': 'Replying to {{user}}';
   'reply.replying.withUserAndText.accessibilityLabel': 'Replying to {{user}}: {{text}}';
   'scheduledMessages.alreadySent.error': 'This message was already sent';
+  'scheduledMessages.banner.count.text': '{{ count }} scheduled messages';
+  'scheduledMessages.banner.failed.text': '{{ count }} failed to send';
+  'scheduledMessages.banner.limit.text': '{{ count }} of {{ max }} scheduled messages';
+  'scheduledMessages.banner.single.text': 'Scheduled for {{ time }}';
   'scheduledMessages.channelLimit.error': "You've reached the limit of scheduled messages in this channel.";
   'scheduledMessages.commandBlocked.error': "Commands can't be scheduled. Remove the / command to continue.";
   'scheduledMessages.confirm.accessibilityLabel': 'Schedule';
@@ -519,6 +523,7 @@ export type TranslationCatalog = {
   'scheduledMessages.userLimit.error': "You've reached your limit of scheduled messages.";
   'scheduledMessages.userLimitCount.error': "You've reached your limit of {{ count }} scheduled messages.";
   'scheduledMessages.view.label': 'View';
+  'scheduledMessages.viewAll.label': 'View all';
   'threadList.unreadBanner.loadFailed.error': "Couldn't load new threads. Tap to retry";
   'threadList.unreadBanner.newThreads.label_one': '{{count}} new thread';
   'threadList.unreadBanner.newThreads.label_other': '{{count}} new threads';

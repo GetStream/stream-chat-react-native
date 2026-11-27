@@ -87,8 +87,16 @@ const flatListViewabilityConfig: ViewabilityConfig = {
   viewAreaCoveragePercentThreshold: 1,
 };
 
-const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
+const floatingComposerSelector = (state: MessageInputHeightState) => ({
+  bannerHeight: state.bannerHeight,
   height: state.height,
+});
+
+// A fixed composer sits below the list, so the list doesn't follow its height and isn't rendered
+// again when the keyboard changes it.
+const fixedComposerSelector = (state: MessageInputHeightState) => ({
+  bannerHeight: state.bannerHeight,
+  height: 0,
 });
 
 type MessageFlashListPropsWithContext = Pick<
@@ -268,6 +276,7 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
     NotificationList,
+    ScheduledMessagesBanner,
     ScrollToBottomButton,
     StickyHeader,
     TypingIndicator,
@@ -276,9 +285,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   } = useComponentsContext();
   const flashListRef = useRef<FlashListRef<LocalMessage> | null>(null);
 
-  const { height: messageInputHeight } = useStateStore(
+  const { bannerHeight, height: messageInputHeight } = useStateStore(
     messageInputHeightStore.store,
-    messageInputHeightStoreSelector,
+    messageInputFloating ? floatingComposerSelector : fixedComposerSelector,
   );
   const paginator = thread ? thread.messagePaginator : channel.messagePaginator;
 
@@ -554,7 +563,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
     const visibleLength = nativeEvent.layoutMeasurement.height;
     const contentLength = nativeEvent.contentSize.height;
 
-    const isScrollAtBottom = contentLength - visibleLength - offset < messageInputHeight;
+    const isScrollAtBottom =
+      contentLength - visibleLength - offset <
+      messageInputHeightStore.store.getLatestValue().height;
 
     // The scroll-to-bottom button shows unless the list is at the bottom with no newer messages.
     setScrollToBottomButtonVisible(
@@ -640,14 +651,15 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
   const flatListContentContainerStyle = useMemo(
     () => [
       styles.contentContainer,
-      { paddingBottom: messageInputFloating ? messageInputHeight : 0 },
+      { paddingBottom: (messageInputFloating ? messageInputHeight : 0) + bannerHeight },
       additionalFlashListProps?.contentContainerStyle,
     ],
     [
       additionalFlashListProps?.contentContainerStyle,
-      styles.contentContainer,
+      bannerHeight,
       messageInputFloating,
       messageInputHeight,
+      styles.contentContainer,
     ],
   );
 
@@ -774,9 +786,10 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         style={[
           styles.scrollToBottomButtonContainer,
           {
-            bottom: messageInputFloating
-              ? messageInputHeight + primitives.spacingMd
-              : primitives.spacingMd,
+            bottom:
+              (messageInputFloating
+                ? messageInputHeight + primitives.spacingMd
+                : primitives.spacingMd) + bannerHeight,
           },
         ]}
       >
@@ -793,6 +806,23 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
             onCloseHandler={onUnreadNotificationClose}
           />
         </View>
+      ) : null}
+      {ScheduledMessagesBanner ? (
+        <Animated.View
+          layout={transitions.layout200}
+          pointerEvents='box-none'
+          style={[
+            { bottom: messageInputFloating ? messageInputHeight + 16 : 0 },
+            styles.scheduledMessagesBannerContainer,
+          ]}
+        >
+          <PortalWhileClosingView
+            portalHostName='overlay-scheduled-messages-banner'
+            portalName='scheduled-messages-banner'
+          >
+            <ScheduledMessagesBanner />
+          </PortalWhileClosingView>
+        </Animated.View>
       ) : null}
       <Animated.View
         layout={transitions.layout200}
@@ -811,7 +841,9 @@ const MessageFlashListWithContext = (props: MessageFlashListPropsWithContext) =>
         </PortalWhileClosingView>
       </Animated.View>
       <NotificationList
-        bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
+        bottomOffset={
+          (messageInputFloating ? messageInputHeight + 16 : 0) + bannerHeight || undefined
+        }
         filter={pendingUploadsEnabled ? excludeCanceledUploadNotifications : undefined}
       />
     </View>
@@ -932,6 +964,10 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
+        scheduledMessagesBannerContainer: {
+          position: 'absolute',
+          width: '100%',
+        },
         suggestionsListContainer: {
           backgroundColor: 'transparent',
           position: 'absolute',

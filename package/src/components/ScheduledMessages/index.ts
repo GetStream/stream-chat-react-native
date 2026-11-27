@@ -1,4 +1,5 @@
 export * from './ScheduleCalendar';
+export * from './ScheduledMessagesBanner';
 export * from './ScheduleMessageSheet';
 export * from './ScheduleSheetHeader';
 export * from './ScheduleSheetNotice';

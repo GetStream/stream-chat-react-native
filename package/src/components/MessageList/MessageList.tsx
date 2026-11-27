@@ -110,6 +110,10 @@ const useStyles = () => {
   return useMemo(
     () =>
       StyleSheet.create({
+        scheduledMessagesBannerContainer: {
+          position: 'absolute',
+          width: '100%',
+        },
         suggestionsListContainer: {
           backgroundColor: 'transparent',
           position: 'absolute',
@@ -230,8 +234,16 @@ type MessageListPropsWithContext = Pick<
     animateLayout?: boolean;
   };
 
-const messageInputHeightStoreSelector = (state: MessageInputHeightState) => ({
+const floatingComposerSelector = (state: MessageInputHeightState) => ({
+  bannerHeight: state.bannerHeight,
   height: state.height,
+});
+
+// A fixed composer sits below the list, so the list doesn't follow its height and isn't rendered
+// again when the keyboard changes it.
+const fixedComposerSelector = (state: MessageInputHeightState) => ({
+  bannerHeight: state.bannerHeight,
+  height: 0,
 });
 
 /** Renders the list of messages in a FlatList. */
@@ -272,6 +284,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
     MessageListLoadingIndicator: LoadingIndicator,
     NetworkDownIndicator,
     NotificationList,
+    ScheduledMessagesBanner,
     ScrollToBottomButton,
     StickyHeader,
     TypingIndicator,
@@ -281,9 +294,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   } = useComponentsContext();
   const { theme } = useTheme();
   const styles = useStyles();
-  const { height: messageInputHeight } = useStateStore(
+  const { bannerHeight, height: messageInputHeight } = useStateStore(
     messageInputHeightStore.store,
-    messageInputHeightStoreSelector,
+    messageInputFloating ? floatingComposerSelector : fixedComposerSelector,
   );
   const paginator = thread ? thread.messagePaginator : channel.messagePaginator;
 
@@ -563,7 +576,7 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
   const handleScroll: ScrollViewProps['onScroll'] = useStableCallback((event) => {
     const messageListHasMessages = processedMessageList.length > 0;
     const offset = event.nativeEvent.contentOffset.y;
-    const isScrollAtBottom = offset <= messageInputHeight;
+    const isScrollAtBottom = offset <= messageInputHeightStore.store.getLatestValue().height;
 
     // The scroll-to-bottom button shows unless the list is at the bottom with no newer messages.
     setScrollToBottomButtonVisible(
@@ -695,15 +708,17 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
 
   const flatListContentContainerStyle = useMemo(
     () => [
-      { paddingTop: messageInputFloating ? messageInputHeight : 0 },
+      // The banner floats over the list, so the newest message ends above it.
+      { paddingTop: (messageInputFloating ? messageInputHeight : 0) + bannerHeight },
       styles.contentContainer,
       additionalFlatListProps?.contentContainerStyle,
     ],
     [
       additionalFlatListProps?.contentContainerStyle,
-      styles.contentContainer,
-      messageInputHeight,
+      bannerHeight,
       messageInputFloating,
+      messageInputHeight,
+      styles.contentContainer,
     ],
   );
 
@@ -853,9 +868,10 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           layout={transitions.layout200}
           style={[
             {
-              bottom: messageInputFloating
-                ? messageInputHeight + primitives.spacingMd + 16
-                : primitives.spacingMd,
+              bottom:
+                (messageInputFloating
+                  ? messageInputHeight + primitives.spacingMd + 16
+                  : primitives.spacingMd) + bannerHeight,
             },
             styles.scrollToBottomButtonContainer,
           ]}
@@ -876,6 +892,23 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
           />
         </View>
       ) : null}
+      {ScheduledMessagesBanner ? (
+        <Animated.View
+          layout={transitions.layout200}
+          pointerEvents='box-none'
+          style={[
+            { bottom: messageInputFloating ? messageInputHeight + 16 : 0 },
+            styles.scheduledMessagesBannerContainer,
+          ]}
+        >
+          <PortalWhileClosingView
+            portalHostName='overlay-scheduled-messages-banner'
+            portalName='scheduled-messages-banner'
+          >
+            <ScheduledMessagesBanner />
+          </PortalWhileClosingView>
+        </Animated.View>
+      ) : null}
       <Animated.View
         layout={transitions.layout200}
         style={[
@@ -893,7 +926,9 @@ const MessageListWithContext = (props: MessageListPropsWithContext) => {
         </PortalWhileClosingView>
       </Animated.View>
       <NotificationList
-        bottomOffset={messageInputFloating ? messageInputHeight + 16 : undefined}
+        bottomOffset={
+          (messageInputFloating ? messageInputHeight + 16 : 0) + bannerHeight || undefined
+        }
         filter={pendingUploadsEnabled ? excludeCanceledUploadNotifications : undefined}
       />
     </View>

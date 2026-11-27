@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { PressableProps, ViewProps } from 'react-native';
 
-import type { Attachment, Channel, LocalMessage } from 'stream-chat';
+import type { Attachment, Channel, LocalMessage, Thread } from 'stream-chat';
 
 import type { MessagePressableHandlerPayload } from '../../components/Message/Message';
 import type { MarkdownRules } from '../../components/Message/MessageItemView/utils/renderText';
@@ -177,6 +177,12 @@ export type MessagesContextValue = {
    * and in a channel also the reply's thread.
    */
   onAlsoSentToChannelHeaderPress?: (payload: AlsoSentToChannelHeaderPressPayload) => void;
+  /**
+   * Handles a press on the scheduled messages banner above the composer, to open the scheduled
+   * messages of the channel or, in a thread, of the thread. The banner shows its `View` link only
+   * when this is set.
+   */
+  onScheduledMessagesBannerPress?: (payload: { channel: Channel; thread?: Thread }) => void;
   /** Where the reaction list renders in the message. Defaults to 'top'. */
   reactionListPosition?: 'top' | 'bottom';
 
