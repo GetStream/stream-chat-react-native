@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import type { Channel, LocalMessage } from 'stream-chat';
@@ -19,7 +19,10 @@ import {
 
 import { useBottomSheetContext } from '../../contexts/bottomSheetContext/BottomSheetContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
-import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
+import {
+  MessageComposerContext,
+  type MessageComposerContextValue,
+} from '../../contexts/messageComposerContext/MessageComposerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks/useStableCallback';
@@ -39,6 +42,13 @@ export type ScheduleTimeSheetProps = {
   initialDate?: Date;
   /** Replaces the sheet's title, e.g. `Reschedule message`. */
   title?: string;
+  /** Replaces the preview card's first line, e.g. `Scheduled for Fri, Oct 23 at 09:00`. */
+  previewTitle?: string;
+  /**
+   * `reschedule` moves a scheduled message to another time. That adds no message, so the count
+   * note is left out, and the server never sends it right away, so a too-soon time says so.
+   */
+  mode?: 'schedule' | 'reschedule';
 };
 
 const NOW_REFRESH_INTERVAL_MS = 15_000;
@@ -47,12 +57,17 @@ const ScheduleTimeSheetContent = ({
   channel,
   initialDate,
   message,
+  mode = 'schedule',
   onConfirm,
+  previewTitle: previewTitleProp,
   title: titleProp,
 }: Omit<ScheduleTimeSheetProps, 'onClose' | 'visible'>) => {
   const { close } = useBottomSheetContext();
   const { Reply } = useComponentsContext();
-  const messageComposer = useMessageComposer();
+  // Read without throwing, as a list across channels reschedules outside any `Channel`.
+  const { messageComposer } = useContext(
+    MessageComposerContext,
+  ) as Partial<MessageComposerContextValue>;
   const { t } = useTranslationContext();
   const channelName = useChannelPreviewDisplayName(channel)?.trim();
   const { maxPerChannel, pendingCount } = useChannelScheduledMessageLimit(channel);
@@ -60,14 +75,16 @@ const ScheduleTimeSheetContent = ({
   const title = titleProp ?? t('scheduledMessages.scheduleMessage.title', 'Schedule message');
 
   const quotedName = message?.quoted_message?.user?.name;
-  const previewTitle = quotedName
-    ? t('reply.replyTo.title', 'Reply to {{name}}', { name: quotedName })
-    : channelName
-      ? t('scheduledMessages.messageTo.title', 'Message to {{ name }}', { name: channelName })
-      : t('scheduledMessages.message.title', 'Scheduled message');
+  const previewTitle =
+    previewTitleProp ??
+    (quotedName
+      ? t('reply.replyTo.title', 'Reply to {{name}}', { name: quotedName })
+      : channelName
+        ? t('scheduledMessages.messageTo.title', 'Message to {{ name }}', { name: channelName })
+        : t('scheduledMessages.message.title', 'Scheduled message'));
 
   const usageText =
-    maxPerChannel !== undefined && pendingCount > 0
+    mode === 'schedule' && maxPerChannel !== undefined && pendingCount > 0
       ? t('scheduledMessages.usage.text', '{{ count }} of {{ max }} scheduled in this channel', {
           count: pendingCount,
           max: maxPerChannel,
@@ -98,7 +115,8 @@ const ScheduleTimeSheetContent = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const blockedText =
-    messageComposer.scheduleBlockReason === ScheduledMessageBlockReason.Command
+    mode === 'schedule' &&
+    messageComposer?.scheduleBlockReason === ScheduledMessageBlockReason.Command
       ? t(
           'scheduledMessages.commandBlocked.error',
           "Commands can't be scheduled. Remove the / command to continue.",
@@ -108,7 +126,12 @@ const ScheduleTimeSheetContent = ({
   const timeError = getScheduleTimeError(scheduledAt, bounds);
   const timeErrorText =
     timeError === 'too_soon'
-      ? t('scheduledMessages.tooSoon.error', 'Pick a time at least 1 minute from now')
+      ? mode === 'reschedule'
+        ? t(
+            'scheduledMessages.rescheduleTooSoon.error',
+            "Pick a later time. Editing can't send a message right away.",
+          )
+        : t('scheduledMessages.tooSoon.error', 'Pick a time at least 1 minute from now')
       : timeError === 'too_far'
         ? t('scheduledMessages.tooFar.error', "That's further ahead than your app allows")
         : undefined;
@@ -185,7 +208,7 @@ const ScheduleTimeSheetContent = ({
   );
 };
 
-/** The date and time sheet `Custom time` opens, and saving an edited failed message. */
+/** The date and time sheet for `Custom time`, rescheduling, and saving a failed message. */
 export const ScheduleTimeSheet = ({ onClose, visible, ...props }: ScheduleTimeSheetProps) => {
   const { height } = useWindowDimensions();
 

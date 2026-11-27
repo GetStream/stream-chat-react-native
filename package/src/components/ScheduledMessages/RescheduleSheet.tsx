@@ -1,8 +1,9 @@
-import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 
 import type { LocalMessage } from 'stream-chat';
 
 import { useScheduleComposerMessage } from './hooks/useScheduleComposerMessage';
+import { useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -17,7 +18,12 @@ export type RescheduleSheetRequest = {
 
 type OpenRescheduleSheet = (request: RescheduleSheetRequest) => void;
 
-const RescheduleSheetContext = createContext<OpenRescheduleSheet | undefined>(undefined);
+/**
+ * Lets the save button open a Reschedule sheet rendered next to the edit rather than inside it.
+ * Scheduling a failed message again ends the edit, so a sheet inside the composer would vanish
+ * instead of sliding closed.
+ */
+export const RescheduleSheetContext = createContext<OpenRescheduleSheet | undefined>(undefined);
 
 /** Opens the hosted Reschedule sheet, or `undefined` when no host is around. */
 export const useOpenRescheduleSheet = () => useContext(RescheduleSheetContext);
@@ -32,6 +38,7 @@ export const RescheduleSheet = ({ onClose, request }: RescheduleSheetProps) => {
   const { ScheduleTimeSheet } = useComponentsContext();
   const { channel } = useChannelContext();
   const { t } = useTranslationContext();
+  const { formatDateTime } = useScheduledTimeFormatter();
   const schedule = useScheduleComposerMessage();
 
   const confirm = useStableCallback((scheduledAt: Date) =>
@@ -45,24 +52,15 @@ export const RescheduleSheet = ({ onClose, request }: RescheduleSheetProps) => {
       message={request?.message}
       onClose={onClose}
       onConfirm={confirm}
+      previewTitle={
+        request?.initialDate
+          ? t('scheduledMessages.banner.single.text', 'Scheduled for {{ time }}', {
+              time: formatDateTime(request.initialDate),
+            })
+          : undefined
+      }
       title={t('scheduledMessages.rescheduleMessage.title', 'Reschedule message')}
       visible={!!request}
     />
-  );
-};
-
-/**
- * Renders the Reschedule sheet next to the edit rather than inside it. Scheduling a failed message
- * again ends the edit, so a sheet inside the composer would vanish instead of sliding closed.
- */
-export const RescheduleSheetHost = ({ children }: PropsWithChildren) => {
-  const [request, setRequest] = useState<RescheduleSheetRequest>();
-  const close = useStableCallback(() => setRequest(undefined));
-
-  return (
-    <RescheduleSheetContext.Provider value={setRequest}>
-      {children}
-      <RescheduleSheet onClose={close} request={request} />
-    </RescheduleSheetContext.Provider>
   );
 };

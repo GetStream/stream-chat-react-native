@@ -171,6 +171,8 @@ import { PollOptionFullResultsContent } from '../../components/Poll/components/P
 import { PollResultsContent } from '../../components/Poll/components/PollResults/PollResults';
 import { PollHeader } from '../../components/Poll/Poll';
 import { Reply } from '../../components/Reply/Reply';
+import { ScheduledMessageActionsSheet } from '../../components/ScheduledMessages/ScheduledMessageActionsSheet';
+import { ScheduledMessageListItem } from '../../components/ScheduledMessages/ScheduledMessageListItem';
 import { ScheduledMessagesBanner } from '../../components/ScheduledMessages/ScheduledMessagesBanner';
 import { ScheduleMessageSheet } from '../../components/ScheduledMessages/ScheduleMessageSheet';
 import { ScheduleTimeSheet } from '../../components/ScheduledMessages/ScheduleTimeSheet';
@@ -487,6 +489,8 @@ const components = {
   ReactionListItemWrapper,
   ReactionListTop,
   Reply,
+  ScheduledMessageActionsSheet,
+  ScheduledMessageListItem,
   ScheduledMessagesBanner,
   ScheduleMessageSheet,
   ScheduleTimeSheet,

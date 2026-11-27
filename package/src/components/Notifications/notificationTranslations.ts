@@ -52,11 +52,6 @@ const translateScheduledMessageBlocked: NotificationTranslator = ({ notification
         'notifications.scheduledMessageBlocked.command.error',
         "Commands can't be scheduled",
       );
-    case ScheduledMessageBlockReason.SharedLocation:
-      return t(
-        'notifications.scheduledMessageBlocked.sharedLocation.error',
-        "Locations can't be scheduled",
-      );
     default:
       return t('notifications.scheduledMessageBlocked.error', 'This message cannot be scheduled');
   }

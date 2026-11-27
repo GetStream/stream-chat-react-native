@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import {
   I18nManager,
   Image,
@@ -26,10 +26,13 @@ import { useAnnounceOnShow } from '../../a11y/hooks/useAnnounceOnShow';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
 import {
+  MessageComposerContext,
+  type MessageComposerContextValue,
+} from '../../contexts/messageComposerContext/MessageComposerContext';
+import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
-import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStateStore } from '../../hooks';
@@ -315,11 +318,12 @@ export const Reply = (props: ReplyProps) => {
   const { client } = useChatContext();
   const { ImageComponent } = useComponentsContext();
 
-  const messageComposer = useMessageComposer();
-  const { quotedMessage: quotedMessageFromComposer } = useStateStore(
-    messageComposer.state,
-    messageComposerStateStoreSelector,
-  );
+  // Read without throwing, as the schedule sheets show a preview outside any `Channel` too.
+  const { messageComposer } = useContext(
+    MessageComposerContext,
+  ) as Partial<MessageComposerContextValue>;
+  const { quotedMessage: quotedMessageFromComposer } =
+    useStateStore(messageComposer?.state, messageComposerStateStoreSelector) ?? {};
 
   const quotedMessage = messageFromContext
     ? (messageFromContext.quoted_message as ReplyPropsWithContext['quotedMessage'])

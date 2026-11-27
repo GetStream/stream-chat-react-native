@@ -7,7 +7,7 @@ import {
   RescheduleSheet,
   type RescheduleSheetRequest,
   useOpenRescheduleSheet,
-} from './RescheduleSheetHost';
+} from './RescheduleSheet';
 
 import { useMessageComposer } from '../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useStableCallback } from '../../hooks/useStableCallback';
