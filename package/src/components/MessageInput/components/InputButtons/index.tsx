@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, useColorScheme } from 'react-native';
 
 import Animated, {
   useAnimatedStyle,
@@ -19,12 +19,13 @@ import {
 import { useOwnCapabilitiesContext } from '../../../../contexts/ownCapabilitiesContext/OwnCapabilitiesContext';
 import { useTheme } from '../../../../contexts/themeContext/ThemeContext';
 import { useAttachmentPickerState } from '../../../../hooks/useAttachmentPickerState';
+import { primitives } from '../../../../theme';
 
 export type InputButtonsProps = Partial<InputButtonsWithContextProps>;
 
 export type InputButtonsWithContextProps = Pick<
   MessageInputContextValue,
-  'hasCameraPicker' | 'hasCommands' | 'hasFilePicker' | 'hasImagePicker'
+  'hasCameraPicker' | 'hasCommands' | 'hasFilePicker' | 'hasImagePicker' | 'messageInputFloating'
 > &
   Pick<OwnCapabilitiesContextValue, 'uploadFile'>;
 
@@ -34,6 +35,7 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
     hasCommands,
     hasFilePicker,
     hasImagePicker,
+    messageInputFloating,
     uploadFile: ownCapabilitiesUploadFile,
   } = props;
   const { AttachButton } = useComponentsContext();
@@ -44,8 +46,10 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   const {
     theme: {
       messageComposer: { attachButtonContainer },
+      semantics,
     },
   } = useTheme();
+  const scheme = useColorScheme();
 
   useEffect(() => {
     rotation.value = withTiming(selectedPicker !== undefined ? 45 : 0, { duration: 200 });
@@ -63,7 +67,19 @@ export const InputButtonsWithContext = (props: InputButtonsWithContextProps) => 
   }
 
   return hasAttachmentUploadCapabilities && !command ? (
-    <Animated.View entering={ZoomIn.duration(200)} exiting={ZoomOut.duration(200)}>
+    <Animated.View
+      entering={ZoomIn.duration(200)}
+      exiting={ZoomOut.duration(200)}
+      style={
+        messageInputFloating
+          ? [
+              styles.floatingContainer,
+              { backgroundColor: semantics.backgroundCoreElevation1 },
+              scheme === 'dark' ? primitives.darkElevation3 : primitives.lightElevation3,
+            ]
+          : undefined
+      }
+    >
       <Animated.View style={[styles.attachButtonContainer, attachButtonContainer, animatedStyle]}>
         <AttachButton />
       </Animated.View>
@@ -91,7 +107,11 @@ const areEqual = (
     uploadFile: nextUploadFile,
   } = nextProps;
 
-  if (prevHasCommands !== nextHasCommands || prevUploadFile !== nextUploadFile) {
+  if (
+    prevHasCommands !== nextHasCommands ||
+    prevUploadFile !== nextUploadFile ||
+    prevProps.messageInputFloating !== nextProps.messageInputFloating
+  ) {
     return false;
   }
 
@@ -116,7 +136,8 @@ const MemoizedInputButtonsWithContext = React.memo(
 ) as typeof InputButtonsWithContext;
 
 export const InputButtons = (props: InputButtonsProps) => {
-  const { hasCameraPicker, hasCommands, hasFilePicker, hasImagePicker } = useMessageInputContext();
+  const { hasCameraPicker, hasCommands, hasFilePicker, hasImagePicker, messageInputFloating } =
+    useMessageInputContext();
   const { uploadFile } = useOwnCapabilitiesContext();
 
   return (
@@ -126,6 +147,7 @@ export const InputButtons = (props: InputButtonsProps) => {
         hasCommands,
         hasFilePicker,
         hasImagePicker,
+        messageInputFloating,
         uploadFile,
       }}
       {...props}
@@ -135,4 +157,7 @@ export const InputButtons = (props: InputButtonsProps) => {
 
 const styles = StyleSheet.create({
   attachButtonContainer: {},
+  floatingContainer: {
+    borderRadius: primitives.radiusMax,
+  },
 });
