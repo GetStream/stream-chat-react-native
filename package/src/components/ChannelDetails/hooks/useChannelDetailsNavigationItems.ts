@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react';
 
+import { useChannelDetailsContext } from '../../../contexts/channelDetailsContext/channelDetailsContext';
 import { useComponentsContext } from '../../../contexts/componentsContext/ComponentsContext';
 import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useCanScheduleMessages } from '../../../hooks/useCanScheduleMessages';
 import { asDynamicKey } from '../../../i18n/utils';
 import type { IconProps } from '../../../icons/utils/base';
 
@@ -12,6 +14,7 @@ import type { IconProps } from '../../../icons/utils/base';
  */
 export type ChannelDetailsNavigationSectionType =
   | 'pinned-messages'
+  | 'scheduled-messages'
   | 'photos-and-videos'
   | 'files'
   | string;
@@ -24,7 +27,10 @@ export type ChannelDetailsNavigationItem = {
   label: string;
   /** The section this row represents. */
   section: ChannelDetailsNavigationSectionType;
-  /** Fired when the row is tapped. When unset, the row opens the built-in modal for its section. */
+  /**
+   * Fired when the row is tapped. When unset, the row opens the built-in modal for its section,
+   * except `scheduled-messages`, which has none and is left out until this is set.
+   */
   onPress?: () => void;
 };
 
@@ -33,10 +39,14 @@ export type ChannelDetailsNavigationItem = {
  * The declaration order is the order of the rows.
  */
 const SECTION_CONFIG: Record<
-  'pinned-messages' | 'photos-and-videos' | 'files',
-  { icon: 'Pin' | 'Picture' | 'Folder'; label: string }
+  'pinned-messages' | 'scheduled-messages' | 'photos-and-videos' | 'files',
+  { icon: 'Pin' | 'Time' | 'Picture' | 'Folder'; label: string }
 > = {
   'pinned-messages': { icon: 'Pin', label: 'channelDetails.navigation.pinnedMessages.label' },
+  'scheduled-messages': {
+    icon: 'Time',
+    label: 'channelDetails.navigation.scheduledMessages.label',
+  },
   'photos-and-videos': {
     icon: 'Picture',
     label: 'channelDetails.navigation.photosAndVideos.label',
@@ -53,7 +63,9 @@ export type ChannelDetailsNavigationItemsContext = {
 /**
  * Customizes the rows rendered by `ChannelDetailsNavigationSection`. Receives the built-in
  * `defaultItems` (and a `context`) and returns the rows to render. Set a row's `onPress` to route
- * it elsewhere, or add and remove rows. A row without `onPress` opens the built-in modal.
+ * it elsewhere, or add and remove rows. A row without `onPress` opens the built-in modal, except
+ * `scheduled-messages`, which is shown only with an `onPress` that opens a screen rendering
+ * `ChannelScheduledMessages` inside a `Channel`.
  */
 export type GetChannelDetailsNavigationItems = (params: {
   context: ChannelDetailsNavigationItemsContext;
@@ -78,21 +90,30 @@ export const useChannelDetailsNavigationItems = ({
 } = {}): ChannelDetailsNavigationItem[] => {
   const { icons } = useComponentsContext();
   const { t } = useTranslationContext();
+  const { channel } = useChannelDetailsContext();
+  const showScheduledMessages = useCanScheduleMessages(channel);
 
   const context = useMemo<ChannelDetailsNavigationItemsContext>(() => ({ t }), [t]);
 
   const defaultItems = useMemo<ChannelDetailsNavigationItem[]>(
     () =>
-      SECTIONS.map((section) => {
-        const { icon, label } = SECTION_CONFIG[section];
-        // The label key comes from `SECTION_CONFIG`, so it is only known at runtime.
-        return { Icon: icons[icon], label: t(asDynamicKey(label)), section };
-      }),
-    [icons, t],
+      SECTIONS.filter((section) => section !== 'scheduled-messages' || showScheduledMessages).map(
+        (section) => {
+          const { icon, label } = SECTION_CONFIG[section];
+          // The label key comes from `SECTION_CONFIG`, so it is only known at runtime.
+          return { Icon: icons[icon], label: t(asDynamicKey(label)), section };
+        },
+      ),
+    [icons, showScheduledMessages, t],
   );
 
+  // Editing a scheduled message needs the app's own `Channel`, so there is no built-in modal for
+  // it and the row is shown only once the app routes it.
   return useMemo(
-    () => getNavigationItems({ context, defaultItems }),
+    () =>
+      getNavigationItems({ context, defaultItems }).filter(
+        (item) => item.section !== 'scheduled-messages' || item.onPress,
+      ),
     [context, defaultItems, getNavigationItems],
   );
 };

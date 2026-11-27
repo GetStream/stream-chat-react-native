@@ -10,6 +10,7 @@ export * from './useChannelMembershipState';
 export * from './useChannelOwnCapabilities';
 export * from './useCanEditChannel';
 export * from './useCanAddMembersToChannel';
+export * from './useCanScheduleMessages';
 export * from './useChannelMuteActive';
 export * from './useIsDirectChat';
 export * from './useIsChannelMember';

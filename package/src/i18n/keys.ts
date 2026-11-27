@@ -214,6 +214,7 @@ export type TranslationCatalog = {
   'channelDetails.navigation.files.label': 'Files';
   'channelDetails.navigation.photosAndVideos.label': 'Photos & Videos';
   'channelDetails.navigation.pinnedMessages.label': 'Pinned Messages';
+  'channelDetails.navigation.scheduledMessages.label': 'Scheduled Messages';
   'channelDetails.pinnedMessageList.empty.description': 'Long-press a message to pin it to the chat';
   'channelDetails.pinnedMessageList.empty.title': 'No pinned messages';
   'channelDetails.pinnedMessageList.load.error': 'Failed to load pinned messages';
@@ -603,6 +604,7 @@ export type BundledTranslationKey =
   | 'channelDetails.navigation.files.label'
   | 'channelDetails.navigation.photosAndVideos.label'
   | 'channelDetails.navigation.pinnedMessages.label'
+  | 'channelDetails.navigation.scheduledMessages.label'
   | 'channelPreview.deliveryStatus.delivered.accessibilityLabel'
   | 'channelPreview.deliveryStatus.read.accessibilityLabel'
   | 'channelPreview.deliveryStatus.sent.accessibilityLabel'

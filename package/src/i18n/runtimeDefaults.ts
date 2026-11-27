@@ -79,6 +79,7 @@ export const runtimeDefaults = {
   'channelDetails.navigation.files.label': 'Files',
   'channelDetails.navigation.photosAndVideos.label': 'Photos & Videos',
   'channelDetails.navigation.pinnedMessages.label': 'Pinned Messages',
+  'channelDetails.navigation.scheduledMessages.label': 'Scheduled Messages',
   'channelPreview.deliveryStatus.delivered.accessibilityLabel': 'Delivered, sent by you',
   'channelPreview.deliveryStatus.read.accessibilityLabel': 'Read, sent by you',
   'channelPreview.deliveryStatus.sent.accessibilityLabel': 'Sent by you',

@@ -203,6 +203,7 @@
   "channelDetails.navigation.files.label": "Files",
   "channelDetails.navigation.photosAndVideos.label": "Photos & Videos",
   "channelDetails.navigation.pinnedMessages.label": "Pinned Messages",
+  "channelDetails.navigation.scheduledMessages.label": "Scheduled Messages",
   "channelDetails.pinnedMessageList.empty.description": "Long-press a message to pin it to the chat",
   "channelDetails.pinnedMessageList.empty.title": "No pinned messages",
   "channelDetails.pinnedMessageList.load.error": "Failed to load pinned messages",

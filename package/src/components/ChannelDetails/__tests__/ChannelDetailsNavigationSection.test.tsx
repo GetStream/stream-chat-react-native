@@ -71,7 +71,13 @@ jest.mock('../../ImageGallery/ImageGallery', () => {
 });
 
 const renderSection = (
-  { getNavigationItems }: { getNavigationItems?: GetChannelDetailsNavigationItems } = {},
+  {
+    channel,
+    getNavigationItems,
+  }: {
+    channel?: ChannelDetailsContextValue['channel'];
+    getNavigationItems?: GetChannelDetailsNavigationItems;
+  } = {},
   overlay: Overlay = 'none',
 ) => {
   const overlayContextValue: OverlayContextValue = {
@@ -94,9 +100,7 @@ const renderSection = (
         }}
       >
         <OverlayContext.Provider value={overlayContextValue}>
-          <ChannelDetailsContextProvider
-            channel={undefined as unknown as ChannelDetailsContextValue['channel']}
-          >
+          <ChannelDetailsContextProvider channel={channel as ChannelDetailsContextValue['channel']}>
             <ChannelDetailsNavigationSection getNavigationItems={getNavigationItems} />
           </ChannelDetailsContextProvider>
         </OverlayContext.Provider>
@@ -109,6 +113,45 @@ describe('ChannelDetailsNavigationSection', () => {
   beforeEach(() => {
     probeCalls.length = 0;
     pinnedListProbe.length = 0;
+  });
+
+  describe('scheduled messages row', () => {
+    const channel = {
+      scheduledMessagesEnabled: true,
+    } as unknown as ChannelDetailsContextValue['channel'];
+
+    it('is left out until the app routes it, since it has no built-in modal', () => {
+      const { queryByTestId } = renderSection({ channel });
+
+      expect(queryByTestId('channel-details-scheduled-messages')).toBeNull();
+    });
+
+    it('is shown and opens the route once the app sets its onPress', () => {
+      const onPress = jest.fn();
+      const { getByTestId } = renderSection({
+        channel,
+        getNavigationItems: ({ defaultItems }) =>
+          defaultItems.map((item) =>
+            item.section === 'scheduled-messages' ? { ...item, onPress } : item,
+          ),
+      });
+
+      fireEvent.press(getByTestId('channel-details-scheduled-messages'));
+
+      expect(onPress).toHaveBeenCalledTimes(1);
+    });
+
+    it('is left out where the user cannot schedule messages, even when routed', () => {
+      const { queryByTestId } = renderSection({
+        channel: {
+          scheduledMessagesEnabled: false,
+        } as unknown as ChannelDetailsContextValue['channel'],
+        getNavigationItems: ({ defaultItems }) =>
+          defaultItems.map((item) => ({ ...item, onPress: jest.fn() })),
+      });
+
+      expect(queryByTestId('channel-details-scheduled-messages')).toBeNull();
+    });
   });
 
   it('renders the three navigation rows with their labels and testIDs', () => {
