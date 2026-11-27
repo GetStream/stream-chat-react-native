@@ -12,6 +12,7 @@ exports[`AttachButton should call handleAttachButtonPress when the button is cli
     }
   >
     <View
+      pointerEvents="box-none"
       style={
         {
           "height": "100%",
@@ -978,6 +979,7 @@ exports[`AttachButton should render a enabled AttachButton 1`] = `
     }
   >
     <View
+      pointerEvents="box-none"
       style={
         {
           "height": "100%",
@@ -1944,6 +1946,7 @@ exports[`AttachButton should render an disabled AttachButton 1`] = `
     }
   >
     <View
+      pointerEvents="box-none"
       style={
         {
           "height": "100%",

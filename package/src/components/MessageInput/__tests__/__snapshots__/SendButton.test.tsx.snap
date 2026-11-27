@@ -12,6 +12,7 @@ exports[`SendButton should render a SendButton 1`] = `
     }
   >
     <View
+      pointerEvents="box-none"
       style={
         {
           "height": "100%",
@@ -976,6 +977,7 @@ exports[`SendButton should render a disabled SendButton 1`] = `
     }
   >
     <View
+      pointerEvents="box-none"
       style={
         {
           "height": "100%",

@@ -1,4 +1,5 @@
 export * from './ScheduleCalendar';
+export * from './ScheduledMessageEditComposer';
 export * from './ScheduledMessagesBanner';
 export * from './ScheduleMessageSheet';
 export * from './ScheduleSheetHeader';
@@ -17,3 +18,6 @@ export * from './utils/failureReason';
 export * from './utils/scheduleErrors';
 export * from './utils/scheduleTime';
 export * from './utils/quote';
+export * from './QuoteDeletedNotice';
+export * from './RescheduleFailedMessageButton';
+export * from './ScheduledMessageSaveButton';

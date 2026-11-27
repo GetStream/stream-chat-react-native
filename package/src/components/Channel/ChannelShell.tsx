@@ -535,7 +535,9 @@ export const ChannelShell = (props: PropsWithChildren<ChannelShellProps>) => {
                   <AudioPlayerProvider value={audioPlayerContext}>
                     <NotificationAnnouncer />
                     {initializeOnMount ? <JumpToLatestOnOpen /> : null}
-                    <View style={{ height: '100%' }}>{children}</View>
+                    <View pointerEvents='box-none' style={{ height: '100%' }}>
+                      {children}
+                    </View>
                     {shouldRenderAttachmentPicker ? <AttachmentPicker /> : null}
                   </AudioPlayerProvider>
                 </MessageInputProvider>

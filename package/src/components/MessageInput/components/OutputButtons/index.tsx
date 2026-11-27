@@ -23,6 +23,8 @@ import { useStateStore } from '../../../../hooks/useStateStore';
 import { transitions } from '../../../../utils/animations/transitions';
 import { AIStates, useAIState } from '../../../AITypingIndicatorView';
 import { useSettledWSConnectionHealth } from '../../../Chat/hooks/useWSConnectionState';
+import { useEditedScheduledMessage } from '../../../ScheduledMessages/hooks/useEditedScheduledMessage';
+import { ScheduledMessageSaveButton } from '../../../ScheduledMessages/ScheduledMessageSaveButton';
 import { useIsCooldownActive } from '../../hooks/useIsCooldownActive';
 
 export type OutputButtonsProps = Partial<OutputButtonsWithContextProps>;
@@ -64,7 +66,8 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
   } = useTheme();
 
   const messageComposer = useMessageComposer();
-  const editing = !!messageComposer.editedMessage;
+  const { editedScheduledMessage } = useEditedScheduledMessage();
+  const editing = !!messageComposer.editedMessage || !!editedScheduledMessage;
   const { textComposer } = messageComposer;
   const { command, textIsEmpty } = useStateStore(textComposer.state, textComposerStateSelector);
   const hasSendableData = useMessageComposerHasSendableData();
@@ -85,7 +88,11 @@ export const OutputButtonsWithContext = (props: OutputButtonsWithContextProps) =
         key='edit-button'
         style={editButtonContainer}
       >
-        <EditButton disabled={messageComposer.compositionIsEmpty} />
+        {editedScheduledMessage ? (
+          <ScheduledMessageSaveButton />
+        ) : (
+          <EditButton disabled={messageComposer.compositionIsEmpty} />
+        )}
       </Animated.View>
     );
   } else if (cooldownIsActive) {

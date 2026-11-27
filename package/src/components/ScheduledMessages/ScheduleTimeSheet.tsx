@@ -37,6 +37,8 @@ export type ScheduleTimeSheetProps = {
   visible: boolean;
   /** The time the sheet opens with. Defaults to tomorrow at 09:00. */
   initialDate?: Date;
+  /** Replaces the sheet's title, e.g. `Reschedule message`. */
+  title?: string;
 };
 
 const NOW_REFRESH_INTERVAL_MS = 15_000;
@@ -46,6 +48,7 @@ const ScheduleTimeSheetContent = ({
   initialDate,
   message,
   onConfirm,
+  title: titleProp,
 }: Omit<ScheduleTimeSheetProps, 'onClose' | 'visible'>) => {
   const { close } = useBottomSheetContext();
   const { Reply } = useComponentsContext();
@@ -54,7 +57,7 @@ const ScheduleTimeSheetContent = ({
   const channelName = useChannelPreviewDisplayName(channel)?.trim();
   const { maxPerChannel, pendingCount } = useChannelScheduledMessageLimit(channel);
 
-  const title = t('scheduledMessages.scheduleMessage.title', 'Schedule message');
+  const title = titleProp ?? t('scheduledMessages.scheduleMessage.title', 'Schedule message');
 
   const quotedName = message?.quoted_message?.user?.name;
   const previewTitle = quotedName
@@ -182,7 +185,7 @@ const ScheduleTimeSheetContent = ({
   );
 };
 
-/** The date and time sheet `Custom time` opens. */
+/** The date and time sheet `Custom time` opens, and saving an edited failed message. */
 export const ScheduleTimeSheet = ({ onClose, visible, ...props }: ScheduleTimeSheetProps) => {
   const { height } = useWindowDimensions();
 

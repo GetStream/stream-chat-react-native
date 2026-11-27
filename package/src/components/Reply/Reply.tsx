@@ -102,7 +102,8 @@ export type ReplyPropsWithContext = { ImageComponent: React.ComponentType<ImageP
     isMyMessage: boolean;
     isParentMessageMine?: boolean;
     onDismiss?: () => void;
-    mode: 'reply' | 'edit';
+    /** `editScheduled` is the composer's edit of a scheduled message. */
+    mode: 'reply' | 'edit' | 'editScheduled';
     /** Replaces the title the mode gives, e.g. `Message to Maya Ross`. */
     title?: string;
     // Style overrides passed by `MessageContent`.
@@ -148,11 +149,13 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
       titleProp ??
       (mode === 'edit'
         ? t('message.editMessage.label', 'Edit Message')
-        : isMyMessage
-          ? t('common.you.label', 'You')
-          : quotedMessage?.user?.name
-            ? t('reply.replyTo.title', 'Reply to {{name}}', { name: quotedMessage?.user?.name })
-            : t('message.reply.label', 'Reply')),
+        : mode === 'editScheduled'
+          ? t('scheduledMessages.editScheduledMessage.label', 'Edit scheduled message')
+          : isMyMessage
+            ? t('common.you.label', 'You')
+            : quotedMessage?.user?.name
+              ? t('reply.replyTo.title', 'Reply to {{name}}', { name: quotedMessage?.user?.name })
+              : t('message.reply.label', 'Reply')),
     [mode, isMyMessage, quotedMessage?.user?.name, t, titleProp],
   );
 
@@ -186,7 +189,7 @@ export const ReplyWithContext = (props: ReplyPropsWithContext) => {
         <View style={[styles.dismissWrapper, dismissWrapper, stylesProp?.dismissWrapper]}>
           <AttachmentRemoveControl
             accessibilityLabelKey={
-              mode === 'edit'
+              mode === 'edit' || mode === 'editScheduled'
                 ? 'reply.removeEdit.accessibilityLabel'
                 : 'reply.removeReply.accessibilityLabel'
             }
@@ -286,7 +289,7 @@ const ReplyComposerAnnouncer = ({
       : raw;
   }, [message?.text]);
   const announcement = useMemo(() => {
-    if (mode === 'edit') {
+    if (mode === 'edit' || mode === 'editScheduled') {
       return truncatedText
         ? t('reply.editingMessage.withText.accessibilityLabel', 'Editing message: {{text}}', {
             text: truncatedText,

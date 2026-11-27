@@ -330,7 +330,15 @@ export const MessageInputProvider = ({
 
     try {
       // Editing a bounced message (type 'error') sends it again as a new message.
-      const { editedMessage } = messageComposer;
+      const { editedMessage, editedScheduledMessage } = messageComposer;
+      if (editedScheduledMessage && editedScheduledMessage.status !== 'failed') {
+        const { status } = await messageComposer.updateScheduledMessage();
+        if (status !== 'scheduled') {
+          inputBoxRef.current?.restoreState(text);
+        }
+        return;
+      }
+
       const result =
         editedMessage && editedMessage.type !== 'error'
           ? await messageComposer.update()

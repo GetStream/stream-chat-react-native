@@ -1,16 +1,33 @@
 import React from 'react';
-import { Pressable } from 'react-native';
+import { Keyboard, Pressable, Text } from 'react-native';
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import type { Channel as ChannelType, ScheduledMessageResponse, StreamChat } from 'stream-chat';
-import { dateToNs, StreamAPIError } from 'stream-chat';
+import type {
+  Channel as ChannelType,
+  MessageComposer,
+  ScheduledMessageResponse,
+  StreamChat,
+} from 'stream-chat';
+import {
+  CORE_NOTIFICATION_TYPE,
+  dateToNs,
+  ScheduledMessageBlockReason,
+  StreamAPIError,
+} from 'stream-chat';
 
 import { OverlayProvider } from '../../../contexts';
+import {
+  type MessageComposerAPIContextValue,
+  useMessageComposerAPIContext,
+} from '../../../contexts/messageComposerContext/MessageComposerAPIContext';
+import { useMessageComposer } from '../../../contexts/messageInputContext/hooks/useMessageComposer';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { SendButton } from '../../MessageInput/components/OutputButtons/SendButton';
+import { useEditedScheduledMessage } from '../hooks/useEditedScheduledMessage';
+import { ScheduledMessageEditComposer } from '../ScheduledMessageEditComposer';
 import { ScheduledMessagesBanner } from '../ScheduledMessagesBanner';
 import { ScheduleMessageSheet } from '../ScheduleMessageSheet';
 import { ScheduleTimePicker } from '../ScheduleTimePicker';
@@ -310,5 +327,233 @@ describe('ScheduleMessageSheet', () => {
     );
     fireEvent.press(screen.getByTestId('schedule-sheet-confirm'));
     expect(scheduleSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('ScheduledMessageEditComposer', () => {
+  let client: StreamChat;
+  let channel: ChannelType;
+  let editScheduledMessage: MessageComposerAPIContextValue['editScheduledMessage'];
+  let currentComposer: MessageComposer;
+
+  const ApiProbe = () => {
+    ({ editScheduledMessage } = useMessageComposerAPIContext());
+    currentComposer = useMessageComposer();
+    return null;
+  };
+
+  const EditProbe = () => {
+    const { editedScheduledMessage } = useEditedScheduledMessage();
+    return editedScheduledMessage ? <Text>{`editing ${editedScheduledMessage.id}`}</Text> : null;
+  };
+
+  const renderEdit = () =>
+    render(
+      <OverlayProvider>
+        <Chat client={client}>
+          <Channel channel={channel} initializeOnMount={false} markReadOnMount={false}>
+            <ApiProbe />
+            <EditProbe />
+            <ScheduledMessageEditComposer />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+  const startEdit = (scheduledMessage: ScheduledMessageResponse) =>
+    act(() => editScheduledMessage(scheduledMessage));
+
+  const press = (testID: string) =>
+    act(() => {
+      fireEvent.press(screen.getByTestId(testID));
+      return Promise.resolve();
+    });
+
+  beforeEach(async () => {
+    const { client: chatClient, channels } = await initiateClientWithChannels();
+    client = chatClient;
+    channel = channels[0];
+    jest.spyOn(channel, 'ensureScheduledMessagesLoaded').mockImplementation(() => undefined);
+    // The mock channel's server config has no scheduled message limits, which turns scheduling off.
+    jest.spyOn(channel, 'scheduledMessagesEnabled', 'get').mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    cleanup();
+    jest.restoreAllMocks();
+  });
+
+  it('renders nothing until the edit has loaded', async () => {
+    let resolveQuoted: (value: unknown) => void = () => undefined;
+    jest
+      .spyOn(client, 'getMessage')
+      .mockReturnValue(new Promise((resolve) => (resolveQuoted = resolve)) as never);
+    const scheduledMessage = generateScheduledMessage(channel, {
+      message: { quoted_message_id: 'not-loaded', text: 'Replying' },
+    });
+    renderEdit();
+
+    act(() => {
+      void editScheduledMessage(scheduledMessage);
+    });
+    await waitFor(() => expect(client.getMessage).toHaveBeenCalled());
+    expect(screen.queryByTestId('send-button')).toBeNull();
+    expect(screen.queryByText(`editing ${scheduledMessage.id}`)).toBeNull();
+    expect(currentComposer).toBe(channel.messageComposer);
+
+    await act(async () => {
+      resolveQuoted({ message: { id: 'not-loaded', text: 'Quoted' } });
+      await Promise.resolve();
+    });
+
+    await waitFor(() => expect(screen.getByText(`editing ${scheduledMessage.id}`)).toBeTruthy());
+    expect(screen.getByTestId('send-button')).toBeTruthy();
+  });
+
+  it('shows the last message opened when an earlier one finishes loading after it', async () => {
+    let resolveQuoted: (value: unknown) => void = () => undefined;
+    jest
+      .spyOn(client, 'getMessage')
+      .mockReturnValue(new Promise((resolve) => (resolveQuoted = resolve)) as never);
+    const slow = generateScheduledMessage(channel, {
+      message: { quoted_message_id: 'not-loaded', text: 'Slow' },
+    });
+    const fast = generateScheduledMessage(channel, { message: { text: 'Fast' } });
+    renderEdit();
+
+    act(() => {
+      void editScheduledMessage(slow);
+    });
+    await startEdit(fast);
+    await waitFor(() => expect(screen.getByText(`editing ${fast.id}`)).toBeTruthy());
+
+    await act(async () => {
+      resolveQuoted({ message: { id: 'not-loaded', text: 'Quoted' } });
+      await Promise.resolve();
+    });
+
+    expect(screen.getByText(`editing ${fast.id}`)).toBeTruthy();
+    expect(screen.queryByText(`editing ${slow.id}`)).toBeNull();
+  });
+
+  it('saves an edited scheduled message in place and hides the composer', async () => {
+    const scheduledMessage = generateScheduledMessage(channel, { message: { text: 'Old text' } });
+    const updateSpy = jest
+      .spyOn(channel.messageOperations, 'updateScheduledMessage')
+      .mockImplementation((id) => Promise.resolve({ ...scheduledMessage, id }));
+    const scheduleSpy = jest.spyOn(channel.messageOperations, 'scheduleMessage');
+    const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
+    renderEdit();
+
+    await startEdit(scheduledMessage);
+    await waitFor(() => expect(screen.getByText('Edit scheduled message')).toBeTruthy());
+    expect(dismissSpy).not.toHaveBeenCalled();
+    await press('send-button');
+
+    await waitFor(() => expect(screen.queryByTestId('send-button')).toBeNull());
+    expect(updateSpy).toHaveBeenCalledWith(scheduledMessage.id, expect.anything());
+    expect(scheduleSpy).not.toHaveBeenCalled();
+    expect(screen.queryByTestId('schedule-time-sheet')).toBeNull();
+    expect(dismissSpy).toHaveBeenCalled();
+  });
+
+  it('hides the composer when the edit is cancelled', async () => {
+    const scheduledMessage = generateScheduledMessage(channel, { message: { text: 'Keep me' } });
+    const updateSpy = jest.spyOn(channel.messageOperations, 'updateScheduledMessage');
+    renderEdit();
+
+    await startEdit(scheduledMessage);
+    await waitFor(() => expect(screen.getByText('Edit scheduled message')).toBeTruthy());
+    act(() => {
+      fireEvent.press(screen.getByTestId('remove-upload-preview'));
+    });
+
+    await waitFor(() => expect(screen.queryByTestId('send-button')).toBeNull());
+    expect(screen.queryByText(`editing ${scheduledMessage.id}`)).toBeNull();
+    expect(updateSpy).not.toHaveBeenCalled();
+    await waitFor(() => expect(currentComposer).toBe(channel.messageComposer));
+  });
+
+  it('asks for a new time before saving a failed message, then schedules it again', async () => {
+    const scheduledAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+    scheduledAt.setSeconds(0, 0);
+    const failed = generateScheduledMessage(channel, {
+      message: { text: 'Retry me' },
+      scheduled_at: dateToNs(scheduledAt),
+      status: 'failed',
+    });
+    const updateSpy = jest.spyOn(channel.messageOperations, 'updateScheduledMessage');
+    const scheduleSpy = jest.spyOn(channel.messageOperations, 'scheduleMessage').mockResolvedValue({
+      scheduled_message: generateScheduledMessage(channel, { message: { text: 'Retry me' } }),
+    } as never);
+    const deleteSpy = jest
+      .spyOn(channel.messageOperations, 'deleteScheduledMessage')
+      .mockResolvedValue(failed);
+    renderEdit();
+
+    await startEdit(failed);
+    await waitFor(() => expect(screen.getByText('Edit scheduled message')).toBeTruthy());
+    await press('send-button');
+
+    await waitFor(() => expect(screen.getByTestId('schedule-time-sheet')).toBeTruthy());
+    expect(screen.getByText('Reschedule message')).toBeTruthy();
+    expect(scheduleSpy).not.toHaveBeenCalled();
+
+    await press('schedule-sheet-confirm');
+
+    await waitFor(() => expect(screen.queryByTestId('send-button')).toBeNull());
+    expect(scheduleSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ options: expect.objectContaining({ scheduled_at: scheduledAt }) }),
+    );
+    expect(deleteSpy).toHaveBeenCalledWith(failed.id);
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('disables save and says why once a command is typed', async () => {
+    const scheduledMessage = generateScheduledMessage(channel, { message: { text: 'Launch day' } });
+    const blockedToasts = () =>
+      client.notifications.notifications.filter(
+        ({ type }) => type === CORE_NOTIFICATION_TYPE.scheduledMessageBlocked,
+      );
+    renderEdit();
+
+    await startEdit(scheduledMessage);
+    await waitFor(() => expect(screen.getByText('Edit scheduled message')).toBeTruthy());
+    expect(screen.getByTestId('send-button').props.accessibilityState?.disabled).toBe(false);
+    expect(blockedToasts()).toHaveLength(0);
+
+    act(() => currentComposer.textComposer.setText('/giphy launch day'));
+    await waitFor(() =>
+      expect(screen.getByTestId('send-button').props.accessibilityState?.disabled).toBe(true),
+    );
+    act(() => currentComposer.textComposer.setText('/giphy launch day!'));
+
+    expect(blockedToasts()).toHaveLength(1);
+    expect(blockedToasts()[0].metadata).toEqual({ reason: ScheduledMessageBlockReason.Command });
+
+    act(() => currentComposer.textComposer.setText('Launch day'));
+    await waitFor(() =>
+      expect(screen.getByTestId('send-button').props.accessibilityState?.disabled).toBe(false),
+    );
+  });
+
+  it('blocks saving while the quoted message is deleted, until the quote is removed', async () => {
+    const scheduledMessage = generateScheduledMessage(channel, {
+      message: {
+        quoted_message: { id: 'quoted', text: '', type: 'deleted' } as never,
+        quoted_message_id: 'quoted',
+        text: 'Replying',
+      },
+    });
+    renderEdit();
+
+    await startEdit(scheduledMessage);
+    await waitFor(() => expect(screen.getByTestId('scheduled-message-quote-deleted')).toBeTruthy());
+    expect(screen.getByTestId('send-button').props.accessibilityState?.disabled).toBe(true);
+
+    await press('scheduled-message-remove-quote');
+
+    await waitFor(() => expect(screen.queryByTestId('scheduled-message-quote-deleted')).toBeNull());
+    expect(screen.getByTestId('send-button').props.accessibilityState?.disabled).toBe(false);
   });
 });

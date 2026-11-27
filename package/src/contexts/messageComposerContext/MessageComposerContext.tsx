@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { LocalMessage, MessageComposer, MessageComposerState } from 'stream-chat';
 
@@ -39,12 +39,21 @@ const editedMessageSelector = (state: MessageComposerState) => ({
   editedMessage: state.editedMessage,
 });
 
+const editedScheduledMessageSelector = (state: MessageComposerState) => ({
+  editedScheduledMessage: state.editedScheduledMessage,
+});
+
 export const MessageComposerProvider = ({ children, value }: Props) => {
   const { client } = useChatContext();
   const { channel, thread } = value;
   const [editComposer, setEditComposer] = useState<MessageComposer | undefined>(undefined);
+  const [scheduledEditComposer, setScheduledEditComposer] = useState<MessageComposer | undefined>(
+    undefined,
+  );
+  const latestScheduledEditComposer = useRef<MessageComposer | undefined>(undefined);
 
-  const messageComposer = editComposer ?? thread?.messageComposer ?? channel.messageComposer;
+  const messageComposer =
+    editComposer ?? scheduledEditComposer ?? thread?.messageComposer ?? channel.messageComposer;
 
   // Submitting or clearing the edit composer clears its edited message, which ends the edit.
   const { editedMessage } = useStateStore(editComposer?.state, editedMessageSelector) ?? {};
@@ -53,6 +62,14 @@ export const MessageComposerProvider = ({ children, value }: Props) => {
       setEditComposer(undefined);
     }
   }, [editComposer, editedMessage]);
+
+  const { editedScheduledMessage } =
+    useStateStore(scheduledEditComposer?.state, editedScheduledMessageSelector) ?? {};
+  useEffect(() => {
+    if (scheduledEditComposer && !editedScheduledMessage) {
+      setScheduledEditComposer(undefined);
+    }
+  }, [editedScheduledMessage, scheduledEditComposer]);
 
   useEffect(() => messageComposer.registerSubscriptions(), [messageComposer]);
 
@@ -85,6 +102,18 @@ export const MessageComposerProvider = ({ children, value }: Props) => {
     () => setEditComposer(undefined),
   );
 
+  const editScheduledMessage: MessageComposerAPIContextValue['editScheduledMessage'] =
+    useStableCallback(async (scheduledMessage) => {
+      // Not cached: it lives only as long as the edit.
+      const composer = new MessageComposer({ client, compositionContext: channel });
+      latestScheduledEditComposer.current = composer;
+      await composer.editScheduledMessage(scheduledMessage);
+      // When another message was opened while this one loaded, only the last one is shown.
+      if (latestScheduledEditComposer.current === composer) {
+        setScheduledEditComposer(composer);
+      }
+    });
+
   const setQuotedMessage = useStableCallback((message: LocalMessage | null) =>
     messageComposer.setQuotedMessage(message),
   );
@@ -95,8 +124,8 @@ export const MessageComposerProvider = ({ children, value }: Props) => {
   );
 
   const messageComposerAPIContextValue = useMemo(
-    () => ({ clearEditingState, setEditingState, setQuotedMessage }),
-    [clearEditingState, setEditingState, setQuotedMessage],
+    () => ({ clearEditingState, editScheduledMessage, setEditingState, setQuotedMessage }),
+    [clearEditingState, editScheduledMessage, setEditingState, setQuotedMessage],
   );
 
   return (

@@ -1,7 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 import Animated from 'react-native-reanimated';
+
+import { toScheduledMessagePreview } from 'stream-chat';
 
 import { LinkPreviewList } from './components/LinkPreviewList';
 import { useHasLinkPreviews } from './hooks/useLinkPreviews';
@@ -18,6 +20,9 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useStateStore } from '../../hooks/useStateStore';
 import { primitives } from '../../theme';
 import { transitions } from '../../utils/animations/transitions';
+import { useEditedScheduledMessage } from '../ScheduledMessages/hooks/useEditedScheduledMessage';
+import { QuoteDeletedNotice } from '../ScheduledMessages/QuoteDeletedNotice';
+import { isDeletedQuotedMessage } from '../ScheduledMessages/utils/quote';
 
 export const MessageInputHeaderView = () => {
   const {
@@ -26,8 +31,17 @@ export const MessageInputHeaderView = () => {
     },
   } = useTheme();
   const messageComposer = useMessageComposer();
-  const editing = !!messageComposer.editedMessage;
+  const { editedScheduledMessage } = useEditedScheduledMessage();
+  const editingScheduled = !!editedScheduledMessage;
+  const editing = !!messageComposer.editedMessage || editingScheduled;
   const { clearEditingState } = useMessageComposerAPIContext();
+  const scheduledMessagePreview = useMemo(
+    () => (editedScheduledMessage ? toScheduledMessagePreview(editedScheduledMessage) : undefined),
+    [editedScheduledMessage],
+  );
+  const onDismissScheduledEdit = useCallback(() => {
+    messageComposer.cancelScheduledMessageEdit();
+  }, [messageComposer]);
   const { quotedMessage } = useStateStore(messageComposer.state, messageComposerStateStoreSelector);
   const hasLinkPreviews = useHasLinkPreviews();
   const { audioRecorderManager } = useMessageInputContext();
@@ -55,13 +69,26 @@ export const MessageInputHeaderView = () => {
         contentContainer,
       ]}
     >
-      {editing ? (
+      {editingScheduled ? (
+        <Animated.View entering={transitions.fadeIn200} exiting={transitions.fadeOut200}>
+          <Reply
+            mode='editScheduled'
+            onDismiss={onDismissScheduledEdit}
+            quotedMessage={scheduledMessagePreview}
+          />
+        </Animated.View>
+      ) : editing ? (
         <Animated.View entering={transitions.fadeIn200} exiting={transitions.fadeOut200}>
           <Reply
             mode='edit'
             onDismiss={clearEditingState}
             quotedMessage={messageComposer.editedMessage}
           />
+        </Animated.View>
+      ) : null}
+      {editingScheduled && isDeletedQuotedMessage(quotedMessage) ? (
+        <Animated.View entering={transitions.fadeIn200} exiting={transitions.fadeOut200}>
+          <QuoteDeletedNotice />
         </Animated.View>
       ) : null}
       {quotedMessage && !editing ? (

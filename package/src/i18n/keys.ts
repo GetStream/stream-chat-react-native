@@ -492,6 +492,7 @@ export type TranslationCatalog = {
   'scheduledMessages.customTime.label': 'Custom time';
   'scheduledMessages.dateTime.label': '{{ day }} at {{ time }}';
   'scheduledMessages.disabled.error': 'Scheduled messages are turned off';
+  'scheduledMessages.editScheduledMessage.label': 'Edit scheduled message';
   'scheduledMessages.failure.banned.text': "You can't send messages in this channel.";
   'scheduledMessages.failure.channelDeleted.text': 'This channel was deleted';
   'scheduledMessages.failure.channelFrozen.text': 'This channel is frozen.';
@@ -509,7 +510,10 @@ export type TranslationCatalog = {
   'scheduledMessages.messageTo.title': 'Message to {{ name }}';
   'scheduledMessages.preset.tomorrow.label': 'Tomorrow at {{ time }}';
   'scheduledMessages.preset.weekday.label': '{{ day }} at {{ time }}';
+  'scheduledMessages.quoteDeleted.title': 'The quoted message was deleted';
+  'scheduledMessages.removeQuote.label': 'Remove quote';
   'scheduledMessages.rescheduleFailed.error': "Couldn't reschedule the message. Try again";
+  'scheduledMessages.rescheduleMessage.title': 'Reschedule message';
   'scheduledMessages.rescheduleTooSoon.error': "Pick a later time. Editing can't send a message right away.";
   'scheduledMessages.scheduleFailed.error': "Couldn't schedule message. Try again";
   'scheduledMessages.scheduleMessage.title': 'Schedule message';
