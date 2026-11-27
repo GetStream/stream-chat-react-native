@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -40,7 +40,6 @@ const TimeColumnItem = ({ disabled, isSelected, onSelect, testID, value }: TimeC
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
   const onPress = useStableCallback(() => onSelect(value));
 
   return (
@@ -83,7 +82,6 @@ const TimeColumn = ({
   selected: number;
   testID: string;
 }) => {
-  const styles = useStyles();
   const initialOffset = useRef(
     Math.max(0, selected * ITEM_HEIGHT - (COLUMN_HEIGHT - ITEM_HEIGHT) / 2),
   ).current;
@@ -125,7 +123,6 @@ export const ScheduleTimePicker = ({
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
   const [isOpen, setIsOpen] = useState(false);
 
   const atTime = useStableCallback((hours: number, minutes: number) => {
@@ -201,57 +198,52 @@ export const ScheduleTimePicker = ({
   );
 };
 
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        column: {
-          height: COLUMN_HEIGHT,
-          width: 72,
-        },
-        columns: {
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: primitives.spacingXs,
-          justifyContent: 'center',
-          paddingVertical: primitives.spacingXs,
-        },
-        item: {
-          alignItems: 'center',
-          borderRadius: primitives.radiusMd,
-          height: ITEM_HEIGHT,
-          justifyContent: 'center',
-        },
-        itemText: {
-          fontSize: primitives.typographyFontSizeLg,
-          fontVariant: ['tabular-nums'],
-        },
-        label: {
-          fontSize: primitives.typographyFontSizeMd,
-          fontWeight: primitives.typographyFontWeightRegular,
-        },
-        pill: {
-          borderRadius: primitives.radiusMax,
-          paddingHorizontal: primitives.spacingSm,
-          paddingVertical: primitives.spacingXs,
-        },
-        pillText: {
-          fontSize: primitives.typographyFontSizeMd,
-          fontVariant: ['tabular-nums'],
-        },
-        row: {
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          minHeight: 48,
-        },
-        selectedItemText: {
-          fontWeight: primitives.typographyFontWeightSemiBold,
-        },
-        separator: {
-          fontSize: primitives.typographyFontSizeLg,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-        },
-      }),
-    [],
-  );
+const styles = StyleSheet.create({
+  column: {
+    height: COLUMN_HEIGHT,
+    width: 72,
+  },
+  columns: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: primitives.spacingXs,
+    justifyContent: 'center',
+    paddingVertical: primitives.spacingXs,
+  },
+  item: {
+    alignItems: 'center',
+    borderRadius: primitives.radiusMd,
+    height: ITEM_HEIGHT,
+    justifyContent: 'center',
+  },
+  itemText: {
+    fontSize: primitives.typographyFontSizeLg,
+    fontVariant: ['tabular-nums'],
+  },
+  label: {
+    fontSize: primitives.typographyFontSizeMd,
+    fontWeight: primitives.typographyFontWeightRegular,
+  },
+  pill: {
+    borderRadius: primitives.radiusMax,
+    paddingHorizontal: primitives.spacingSm,
+    paddingVertical: primitives.spacingXs,
+  },
+  pillText: {
+    fontSize: primitives.typographyFontSizeMd,
+    fontVariant: ['tabular-nums'],
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    minHeight: 48,
+  },
+  selectedItemText: {
+    fontWeight: primitives.typographyFontWeightSemiBold,
+  },
+  separator: {
+    fontSize: primitives.typographyFontSizeLg,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+  },
+});

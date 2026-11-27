@@ -51,7 +51,6 @@ const ScheduledMessagesBannerContent = () => {
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
 
   const channelWideView = useChannelWideScheduledMessagesView(channel);
   // A thread's banner counts only the thread's scheduled replies.
@@ -182,40 +181,35 @@ export const ScheduledMessagesBanner = () => {
   return pendingDisposal ? null : <ScheduledMessagesBannerContent />;
 };
 
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        banner: {
-          alignItems: 'center',
-          borderRadius: primitives.radiusMax,
-          borderWidth: 1,
-          elevation: 3,
-          flexDirection: 'row',
-          gap: primitives.spacingSm,
-          minHeight: 44,
-          paddingHorizontal: primitives.spacingMd,
-          paddingVertical: primitives.spacingSm,
-          shadowColor: '#000',
-          shadowOffset: { height: 2, width: 0 },
-          shadowOpacity: 0.08,
-          shadowRadius: 8,
-        },
-        container: {
-          marginBottom: COMPOSER_GAP,
-          marginHorizontal: primitives.spacingMd,
-        },
-        label: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          lineHeight: primitives.typographyLineHeightNormal,
-        },
-        link: {
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightRegular,
-          lineHeight: primitives.typographyLineHeightNormal,
-        },
-      }),
-    [],
-  );
+const styles = StyleSheet.create({
+  banner: {
+    alignItems: 'center',
+    borderRadius: primitives.radiusMax,
+    borderWidth: 1,
+    elevation: 3,
+    flexDirection: 'row',
+    gap: primitives.spacingSm,
+    minHeight: 44,
+    paddingHorizontal: primitives.spacingMd,
+    paddingVertical: primitives.spacingSm,
+    shadowColor: '#000',
+    shadowOffset: { height: 2, width: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+  },
+  container: {
+    marginBottom: COMPOSER_GAP,
+    marginHorizontal: primitives.spacingMd,
+  },
+  label: {
+    flex: 1,
+    fontSize: primitives.typographyFontSizeXs,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+  link: {
+    fontSize: primitives.typographyFontSizeXs,
+    fontWeight: primitives.typographyFontWeightRegular,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+});

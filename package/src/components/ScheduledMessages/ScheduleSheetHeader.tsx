@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -29,7 +29,6 @@ export const ScheduleSheetHeader = ({
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
 
   const renderConfirmIcon = useCallback(
     (props: IconProps) => (
@@ -83,30 +82,25 @@ export const ScheduleSheetHeader = ({
   );
 };
 
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: primitives.spacingSm,
-          paddingBottom: primitives.spacingSm,
-          paddingHorizontal: primitives.spacingMd,
-        },
-        side: {
-          minWidth: 40,
-        },
-        sideEnd: {
-          alignItems: 'flex-end',
-        },
-        title: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeMd,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          lineHeight: primitives.typographyLineHeightNormal,
-          textAlign: 'center',
-        },
-      }),
-    [],
-  );
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: primitives.spacingSm,
+    paddingBottom: primitives.spacingSm,
+    paddingHorizontal: primitives.spacingMd,
+  },
+  side: {
+    minWidth: 40,
+  },
+  sideEnd: {
+    alignItems: 'flex-end',
+  },
+  title: {
+    flex: 1,
+    fontSize: primitives.typographyFontSizeMd,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightNormal,
+    textAlign: 'center',
+  },
+});

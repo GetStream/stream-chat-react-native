@@ -96,7 +96,6 @@ const ScheduleTimeSheetContent = ({
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -219,20 +218,15 @@ export const ScheduleTimeSheet = ({ onClose, visible, ...props }: ScheduleTimeSh
   );
 };
 
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          paddingBottom: primitives.spacingMd,
-        },
-        content: {
-          gap: primitives.spacingSm,
-          paddingHorizontal: primitives.spacingMd,
-        },
-        divider: {
-          height: StyleSheet.hairlineWidth,
-        },
-      }),
-    [],
-  );
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: primitives.spacingMd,
+  },
+  content: {
+    gap: primitives.spacingSm,
+    paddingHorizontal: primitives.spacingMd,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+  },
+});

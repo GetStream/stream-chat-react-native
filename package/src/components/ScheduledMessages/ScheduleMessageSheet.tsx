@@ -51,7 +51,6 @@ const ScheduleOption = ({ disabled, label, onPress, showChevron, testID }: Sched
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
   const color = disabled ? semantics.textDisabled : semantics.textPrimary;
   const Chevron = I18nManager.isRTL ? icons.ChevronLeft : icons.ChevronRight;
 
@@ -61,7 +60,7 @@ const ScheduleOption = ({ disabled, label, onPress, showChevron, testID }: Sched
       pressed ? { backgroundColor: semantics.backgroundUtilityPressed } : null,
       presetSheet.option,
     ],
-    [presetSheet.option, semantics.backgroundUtilityPressed, styles.option],
+    [presetSheet.option, semantics.backgroundUtilityPressed],
   );
 
   return (
@@ -160,7 +159,6 @@ const ScheduleMessageSheetContent = () => {
       scheduledMessages: { presetSheet },
     },
   } = useTheme();
-  const styles = useStyles();
 
   // The presets are worked out when the sheet opens, in the device's time zone.
   const { now, presets } = useMemo(() => {
@@ -216,29 +214,24 @@ export const ScheduleMessageSheet = () => {
   );
 };
 
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          paddingBottom: primitives.spacingMd,
-        },
-        option: {
-          alignItems: 'center',
-          borderRadius: primitives.radiusLg,
-          flexDirection: 'row',
-          gap: primitives.spacingSm,
-          minHeight: 48,
-          paddingHorizontal: primitives.spacingSm,
-        },
-        optionLabel: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeMd,
-          lineHeight: primitives.typographyLineHeightNormal,
-        },
-        options: {
-          paddingHorizontal: primitives.spacingXs,
-        },
-      }),
-    [],
-  );
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: primitives.spacingMd,
+  },
+  option: {
+    alignItems: 'center',
+    borderRadius: primitives.radiusLg,
+    flexDirection: 'row',
+    gap: primitives.spacingSm,
+    minHeight: 48,
+    paddingHorizontal: primitives.spacingSm,
+  },
+  optionLabel: {
+    flex: 1,
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+  options: {
+    paddingHorizontal: primitives.spacingXs,
+  },
+});

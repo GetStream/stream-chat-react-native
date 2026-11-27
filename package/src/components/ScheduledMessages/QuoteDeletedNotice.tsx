@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -18,7 +18,6 @@ export const QuoteDeletedNotice = () => {
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
 
   return (
     <View
@@ -48,27 +47,22 @@ export const QuoteDeletedNotice = () => {
   );
 };
 
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        action: {
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-        },
-        container: {
-          alignItems: 'center',
-          borderRadius: primitives.radiusLg,
-          flexDirection: 'row',
-          gap: primitives.spacingXs,
-          paddingHorizontal: primitives.spacingSm,
-          paddingVertical: primitives.spacingXs,
-        },
-        title: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-        },
-      }),
-    [],
-  );
+const styles = StyleSheet.create({
+  action: {
+    fontSize: primitives.typographyFontSizeXs,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+  },
+  container: {
+    alignItems: 'center',
+    borderRadius: primitives.radiusLg,
+    flexDirection: 'row',
+    gap: primitives.spacingXs,
+    paddingHorizontal: primitives.spacingSm,
+    paddingVertical: primitives.spacingXs,
+  },
+  title: {
+    flex: 1,
+    fontSize: primitives.typographyFontSizeXs,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+  },
+});

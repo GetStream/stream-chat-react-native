@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -22,7 +22,6 @@ export const ScheduleSheetNotice = ({ description, title, type }: ScheduleSheetN
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
   const isError = type === 'error';
   const Icon = isError ? icons.ExclamationCircle : icons.InfoTooltip;
 
@@ -66,30 +65,25 @@ export const ScheduleSheetNotice = ({ description, title, type }: ScheduleSheetN
   );
 };
 
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          alignItems: 'center',
-          borderRadius: primitives.radiusLg,
-          flexDirection: 'row',
-          gap: primitives.spacingSm,
-          paddingHorizontal: primitives.spacingMd,
-          paddingVertical: primitives.spacingSm,
-        },
-        description: {
-          fontSize: primitives.typographyFontSizeXs,
-          lineHeight: primitives.typographyLineHeightTight,
-        },
-        texts: {
-          flex: 1,
-        },
-        title: {
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          lineHeight: primitives.typographyLineHeightTight,
-        },
-      }),
-    [],
-  );
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    borderRadius: primitives.radiusLg,
+    flexDirection: 'row',
+    gap: primitives.spacingSm,
+    paddingHorizontal: primitives.spacingMd,
+    paddingVertical: primitives.spacingSm,
+  },
+  description: {
+    fontSize: primitives.typographyFontSizeXs,
+    lineHeight: primitives.typographyLineHeightTight,
+  },
+  texts: {
+    flex: 1,
+  },
+  title: {
+    fontSize: primitives.typographyFontSizeXs,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    lineHeight: primitives.typographyLineHeightTight,
+  },
+});

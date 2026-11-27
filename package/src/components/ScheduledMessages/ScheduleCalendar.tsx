@@ -65,7 +65,6 @@ const CalendarDay = ({
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
   const onPress = useStableCallback(() => onSelect(dayOfMonth));
 
   const backgroundColor = isSelected
@@ -129,7 +128,6 @@ export const ScheduleCalendar = ({
       semantics,
     },
   } = useTheme();
-  const styles = useStyles();
 
   const [shownMonth, setShownMonth] = useState(() => ({
     month: selectedDate.getMonth(),
@@ -252,56 +250,51 @@ export const ScheduleCalendar = ({
 
 const DAY_SIZE = 40;
 
-const useStyles = () =>
-  useMemo(
-    () =>
-      StyleSheet.create({
-        container: {
-          gap: primitives.spacingXxs,
-        },
-        day: {
-          alignItems: 'center',
-          borderRadius: DAY_SIZE / 2,
-          height: DAY_SIZE,
-          justifyContent: 'center',
-          width: DAY_SIZE,
-        },
-        dayCell: {
-          alignItems: 'center',
-          flex: 1,
-          paddingVertical: primitives.spacingXxs,
-        },
-        dayText: {
-          fontSize: primitives.typographyFontSizeLg,
-          fontWeight: primitives.typographyFontWeightRegular,
-        },
-        header: {
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingBottom: primitives.spacingXs,
-          paddingHorizontal: primitives.spacingXs,
-        },
-        monthTitle: {
-          fontSize: primitives.typographyFontSizeMd,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-        },
-        navigation: {
-          flexDirection: 'row',
-          gap: primitives.spacingLg,
-        },
-        selectedDayText: {
-          fontWeight: primitives.typographyFontWeightSemiBold,
-        },
-        week: {
-          flexDirection: 'row',
-        },
-        weekday: {
-          flex: 1,
-          fontSize: primitives.typographyFontSizeXs,
-          fontWeight: primitives.typographyFontWeightSemiBold,
-          textAlign: 'center',
-        },
-      }),
-    [],
-  );
+const styles = StyleSheet.create({
+  container: {
+    gap: primitives.spacingXxs,
+  },
+  day: {
+    alignItems: 'center',
+    borderRadius: DAY_SIZE / 2,
+    height: DAY_SIZE,
+    justifyContent: 'center',
+    width: DAY_SIZE,
+  },
+  dayCell: {
+    alignItems: 'center',
+    flex: 1,
+    paddingVertical: primitives.spacingXxs,
+  },
+  dayText: {
+    fontSize: primitives.typographyFontSizeLg,
+    fontWeight: primitives.typographyFontWeightRegular,
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: primitives.spacingXs,
+    paddingHorizontal: primitives.spacingXs,
+  },
+  monthTitle: {
+    fontSize: primitives.typographyFontSizeMd,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+  },
+  navigation: {
+    flexDirection: 'row',
+    gap: primitives.spacingLg,
+  },
+  selectedDayText: {
+    fontWeight: primitives.typographyFontWeightSemiBold,
+  },
+  week: {
+    flexDirection: 'row',
+  },
+  weekday: {
+    flex: 1,
+    fontSize: primitives.typographyFontSizeXs,
+    fontWeight: primitives.typographyFontWeightSemiBold,
+    textAlign: 'center',
+  },
+});
