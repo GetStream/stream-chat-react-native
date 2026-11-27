@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark colours for the picker themes in values/, following the monochrome scheme of the Android design. -->
+<resources>
+  <color name="stream_date_time_picker_primary">#FFFFFF</color>
+  <color name="stream_date_time_picker_on_primary">#1A1C1C</color>
+  <color name="stream_date_time_picker_primary_container">#D4D4D4</color>
+  <color name="stream_date_time_picker_on_primary_container">#000000</color>
+  <color name="stream_date_time_picker_secondary_container">#474747</color>
+  <color name="stream_date_time_picker_on_secondary_container">#E2E2E2</color>
+  <color name="stream_date_time_picker_surface">#131313</color>
+  <color name="stream_date_time_picker_surface_container_high">#2A2A2A</color>
+  <color name="stream_date_time_picker_surface_container_highest">#353535</color>
+  <color name="stream_date_time_picker_on_surface">#E2E2E2</color>
+  <color name="stream_date_time_picker_on_surface_variant">#C6C6C6</color>
+  <color name="stream_date_time_picker_outline">#565656</color>
+  <color name="stream_date_time_picker_outline_variant">#474747</color>
+</resources>

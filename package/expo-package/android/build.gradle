@@ -164,6 +164,9 @@ dependencies {
   // The agent components' tool-call sign-ins: an Auth Tab where the app's build allows 1.9.0,
   // else a Custom Tab (see `agentSignInWithAuthTab`).
   implementation "androidx.browser:browser:${agentSignInWithAuthTab ? '1.9.0' : '1.8.0'}"
+  // Provides the date and time picker dialogs. Apps using react-native-screens already resolve
+  // 1.13.0, so this declaration does not raise their version.
+  implementation "com.google.android.material:material:1.12.0"
 }
 
 if (isNewArchitectureEnabled()) {

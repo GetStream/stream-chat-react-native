@@ -118,6 +118,7 @@
     "ios": {
       "modulesProvider": {
         "AIAgent": "AIAgent",
+        "StreamDateTimePicker": "StreamDateTimePicker",
         "StreamMultipartUploader": "StreamMultipartUploader",
         "StreamVideoThumbnail": "StreamVideoThumbnail"
       },

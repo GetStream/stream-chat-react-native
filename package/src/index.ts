@@ -5,6 +5,8 @@ import './polyfills';
 export * from './components';
 export * from './hooks';
 export {
+  PickDateTime,
+  PickDateTimeOptions,
   PickImageOptions,
   PlaybackStatus,
   RecordingStatus,

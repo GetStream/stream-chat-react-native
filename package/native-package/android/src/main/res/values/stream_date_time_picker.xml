@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Material date and time pickers require a Material 3 theme, whereas most React Native apps
+  use AppCompat. These themes are self-contained, so the pickers render correctly with any app
+  theme, which is never modified. The light colours are the Stream neutrals and values-night holds
+  the dark scheme of the Android design. An app can override any of these resources by declaring
+  a resource with the same name.
+-->
+<resources>
+  <color name="stream_date_time_picker_primary">#1A1B25</color>
+  <color name="stream_date_time_picker_on_primary">#FFFFFF</color>
+  <color name="stream_date_time_picker_primary_container">#1A1B25</color>
+  <color name="stream_date_time_picker_on_primary_container">#FFFFFF</color>
+  <color name="stream_date_time_picker_secondary_container">#D5DBE1</color>
+  <color name="stream_date_time_picker_on_secondary_container">#1A1B25</color>
+  <color name="stream_date_time_picker_surface">#EBEEF1</color>
+  <color name="stream_date_time_picker_surface_container_high">#EBEEF1</color>
+  <color name="stream_date_time_picker_surface_container_highest">#D5DBE1</color>
+  <color name="stream_date_time_picker_on_surface">#1A1B25</color>
+  <color name="stream_date_time_picker_on_surface_variant">#414552</color>
+  <color name="stream_date_time_picker_outline">#C0C8D2</color>
+  <color name="stream_date_time_picker_outline_variant">#C0C8D2</color>
+
+  <style name="StreamChat.DateTimePicker" parent="Theme.Material3.DayNight.Dialog">
+    <item name="colorPrimary">@color/stream_date_time_picker_primary</item>
+    <item name="colorOnPrimary">@color/stream_date_time_picker_on_primary</item>
+    <item name="colorPrimaryContainer">@color/stream_date_time_picker_primary_container</item>
+    <item name="colorOnPrimaryContainer">@color/stream_date_time_picker_on_primary_container</item>
+    <item name="colorSecondaryContainer">@color/stream_date_time_picker_secondary_container</item>
+    <item name="colorOnSecondaryContainer">@color/stream_date_time_picker_on_secondary_container</item>
+    <!-- The selected AM or PM option in the 12 hour time picker. -->
+    <item name="colorTertiaryContainer">@color/stream_date_time_picker_secondary_container</item>
+    <item name="colorOnTertiaryContainer">@color/stream_date_time_picker_on_secondary_container</item>
+    <item name="colorSurface">@color/stream_date_time_picker_surface</item>
+    <item name="colorSurfaceContainerHigh">@color/stream_date_time_picker_surface_container_high</item>
+    <item name="colorSurfaceContainerHighest">@color/stream_date_time_picker_surface_container_highest</item>
+    <item name="colorOnSurface">@color/stream_date_time_picker_on_surface</item>
+    <item name="colorOnSurfaceVariant">@color/stream_date_time_picker_on_surface_variant</item>
+    <item name="colorOutline">@color/stream_date_time_picker_outline</item>
+    <item name="colorOutlineVariant">@color/stream_date_time_picker_outline_variant</item>
+    <!--
+      Cancel and OK are plain Buttons, which an AppCompat activity inflates without the
+      MaterialButton theme overlay that defines these attributes. Left unset, they render magenta.
+    -->
+    <item name="colorOnContainer">@color/stream_date_time_picker_primary</item>
+    <item name="colorContainer">@android:color/transparent</item>
+  </style>
+
+  <!-- The attributes of ThemeOverlay.Material3.MaterialCalendar, applied on top of the base theme. -->
+  <style name="StreamChat.DateTimePicker.Date">
+    <item name="android:windowElevation">@dimen/m3_datepicker_elevation</item>
+    <item name="materialCalendarStyle">@style/Widget.Material3.MaterialCalendar</item>
+    <item name="materialCalendarHeaderLayout">@style/Widget.Material3.MaterialCalendar.HeaderLayout</item>
+    <item name="materialCalendarHeaderDivider">@style/Widget.Material3.MaterialCalendar.HeaderDivider</item>
+    <item name="materialCalendarHeaderTitle">@style/Widget.Material3.MaterialCalendar.HeaderTitle</item>
+    <item name="materialCalendarHeaderSelection">@style/Widget.Material3.MaterialCalendar.HeaderSelection</item>
+    <item name="materialCalendarHeaderCancelButton">@style/Widget.Material3.MaterialCalendar.HeaderCancelButton</item>
+    <item name="materialCalendarHeaderConfirmButton">@style/Widget.Material3.Button.TextButton</item>
+    <item name="materialCalendarHeaderToggleButton">@style/Widget.Material3.MaterialCalendar.HeaderToggleButton</item>
+    <item name="materialCalendarYearNavigationButton">@style/Widget.Material3.MaterialCalendar.YearNavigationButton</item>
+    <item name="materialCalendarMonthNavigationButton">@style/Widget.Material3.MaterialCalendar.MonthNavigationButton</item>
+    <item name="materialCalendarDayOfWeekLabel">@style/Widget.Material3.MaterialCalendar.DayOfWeekLabel</item>
+    <item name="materialCalendarDay">@style/Widget.Material3.MaterialCalendar.DayTextView</item>
+    <item name="materialCalendarMonth">@style/Widget.Material3.MaterialCalendar.MonthTextView</item>
+    <item name="buttonBarPositiveButtonStyle">@style/Widget.Material3.Button.TextButton.Dialog</item>
+    <item name="buttonBarNegativeButtonStyle">@style/Widget.Material3.Button.TextButton.Dialog</item>
+  </style>
+
+  <!-- The attributes of ThemeOverlay.Material3.MaterialTimePicker, applied on top of the base theme. -->
+  <style name="StreamChat.DateTimePicker.Time">
+    <item name="android:windowElevation">@dimen/m3_timepicker_window_elevation</item>
+    <item name="chipStyle">@style/Widget.Material3.MaterialTimePicker.Display</item>
+    <item name="textInputStyle">@style/Widget.Material3.MaterialTimePicker.Display.TextInputLayout</item>
+    <item name="materialDisplayDividerStyle">@style/Widget.Material3.MaterialTimePicker.Display.Divider</item>
+    <item name="materialButtonOutlinedStyle">@style/Widget.Material3.MaterialTimePicker.Button</item>
+    <item name="materialClockStyle">@style/Widget.Material3.MaterialTimePicker.Clock</item>
+    <item name="materialTimePickerStyle">@style/Widget.Material3.MaterialTimePicker</item>
+    <item name="imageButtonStyle">@style/StreamChat.DateTimePicker.ModeButton</item>
+    <item name="materialTimePickerTitleStyle">@style/TextAppearance.Material3.MaterialTimePicker.Title</item>
+  </style>
+
+  <!--
+    The input mode toggle. The default button style draws a filled container, whereas the design
+    shows the icon alone.
+  -->
+  <style name="StreamChat.DateTimePicker.ModeButton" parent="Widget.Material3.MaterialTimePicker.ImageButton">
+    <item name="backgroundTint">@android:color/transparent</item>
+  </style>
+</resources>

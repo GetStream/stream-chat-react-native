@@ -29,6 +29,7 @@ import {
   useMessageInputContext,
 } from '../../../contexts/messageInputContext/MessageInputContext';
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
+import { NativeHandlers, type PickDateTimeOptions } from '../../../native';
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { SendButton } from '../../MessageInput/components/OutputButtons/SendButton';
@@ -39,7 +40,7 @@ import { ScheduledMessageEditComposer } from '../ScheduledMessageEditComposer';
 import { ScheduledMessageList } from '../ScheduledMessageList';
 import { ScheduledMessagesBanner } from '../ScheduledMessagesBanner';
 import { ScheduleMessageSheet } from '../ScheduleMessageSheet';
-import { ScheduleTimePicker } from '../ScheduleTimePicker';
+import { ScheduleTimeSheet } from '../ScheduleTimeSheet';
 
 // The real modal runs `dismiss` callbacks only after iOS reports the dismissal, which never
 // happens in tests. This one runs `onClose` and then the callback, as the modal does. While
@@ -600,52 +601,144 @@ describe('ScheduledMessageList', () => {
   });
 });
 
-describe('ScheduleTimePicker', () => {
+describe('ScheduleTimeSheet', () => {
   let client: StreamChat;
+  let channel: ChannelType;
+
+  // The sheet opens on tomorrow at 09:00.
+  const tomorrowAt = (hours: number, minutes = 0) => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setHours(hours, minutes, 0, 0);
+    return date;
+  };
 
   beforeEach(async () => {
-    ({ client } = await initiateClientWithChannels());
+    const { client: chatClient, channels } = await initiateClientWithChannels();
+    client = chatClient;
+    channel = channels[0];
   });
 
   afterEach(() => {
     cleanup();
     jest.restoreAllMocks();
+    NativeHandlers.pickDateTime = undefined;
   });
 
-  it('disables the hours and minutes earlier than the minimum', () => {
-    const at = (hours: number, minutes: number) => {
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      return date;
-    };
-    const onSelectTime = jest.fn();
+  const renderSheet = (onConfirm = jest.fn().mockResolvedValue({})) =>
     render(
       <OverlayProvider>
         <Chat client={client}>
-          <ScheduleTimePicker
-            minimumDate={at(10, 30)}
-            onSelectTime={onSelectTime}
-            selectedDate={at(10, 45)}
-          />
+          <ScheduleTimeSheet channel={channel} onClose={jest.fn()} onConfirm={onConfirm} visible />
         </Chat>
       </OverlayProvider>,
     );
 
-    fireEvent.press(screen.getByTestId('schedule-time-pill'));
+  it('picks the date and then the time, with the bounds and the translated buttons', async () => {
+    const pickedDay = tomorrowAt(9);
+    pickedDay.setDate(pickedDay.getDate() + 2);
+    const pickedTime = new Date(pickedDay);
+    pickedTime.setHours(14, 30);
+    const pickDateTime = jest
+      .fn()
+      .mockResolvedValueOnce(pickedDay)
+      .mockResolvedValueOnce(pickedTime);
+    NativeHandlers.pickDateTime = pickDateTime;
+    const onConfirm = jest.fn().mockResolvedValue({});
+    renderSheet(onConfirm);
 
-    expect(screen.getByTestId('schedule-time-hours-9').props.accessibilityState.disabled).toBe(
+    await act(() => fireEvent.press(screen.getByTestId('schedule-time-sheet-date')));
+
+    expect(pickDateTime).toHaveBeenCalledTimes(2);
+    expect(pickDateTime).toHaveBeenNthCalledWith(1, {
+      cancelLabel: 'Cancel',
+      confirmLabel: 'Confirm',
+      maximumDate: undefined,
+      minimumDate: expect.any(Date),
+      mode: 'date',
+      signal: expect.objectContaining({ aborted: false }),
+      value: tomorrowAt(9),
+    });
+    expect(pickDateTime).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ mode: 'time', value: pickedDay }),
+    );
+
+    await act(() => fireEvent.press(screen.getByTestId('schedule-sheet-confirm')));
+    expect(onConfirm).toHaveBeenCalledWith(pickedTime);
+  });
+
+  it('keeps the time when the date picker is cancelled, and opens no time picker', async () => {
+    const pickDateTime = jest.fn().mockResolvedValue(null);
+    NativeHandlers.pickDateTime = pickDateTime;
+    const onConfirm = jest.fn().mockResolvedValue({});
+    renderSheet(onConfirm);
+
+    await act(() => fireEvent.press(screen.getByTestId('schedule-time-sheet-date')));
+
+    expect(pickDateTime).toHaveBeenCalledTimes(1);
+    await act(() => fireEvent.press(screen.getByTestId('schedule-sheet-confirm')));
+    expect(onConfirm).toHaveBeenCalledWith(tomorrowAt(9));
+  });
+
+  it('picks only the time from the time row', async () => {
+    const pickDateTime = jest.fn().mockResolvedValue(tomorrowAt(18, 15));
+    NativeHandlers.pickDateTime = pickDateTime;
+    const onConfirm = jest.fn().mockResolvedValue({});
+    renderSheet(onConfirm);
+
+    await act(() => fireEvent.press(screen.getByTestId('schedule-time-sheet-time')));
+
+    expect(pickDateTime).toHaveBeenCalledTimes(1);
+    expect(pickDateTime).toHaveBeenCalledWith(expect.objectContaining({ mode: 'time' }));
+    await act(() => fireEvent.press(screen.getByTestId('schedule-sheet-confirm')));
+    expect(onConfirm).toHaveBeenCalledWith(tomorrowAt(18, 15));
+  });
+
+  it('closes an open picker when the sheet unmounts', () => {
+    const pickDateTime = jest.fn(
+      (_options: PickDateTimeOptions) => new Promise<Date | null>(() => undefined),
+    );
+    NativeHandlers.pickDateTime = pickDateTime;
+    const { unmount } = renderSheet();
+
+    fireEvent.press(screen.getByTestId('schedule-time-sheet-date'));
+    const { signal } = pickDateTime.mock.calls[0][0];
+    expect(signal?.aborted).toBe(false);
+
+    unmount();
+    expect(signal?.aborted).toBe(true);
+  });
+
+  it('opens one picker at a time', async () => {
+    let resolvePick: (date: Date | null) => void = () => undefined;
+    const pickDateTime = jest.fn(
+      () => new Promise<Date | null>((resolve) => (resolvePick = resolve)),
+    );
+    NativeHandlers.pickDateTime = pickDateTime;
+    renderSheet();
+
+    fireEvent.press(screen.getByTestId('schedule-time-sheet-time'));
+    fireEvent.press(screen.getByTestId('schedule-time-sheet-date'));
+    expect(pickDateTime).toHaveBeenCalledTimes(1);
+
+    await act(() => {
+      resolvePick(null);
+      return Promise.resolve();
+    });
+    fireEvent.press(screen.getByTestId('schedule-time-sheet-date'));
+    expect(pickDateTime).toHaveBeenCalledTimes(2);
+  });
+
+  it('shows the time but disables the rows without a native picker', () => {
+    renderSheet();
+
+    expect(screen.getByTestId('schedule-time-sheet-date').props.accessibilityState.disabled).toBe(
       true,
     );
-    expect(screen.getByTestId('schedule-time-hours-10').props.accessibilityState.disabled).toBe(
-      false,
-    );
-    expect(screen.getByTestId('schedule-time-minutes-29').props.accessibilityState.disabled).toBe(
+    expect(screen.getByTestId('schedule-time-sheet-time').props.accessibilityState.disabled).toBe(
       true,
     );
-    fireEvent.press(screen.getByTestId('schedule-time-minutes-29'));
-    expect(onSelectTime).not.toHaveBeenCalled();
-    fireEvent.press(screen.getByTestId('schedule-time-minutes-30'));
-    expect(onSelectTime).toHaveBeenCalledWith(at(10, 30));
   });
 });
 

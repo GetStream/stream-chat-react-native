@@ -343,6 +343,25 @@ export type NativePerfTextProps = ViewProps & {
   lineHeight?: number;
 };
 
+export type PickDateTimeOptions = {
+  mode: 'date' | 'time';
+  /** The initial value. Selecting a date preserves its time of day, and the reverse. */
+  value: Date;
+  minimumDate?: Date;
+  maximumDate?: Date;
+  /** Translated labels for the dialog buttons, used on iOS. The Android dialogs provide their own. */
+  confirmLabel: string;
+  cancelLabel: string;
+  /** Aborting the signal closes the picker and resolves the call with `null`. */
+  signal?: AbortSignal;
+};
+
+/**
+ * Opens the system date or time picker, a Material dialog on Android and a `UIDatePicker` dialog on
+ * iOS. Resolves with the selected moment, or `null` when the picker is cancelled.
+ */
+export type PickDateTime = (options: PickDateTimeOptions) => Promise<Date | null>;
+
 type Handlers = {
   Audio?: AudioType;
   compressImage?: CompressImage;
@@ -356,6 +375,7 @@ type Handlers = {
   overrideAudioRecordingConfiguration?: (
     audioRecordingConfiguration: AudioRecordingConfiguration,
   ) => AudioRecordingConfiguration;
+  pickDateTime?: PickDateTime;
   pickDocument?: PickDocument;
   pickImage?: PickImage;
   saveFile?: SaveFile;
@@ -372,7 +392,7 @@ type Handlers = {
 
 export const NativeHandlers: Pick<
   Handlers,
-  'Audio' | 'FlatList' | 'NativeShimmerView' | 'PerfText' | 'Video' | 'Sound'
+  'Audio' | 'FlatList' | 'NativeShimmerView' | 'PerfText' | 'pickDateTime' | 'Video' | 'Sound'
 > &
   Required<
     Pick<
@@ -403,6 +423,7 @@ export const NativeHandlers: Pick<
   iOS14RefreshGallerySelection: fail,
   multipartUpload: fail,
   oniOS14GalleryLibrarySelectionChange: fail,
+  pickDateTime: undefined,
   pickDocument: fail,
   pickImage: fail,
   saveFile: fail,
@@ -459,6 +480,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
   if (handlers.oniOS14GalleryLibrarySelectionChange !== undefined) {
     NativeHandlers.oniOS14GalleryLibrarySelectionChange =
       handlers.oniOS14GalleryLibrarySelectionChange;
+  }
+
+  if (handlers.pickDateTime !== undefined) {
+    NativeHandlers.pickDateTime = handlers.pickDateTime;
   }
 
   if (handlers.pickDocument !== undefined) {

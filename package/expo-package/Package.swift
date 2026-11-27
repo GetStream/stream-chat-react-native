@@ -24,6 +24,7 @@ let interfacesTargetName = "StreamChatNativeInterfaces"
 let swiftSources = [
   "AIAgentModule.swift",
   "AIDictationModule.swift",
+  "StreamDateTimePickerPresenter.swift",
   "StreamMultipartUploadBodyStream.swift",
   "StreamMultipartUploadManager.swift",
   "StreamMultipartUploadModels.swift",

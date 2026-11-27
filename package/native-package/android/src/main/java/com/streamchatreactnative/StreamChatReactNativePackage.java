@@ -16,6 +16,7 @@ import java.util.Map;
 public class StreamChatReactNativePackage extends TurboReactPackage {
   private static final String STREAM_MULTIPART_UPLOADER_MODULE = "StreamMultipartUploader";
   private static final String STREAM_VIDEO_THUMBNAIL_MODULE = "StreamVideoThumbnail";
+  private static final String STREAM_DATE_TIME_PICKER_MODULE = "StreamDateTimePicker";
   private static final String AI_DICTATION_MODULE = "AIDictation";
   private static final String AI_AGENT_MODULE = "AIAgent";
 
@@ -32,6 +33,11 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
     } else if (name.equals(STREAM_VIDEO_THUMBNAIL_MODULE)) {
         return createNewArchModule(
                 "com.streamchatreactnative.StreamVideoThumbnailModule",
+                reactContext
+        );
+    } else if (name.equals(STREAM_DATE_TIME_PICKER_MODULE)) {
+        return createNewArchModule(
+                "com.streamchatreactnative.StreamDateTimePickerModule",
                 reactContext
         );
     } else if (name.equals(AI_DICTATION_MODULE)) {
@@ -80,6 +86,17 @@ public class StreamChatReactNativePackage extends TurboReactPackage {
               new ReactModuleInfo(
                       STREAM_VIDEO_THUMBNAIL_MODULE,
                       STREAM_VIDEO_THUMBNAIL_MODULE,
+                      false, // canOverrideExistingModule
+                      false, // needsEagerInit
+                      false, // hasConstants
+                      false, // isCxxModule
+                      true // isTurboModule
+      ));
+      moduleInfos.put(
+              STREAM_DATE_TIME_PICKER_MODULE,
+              new ReactModuleInfo(
+                      STREAM_DATE_TIME_PICKER_MODULE,
+                      STREAM_DATE_TIME_PICKER_MODULE,
                       false, // canOverrideExistingModule
                       false, // needsEagerInit
                       false, // hasConstants

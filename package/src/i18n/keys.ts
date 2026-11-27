@@ -492,6 +492,7 @@ export type TranslationCatalog = {
   'scheduledMessages.confirm.accessibilityLabel': 'Schedule';
   'scheduledMessages.copyText.label': 'Copy text';
   'scheduledMessages.customTime.label': 'Custom time';
+  'scheduledMessages.date.label': 'Date';
   'scheduledMessages.dateTime.label': '{{ day }} at {{ time }}';
   'scheduledMessages.delete.label': 'Delete';
   'scheduledMessages.deleteConfirm.text': "This message won't be sent. This can't be undone.";
@@ -519,6 +520,7 @@ export type TranslationCatalog = {
   'scheduledMessages.loadFailed.error': "Couldn't load scheduled messages";
   'scheduledMessages.message.title': 'Scheduled message';
   'scheduledMessages.messageTo.title': 'Message to {{ name }}';
+  'scheduledMessages.pickerConfirm.label': 'Confirm';
   'scheduledMessages.preset.tomorrow.label': 'Tomorrow at {{ time }}';
   'scheduledMessages.preset.weekday.label': '{{ day }} at {{ time }}';
   'scheduledMessages.quoteDeleted.text': 'The quoted message was deleted. Edit it to remove the quote.';

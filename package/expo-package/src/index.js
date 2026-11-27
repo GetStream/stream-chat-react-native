@@ -2,7 +2,7 @@ import { FlatList } from 'react-native';
 
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
-import { compressImage, multipartUpload } from './handlers';
+import { compressImage, multipartUpload, pickDateTime } from './handlers';
 
 import {
   Audio,
@@ -39,6 +39,7 @@ export const defaultNativeHandlers = {
   NativeShimmerView,
   oniOS14GalleryLibrarySelectionChange,
   overrideAudioRecordingConfiguration,
+  pickDateTime,
   pickDocument,
   pickImage,
   saveFile,

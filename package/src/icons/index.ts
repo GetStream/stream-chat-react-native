@@ -3,6 +3,7 @@ export * from './utils/base';
 export * from './filetype-audio-xl';
 export * from './archive';
 export * from './no-sign';
+export * from './calendar';
 export * from './camera';
 export { Check } from './checkmark';
 export * from './checks';

@@ -1,15 +1,21 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Pressable,
+  type PressableStateCallbackType,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import type { Channel, LocalMessage } from 'stream-chat';
 import { ScheduledMessageBlockReason } from 'stream-chat';
 
 import { useChannelScheduledMessageLimit } from './hooks/useChannelScheduledMessageLimit';
 import type { ScheduleComposerMessageResult } from './hooks/useScheduleComposerMessage';
-import { ScheduleCalendar } from './ScheduleCalendar';
+import { formatWithParser, useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
 import { ScheduleSheetHeader } from './ScheduleSheetHeader';
 import { ScheduleSheetNotice } from './ScheduleSheetNotice';
-import { ScheduleTimePicker } from './ScheduleTimePicker';
 import {
   formatTimeZoneOffset,
   getDefaultScheduledAt,
@@ -26,7 +32,9 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { useStableCallback } from '../../hooks/useStableCallback';
-import { primitives } from '../../theme';
+import type { IconProps } from '../../icons/utils/base';
+import { NativeHandlers, type PickDateTimeOptions } from '../../native';
+import { components, primitives } from '../../theme';
 import { useChannelPreviewDisplayName } from '../ChannelPreview/hooks/useChannelPreviewDisplayName';
 import { BottomSheetModal } from '../UIComponents/BottomSheetModal';
 
@@ -53,6 +61,71 @@ export type ScheduleTimeSheetProps = {
 
 const NOW_REFRESH_INTERVAL_MS = 15_000;
 
+type ScheduleTimeRowProps = {
+  disabled: boolean;
+  Icon: React.ComponentType<IconProps>;
+  label: string;
+  onPress: () => void;
+  testID: string;
+  value: string;
+};
+
+/** A `Date` or `Time` row, with the label on the left and the selected value on the right. */
+const ScheduleTimeRow = ({
+  disabled,
+  Icon,
+  label,
+  onPress,
+  testID,
+  value,
+}: ScheduleTimeRowProps) => {
+  const {
+    theme: {
+      scheduledMessages: { timeSheet },
+      semantics,
+    },
+  } = useTheme();
+
+  const style = useCallback(
+    ({ pressed }: PressableStateCallbackType) => [
+      styles.row,
+      pressed ? { backgroundColor: semantics.backgroundUtilityPressed } : null,
+      timeSheet.row,
+    ],
+    [semantics.backgroundUtilityPressed, timeSheet.row],
+  );
+
+  return (
+    <Pressable
+      accessibilityLabel={`${label}, ${value}`}
+      accessibilityRole='button'
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={style}
+      testID={testID}
+    >
+      <Icon
+        height={components.iconSizeMd}
+        stroke={semantics.textSecondary}
+        width={components.iconSizeMd}
+      />
+      <Text
+        numberOfLines={1}
+        style={[styles.rowLabel, { color: semantics.textPrimary }, timeSheet.rowLabel]}
+      >
+        {label}
+      </Text>
+      <Text
+        numberOfLines={1}
+        style={[styles.rowValue, { color: semantics.textTertiary }, timeSheet.rowValue]}
+      >
+        {value}
+      </Text>
+    </Pressable>
+  );
+};
+
 const ScheduleTimeSheetContent = ({
   channel,
   initialDate,
@@ -63,12 +136,13 @@ const ScheduleTimeSheetContent = ({
   title: titleProp,
 }: Omit<ScheduleTimeSheetProps, 'onClose' | 'visible'>) => {
   const { close } = useBottomSheetContext();
-  const { Reply } = useComponentsContext();
+  const { icons, Reply } = useComponentsContext();
   // Read without throwing, as a list across channels reschedules outside any `Channel`.
   const { messageComposer } = useContext(
     MessageComposerContext,
   ) as Partial<MessageComposerContextValue>;
-  const { t } = useTranslationContext();
+  const { t, tDateTimeParser } = useTranslationContext();
+  const { formatTime } = useScheduledTimeFormatter();
   const channelName = useChannelPreviewDisplayName(channel)?.trim();
   const { maxPerChannel, pendingCount } = useChannelScheduledMessageLimit(channel);
 
@@ -93,7 +167,6 @@ const ScheduleTimeSheetContent = ({
   const {
     theme: {
       scheduledMessages: { timeSheet },
-      semantics,
     },
   } = useTheme();
 
@@ -145,6 +218,58 @@ const ScheduleTimeSheetContent = ({
 
   const closeSheet = useStableCallback(() => close());
 
+  const pickDateTime = NativeHandlers.pickDateTime;
+  const isPickingRef = useRef(false);
+  // Aborted on unmount, so a picker that is still open closes together with the sheet.
+  const pickerAbortRef = useRef<AbortController>(undefined);
+  useEffect(() => {
+    const controller = new AbortController();
+    pickerAbortRef.current = controller;
+    return () => controller.abort();
+  }, []);
+
+  const pick = (mode: PickDateTimeOptions['mode'], value: Date) =>
+    pickDateTime
+      ? pickDateTime({
+          cancelLabel: t('common.cancel.label', 'Cancel'),
+          confirmLabel: t('scheduledMessages.pickerConfirm.label', 'Confirm'),
+          maximumDate: bounds.latest,
+          minimumDate: bounds.earliest,
+          mode,
+          signal: pickerAbortRef.current?.signal,
+          value,
+        }).catch(() => null)
+      : Promise.resolve(null);
+
+  // Presses are ignored while a picker is open or being opened.
+  const runPicker = async (picker: () => Promise<void>) => {
+    if (isPickingRef.current) return;
+    isPickingRef.current = true;
+    try {
+      await picker();
+    } finally {
+      isPickingRef.current = false;
+    }
+  };
+
+  // Confirming a date opens the time picker next, as the design specifies for both platforms.
+  const pickDate = useStableCallback(() =>
+    runPicker(async () => {
+      const date = await pick('date', scheduledAt);
+      if (!date) return;
+      changeTime(date);
+      const time = await pick('time', date);
+      if (time) changeTime(time);
+    }),
+  );
+
+  const pickTime = useStableCallback(() =>
+    runPicker(async () => {
+      const time = await pick('time', scheduledAt);
+      if (time) changeTime(time);
+    }),
+  );
+
   const confirm = useStableCallback(async () => {
     if (confirmDisabled) return;
     setIsSubmitting(true);
@@ -174,20 +299,23 @@ const ScheduleTimeSheetContent = ({
       <View style={[styles.content, timeSheet.content]}>
         {message ? <Reply mode='reply' quotedMessage={message} title={previewTitle} /> : null}
         {errorText ? <ScheduleSheetNotice title={errorText} type='error' /> : null}
-        {/* The date and time sit right under their dividers, so the gap only spaces the sections. */}
-        <View style={[styles.section, { borderTopColor: semantics.borderCoreSubtle }]}>
-          <ScheduleCalendar
-            minimumDate={bounds.earliest}
-            onSelectDate={changeTime}
-            selectedDate={scheduledAt}
+        <View style={[styles.rows, timeSheet.rows]}>
+          <ScheduleTimeRow
+            disabled={!pickDateTime}
+            Icon={icons.Calendar}
+            label={t('scheduledMessages.date.label', 'Date')}
+            onPress={pickDate}
+            testID='schedule-time-sheet-date'
+            value={formatWithParser(tDateTimeParser, scheduledAt, 'ddd, MMM D')}
           />
-          <View style={[styles.section, { borderTopColor: semantics.borderCoreSubtle }]}>
-            <ScheduleTimePicker
-              minimumDate={bounds.earliest}
-              onSelectTime={changeTime}
-              selectedDate={scheduledAt}
-            />
-          </View>
+          <ScheduleTimeRow
+            disabled={!pickDateTime}
+            Icon={icons.Time}
+            label={t('scheduledMessages.time.label', 'Time')}
+            onPress={pickTime}
+            testID='schedule-time-sheet-time'
+            value={formatTime(scheduledAt)}
+          />
         </View>
         <ScheduleSheetNotice
           description={
@@ -230,7 +358,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: primitives.spacingMd,
     paddingTop: primitives.spacingXs,
   },
-  section: {
-    borderTopWidth: StyleSheet.hairlineWidth,
+  row: {
+    alignItems: 'center',
+    borderRadius: primitives.radiusMd,
+    flexDirection: 'row',
+    gap: primitives.spacingSm,
+    minHeight: 48,
+    paddingHorizontal: primitives.spacingSm,
+    paddingVertical: primitives.spacingXs,
+  },
+  rowLabel: {
+    flex: 1,
+    fontSize: primitives.typographyFontSizeMd,
+    lineHeight: primitives.typographyLineHeightNormal,
+  },
+  // List items extend beyond the horizontal padding of the surrounding content.
+  rows: {
+    marginHorizontal: primitives.spacingXxs - primitives.spacingMd,
+  },
+  rowValue: {
+    fontSize: primitives.typographyFontSizeSm,
+    lineHeight: primitives.typographyLineHeightNormal,
+    width: 120,
   },
 });

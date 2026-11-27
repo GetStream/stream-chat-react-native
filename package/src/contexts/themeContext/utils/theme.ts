@@ -1172,15 +1172,6 @@ export type Theme = {
       label: TextStyle;
       link: TextStyle;
     };
-    calendar: {
-      container: ViewStyle;
-      day: ViewStyle;
-      dayText: TextStyle;
-      header: ViewStyle;
-      monthTitle: TextStyle;
-      selectedDay: ViewStyle;
-      weekday: TextStyle;
-    };
     list: {
       container: ViewStyle;
       list: ViewStyle;
@@ -1214,19 +1205,13 @@ export type Theme = {
       container: ViewStyle;
       title: TextStyle;
     };
-    timePicker: {
-      columns: ViewStyle;
-      container: ViewStyle;
-      item: ViewStyle;
-      itemText: TextStyle;
-      label: TextStyle;
-      pill: ViewStyle;
-      pillText: TextStyle;
-      row: ViewStyle;
-    };
     timeSheet: {
       container: ViewStyle;
       content: ViewStyle;
+      row: ViewStyle;
+      rowLabel: TextStyle;
+      rows: ViewStyle;
+      rowValue: TextStyle;
     };
   };
   scheduledMessageListSkeleton: {
@@ -2351,15 +2336,6 @@ export const defaultTheme: Theme = {
       label: {},
       link: {},
     },
-    calendar: {
-      container: {},
-      day: {},
-      dayText: {},
-      header: {},
-      monthTitle: {},
-      selectedDay: {},
-      weekday: {},
-    },
     list: {
       container: {},
       list: {},
@@ -2393,19 +2369,13 @@ export const defaultTheme: Theme = {
       container: {},
       title: {},
     },
-    timePicker: {
-      columns: {},
-      container: {},
-      item: {},
-      itemText: {},
-      label: {},
-      pill: {},
-      pillText: {},
-      row: {},
-    },
     timeSheet: {
       container: {},
       content: {},
+      row: {},
+      rowLabel: {},
+      rows: {},
+      rowValue: {},
     },
   },
   scheduledMessageListSkeleton: {

@@ -195,6 +195,7 @@ import { ArrowUpRight } from '../../icons/arrow-up-right';
 import { Sound } from '../../icons/audio';
 import { Bell } from '../../icons/bell';
 import { Lightning } from '../../icons/bolt';
+import { Calendar } from '../../icons/calendar';
 import { Camera } from '../../icons/camera';
 import { Check, Tick } from '../../icons/checkmark';
 import { Checkmark } from '../../icons/checkmark-1';
@@ -294,6 +295,7 @@ export const defaultIcons = {
   Bell,
   BlockUser,
   Bookmark,
+  Calendar,
   Camera,
   Check,
   CheckAll,
