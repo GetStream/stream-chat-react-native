@@ -7,6 +7,7 @@ import type { Channel as ChannelType, StreamChat, UserResponse } from 'stream-ch
 
 import * as AttachmentPickerUtils from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { WithComponents } from '../../../contexts/componentsContext/ComponentsContext';
+import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
 import { OverlayProvider } from '../../../contexts/overlayContext/OverlayProvider';
 
 import { initiateClientWithChannels } from '../../../mock-builders/api/initiateClientWithChannels';
@@ -14,6 +15,7 @@ import { generateMember } from '../../../mock-builders/generator/member';
 import { generateUser } from '../../../mock-builders/generator/user';
 
 import { AttachmentPickerStore } from '../../../state-store/attachment-picker-store';
+import type { MessageInputHeightStore } from '../../../state-store/message-input-height-store';
 import { AttachmentPickerContent } from '../../AttachmentPicker/components/AttachmentPickerContent';
 import { AttachmentPickerSelectionBar } from '../../AttachmentPicker/components/AttachmentPickerSelectionBar';
 import type { ChannelProps } from '../../Channel/Channel';
@@ -88,6 +90,51 @@ describe('MessageComposer', () => {
 
     expect(paddings).toContain(300 + 80 + 16);
     expect(paddings).not.toContain(300 - 80 + 16);
+  });
+
+  describe('measured height while the picker is open', () => {
+    // Lays out the composer's measured view at `height` and returns the height it stored.
+    const measure = (messageInputFloating: boolean, height: number) => {
+      attachmentPickerContextOverrides = {
+        attachmentPickerBottomSheetHeight: 300,
+        bottomInset: 80,
+      };
+      let heightStore: MessageInputHeightStore | undefined;
+      const HeightProbe = () => {
+        heightStore = useMessageInputContext().messageInputHeightStore;
+        return null;
+      };
+      render(
+        <OverlayProvider>
+          <Chat client={client}>
+            <Channel channel={channel} messageInputFloating={messageInputFloating}>
+              <MessageComposer />
+              <HeightProbe />
+            </Channel>
+          </Chat>
+        </OverlayProvider>,
+      );
+      const layout = {
+        nativeEvent: { layout: { height, width: 400, x: 0, y: 0 } },
+      };
+      const measuredView = screen.UNSAFE_root.find(
+        (node) =>
+          typeof node.type === 'string' &&
+          typeof node.props.onLayout === 'function' &&
+          String(node.props.onLayout).includes('setHeight'),
+      );
+      act(() => measuredView.props.onLayout(layout));
+      return heightStore?.store.getLatestValue().height;
+    };
+
+    it('leaves out the picker space the docked composer pads itself with', () => {
+      expect(measure(false, 456)).toBe(456 - 300 - 80);
+    });
+
+    // The floating composer is lifted by a spacer outside the measured view.
+    it('keeps the floating composer at its measured height', () => {
+      expect(measure(true, 76)).toBe(76);
+    });
   });
 
   // Mention candidates are read from the channel when `Input` asks for them. A member added after mount

@@ -373,9 +373,11 @@ const MessageComposerWithContext = (props: MessageComposerPropsWithContext) => {
                 layout: { height: newHeight },
               },
             }) => {
+              // Only the docked wrapper pads itself for the open picker. The floating composer is
+              // lifted by a spacer outside this view, so its measured height is already its own.
               messageInputHeightStore.setHeight(
                 newHeight -
-                  (selectedPicker && !isKeyboardVisible
+                  (!messageInputFloating && selectedPicker && !isKeyboardVisible
                     ? attachmentPickerBottomSheetHeight + bottomInset
                     : 0),
               );
