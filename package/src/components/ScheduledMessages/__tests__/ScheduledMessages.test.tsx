@@ -26,6 +26,7 @@ import { initiateClientWithChannels } from '../../../mock-builders/api/initiateC
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
 import { SendButton } from '../../MessageInput/components/OutputButtons/SendButton';
+import { MessageComposer as MessageComposerView } from '../../MessageInput/MessageComposer';
 import { useEditedScheduledMessage } from '../hooks/useEditedScheduledMessage';
 import { ScheduledMessageEditComposer } from '../ScheduledMessageEditComposer';
 import { ScheduledMessagesBanner } from '../ScheduledMessagesBanner';
@@ -507,6 +508,56 @@ describe('ScheduledMessageEditComposer', () => {
     );
     expect(deleteSpy).toHaveBeenCalledWith(failed.id);
     expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('keeps the reschedule sheet open when the edit ends under it', async () => {
+    const failed = generateScheduledMessage(channel, {
+      message: { text: 'Retry me' },
+      status: 'failed',
+    });
+    renderEdit();
+
+    await startEdit(failed);
+    await waitFor(() => expect(screen.getByText('Edit scheduled message')).toBeTruthy());
+    await press('send-button');
+    await waitFor(() => expect(screen.getByTestId('schedule-time-sheet')).toBeTruthy());
+
+    // Scheduling it again ends the edit the same way, before the sheet starts closing.
+    act(() => currentComposer.cancelScheduledMessageEdit());
+
+    await waitFor(() => expect(screen.queryByTestId('send-button')).toBeNull());
+    expect(screen.getByTestId('schedule-time-sheet')).toBeTruthy();
+    expect(screen.getByText('Retry me')).toBeTruthy();
+  });
+
+  it('reschedules a failed message from a channel screen composer too', async () => {
+    const failed = generateScheduledMessage(channel, {
+      message: { text: 'Retry me' },
+      status: 'failed',
+    });
+    const scheduleSpy = jest.spyOn(channel.messageOperations, 'scheduleMessage').mockResolvedValue({
+      scheduled_message: generateScheduledMessage(channel, { message: { text: 'Retry me' } }),
+    } as never);
+    jest.spyOn(channel.messageOperations, 'deleteScheduledMessage').mockResolvedValue(failed);
+    render(
+      <OverlayProvider>
+        <Chat client={client}>
+          <Channel channel={channel} initializeOnMount={false} markReadOnMount={false}>
+            <ApiProbe />
+            <MessageComposerView />
+          </Channel>
+        </Chat>
+      </OverlayProvider>,
+    );
+
+    await startEdit(failed);
+    await waitFor(() => expect(screen.getByText('Edit scheduled message')).toBeTruthy());
+    await press('send-button');
+    await waitFor(() => expect(screen.getByTestId('schedule-time-sheet')).toBeTruthy());
+    await press('schedule-sheet-confirm');
+
+    await waitFor(() => expect(scheduleSpy).toHaveBeenCalled());
+    await waitFor(() => expect(screen.queryByTestId('schedule-time-sheet')).toBeNull());
   });
 
   it('disables save and says why once a command is typed', async () => {

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Keyboard } from 'react-native';
 
 import { useEditedScheduledMessage } from './hooks/useEditedScheduledMessage';
+import { RescheduleSheetHost } from './RescheduleSheetHost';
 
 import { useMessageInputContext } from '../../contexts/messageInputContext/MessageInputContext';
 import { MessageComposer } from '../MessageInput/MessageComposer';
@@ -27,5 +28,8 @@ export const ScheduledMessageEditComposer = () => {
     return () => Keyboard.dismiss();
   }, [editedId, inputBoxRef]);
 
-  return editedScheduledMessage ? <MessageComposer /> : null;
+  // The host stays when the edit ends, so rescheduling a failed message can slide its sheet closed.
+  return (
+    <RescheduleSheetHost>{editedScheduledMessage ? <MessageComposer /> : null}</RescheduleSheetHost>
+  );
 };
