@@ -16,6 +16,7 @@ import type {
 import { useScheduledMessageList } from './hooks/useScheduledMessageList';
 
 import { useScheduledTimeFormatter } from './hooks/useScheduledTimeFormatter';
+import { ScheduledMessageListLoadingSkeleton } from './ScheduledMessageListLoadingSkeleton';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useComponentsContext } from '../../contexts/componentsContext/ComponentsContext';
@@ -29,7 +30,6 @@ import { NotificationTargetProvider } from '../Notifications/NotificationTargetC
 import { Button } from '../ui';
 import { EmptyList } from '../UIComponents/EmptyList';
 import { EmptySearchResult } from '../UIComponents/EmptySearchResult';
-import { GenericListLoadingSkeleton } from '../UIComponents/GenericListLoadingSkeleton';
 import { SearchInput, SearchInputProps } from '../UIComponents/SearchInput';
 
 export type ScheduledMessageListProps = {
@@ -109,7 +109,6 @@ const ScheduledMessageListContent = ({
   const { formatDateTime } = useScheduledTimeFormatter();
   const {
     theme: {
-      scheduledMessageListSkeleton,
       scheduledMessages: { list: listTheme },
       semantics,
     },
@@ -220,10 +219,7 @@ const ScheduledMessageListContent = ({
     !items && error ? (
       <ScheduledMessageListLoadError onRetry={reload} />
     ) : !items || (isLoading && !hasItems) ? (
-      <GenericListLoadingSkeleton
-        skeleton={scheduledMessageListSkeleton}
-        testID='scheduled-message-list-loading-skeleton'
-      />
+      <ScheduledMessageListLoadingSkeleton />
     ) : !hasItems ? (
       <EmptyList
         icon={icons.Time}

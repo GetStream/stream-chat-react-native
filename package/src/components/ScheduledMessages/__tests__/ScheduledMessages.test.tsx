@@ -356,6 +356,17 @@ describe('ScheduledMessageList', () => {
     await waitFor(() => expect(screen.getByText('No scheduled messages')).toBeTruthy());
   });
 
+  it('shows the scheduled messages skeleton until the first page arrives', async () => {
+    renderList();
+
+    expect(screen.getByTestId('scheduled-message-list-loading-skeleton')).toBeTruthy();
+
+    ingest(channel, []);
+
+    await waitFor(() => expect(screen.getByText('No scheduled messages')).toBeTruthy());
+    expect(screen.queryByTestId('scheduled-message-list-loading-skeleton')).toBeNull();
+  });
+
   it('deletes a scheduled message after the confirmation', async () => {
     const scheduledMessage = generateScheduledMessage(channel, { message: { text: 'To delete' } });
     const { data } = channel.state.getLatestValue();

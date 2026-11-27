@@ -1232,10 +1232,13 @@ export type Theme = {
   scheduledMessageListSkeleton: {
     animationTime: number;
     avatar: ViewStyle;
+    body: ViewStyle;
     container: ViewStyle;
     content: ViewStyle;
-    subtitle: ViewStyle;
+    list: ViewStyle;
+    message: ViewStyle;
     textContainer: ViewStyle;
+    time: ViewStyle;
     title: ViewStyle;
   };
   selectionCircle: {
@@ -2408,10 +2411,13 @@ export const defaultTheme: Theme = {
   scheduledMessageListSkeleton: {
     animationTime: 1000, // in milliseconds
     avatar: {},
+    body: {},
     container: {},
     content: {},
-    subtitle: {},
+    list: {},
+    message: {},
     textContainer: {},
+    time: {},
     title: {},
   },
   selectionCircle: {
